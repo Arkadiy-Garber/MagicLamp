@@ -1,0 +1,10 @@
+name	gene	bitscore
+4HB_MCP_1	WspA	27.00
+HAMP	WspA	25.00
+MCPsignal	WspA	34.60
+CheW	WspB-WspD-WspE	23.50
+CheR	WspC	20.60
+Hpt	WspE	22.70
+HATPase_c	WspE	26.40
+Response_reg	WspE-WspR	30.20
+GGDEF	WspR	22.20
