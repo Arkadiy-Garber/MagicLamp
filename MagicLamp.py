@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from sys import argv, stderr
-from lamp import FeGenie, LithoGenie, RosGenie, MagnetoGenie, WspGenie, Lucifer, Genie
+from genies import FeGenie, LithoGenie, RosGenie, MagnetoGenie, WspGenie, Lucifer, Genie
 
 """
 MagicLamp.py: A script for querying HMMs against provided datasets and processing output.
