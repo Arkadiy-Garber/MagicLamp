@@ -209,152 +209,181 @@ def delim(line):
     return ls
 
 
-parser = argparse.ArgumentParser(
-    prog="WspGenie.py",
-    formatter_class=argparse.RawDescriptionHelpFormatter,
-    description=textwrap.dedent('''
-    *******************************************************
-
-    Developed by Arkadiy Garber;
-    University of Montana, Biological Sciences
-    Please send comments and inquiries to rkdgarber@gmail.com
+def main():
+    parser = argparse.ArgumentParser(
+        prog="WspGenie.py",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent('''
+        *******************************************************
     
-                              .-=-.
-                         /  ! ) )
-                      __ \__/__/
-                     / _<( ^.^ )   Your wish is my command...
-                    / /   \ c /O
-                    \ \_.-./=\.-._     _
-                     `-._  `~`    `-,./_<
-                         `\' \'\`'----'
-                       *   \  . \          *
-                            `-~~~\   .
-                       .      `-._`-._   *
-                             *    `~~~-,      *
-                   ()                   * )
-                  <^^>             *     (   .
-                 .-""-.                    )
-      .---.    ."-....-"-._     _...---''`/. '
-     ( (`\ \ .'            ``-''    _.-"'`
-      \ \ \ : :.                 .-'
-       `\`.\: `:.             _.'
-       (  .'`.`            _.'
-        ``    `-..______.-'
-                  ):.  (
-                ."-....-".
-              .':.        `.
-              "-..______..-"
-
-    *******************************************************
-    '''))
-
-
-parser.add_argument('-bin', type=str, help="FASTA format file")
-parser.add_argument('-format', type=str, help="is the input fasta file ORFs or contigs (orfs/contigs). "
-                                              "If contigs is chosen, then prodigal will be run."
-                                              "Default = contigs", default = "contigs")
-parser.add_argument('-outdir', type=str, help="output directory (will be created if does not exist)", default="genie_out")
-parser.add_argument('-hmm_dir', type=str, help='directory of HMMs', default="NA")
-
-args = parser.parse_args()
+        Developed by Arkadiy Garber;
+        University of Montana, Biological Sciences
+        Please send comments and inquiries to rkdgarber@gmail.com
+        
+                                  .-=-.
+                             /  ! ) )
+                          __ \__/__/
+                         / _<( ^.^ )   Your wish is my command...
+                        / /   \ c /O
+                        \ \_.-./=\.-._     _
+                         `-._  `~`    `-,./_<
+                             `\' \'\`'----'
+                           *   \  . \          *
+                                `-~~~\   .
+                           .      `-._`-._   *
+                                 *    `~~~-,      *
+                       ()                   * )
+                      <^^>             *     (   .
+                     .-""-.                    )
+          .---.    ."-....-"-._     _...---''`/. '
+         ( (`\ \ .'            ``-''    _.-"'`
+          \ \ \ : :.                 .-'
+           `\`.\: `:.             _.'
+           (  .'`.`            _.'
+            ``    `-..______.-'
+                      ):.  (
+                    ."-....-".
+                  .':.        `.
+                  "-..______..-"
+    
+        *******************************************************
+        '''))
 
 
-bits = open(args.hmm_dir + "/bitscores.txt")
-bitDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-for i in bits:
-    ls = i.rstrip().split("\t")
-    bitDict[ls[0]]["gene"] = ls[1]
-    bitDict[ls[0]]["bit"] = ls[2]
-
-if args.format == "contigs":
-    os.system("prodigal -i %s -a %s-proteins.faa -o %s-prodigal.out -q" % (args.bin, args.bin, args.bin))
-else:
-    os.system("mv %s %s-proteins.faa" % (args.bin, args.bin))
-
-os.system("mkdir " + args.outdir)
-
-hmms = os.listdir(args.hmm_dir)
-for i in hmms:
-    if lastItem(i.split(".")) == "hmm":
-        os.system(
-            "hmmsearch --tblout %s/%s.tblout -o %s/%s.txt %s/%s %s-proteins.faa" % (args.outdir, i, args.outdir, i, args.hmm_dir, i, args.bin))
+    parser.add_argument('-bin', type=str, help="FASTA format file")
+    parser.add_argument('-format', type=str, help="is the input fasta file ORFs or contigs (orfs/contigs). "
+                                                  "If contigs is chosen, then prodigal will be run."
+                                                  "Default = contigs", default = "contigs")
+    parser.add_argument('-out', type=str, help="name output directory (default=wspgenie_out)",
+                        default="wspgenie_out")
+    parser.add_argument('-hmm_dir', type=str, help='directory of HMMs. Provide the directory path (e.g. hmms/iron or hmms/lux) if you do not have conda installed and were not able to run the setup.sh script', default="NA")
 
 
-results = os.listdir(args.outdir)
-resultsDict = defaultdict(lambda: defaultdict(list))
-for i in results:
-    if lastItem(i.split(".")) == "tblout":
-        result = open(args.outdir + "/" + i, "r")
-        for line in result:
-            if not re.match(r'#', line):
-                ls = delim(line)
-                evalue = float(ls[4])
-                bit = float(ls[5])
-                orf = ls[0]
-                query = ls[2]
-                threshold = bitDict[query]["bit"]
-                gene = bitDict[query]["gene"]
-                if float(bit) > float(threshold):
-                    resultsDict[orf]["query"].append(query)
-                    resultsDict[orf]["threshold"].append(threshold)
-                    resultsDict[orf]["gene"].append(gene)
-                    resultsDict[orf]["bit"].append(bit)
+    # CHECKING FOR CONDA INSTALL
+    os.system("echo ${magneto_hmms}/hmm-meta.txt > HMMlib.txt")
+    file = open("HMMlib.txt")
+    for i in file:
+        location = i.rstrip()
 
-out = open(args.outdir + "/wspgenie.csv", "w")
-for i in sorted(resultsDict.keys()):
-    for j in range(0, len(resultsDict[i]["query"])):
-        out.write(i + "," + str(resultsDict[i]["query"][j]) + "," + str(resultsDict[i]["gene"][j]) + "," + str(resultsDict[i]["bit"][j]) + "," + str(resultsDict[i]["threshold"][j]) + "\n")
-out.close()
+    os.system("rm HMMlib.txt")
+    try:
+        bitscores = open(location)
+        conda = 1
+    except FileNotFoundError:
+        conda = 0
 
+    if conda == 0:
+        parser.add_argument('-hmm_dir', type=str,
+                            help='directory of HMMs. Provide the directory path (e.g. hmms/iron or hmms/lux) if you do not have conda installed and were not able to run the setup.sh script',
+                            default="NA")
 
-summaryDict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-summary = open(args.outdir + "/wspgenie.csv", "r")
-for i in summary:
-    ls = i.rstrip().split(",")
-    orf = ls[0]
-    contig = allButTheLast(orf, "_")
-    orfNum = lastItem(orf.split("_"))
-    domain = ls[1]
-    gene = ls[2]
-    bit = ls[3]
-    threshold = ls[4]
-    summaryDict[contig][orfNum]["domain"].append(domain)
-    summaryDict[contig][orfNum]["gene"].append(gene)
-    summaryDict[contig][orfNum]["bit"].append(bit)
-    summaryDict[contig][orfNum]["threshold"].append(threshold)
+        # parser.add_argument('--R', type=str,
+        #                     help="location of R scripts directory (note: this optional argument requires Rscript to be "
+        #                          "installed on your system). The R scripts directory is in the same directory as the "
+        #                          "Genie.py code", default="NA")
 
-orfs = defaultdict(list)
-for i in summaryDict.keys():
-    for j in summaryDict[i]:
-        orfs[i].append(int(j))
-
-ORFS = defaultdict(list)
-for i in orfs.keys():
-    clu = cluster(orfs[i], 2)
-    for j in clu:
-        if len(j) > 3:
-            ORFS[i].append(j)
-
-out = open(args.outdir + "/wspgenie-2.csv", "w")
-out.write("orf" + "," + "gene" + "," + "domain" + "," + "domain_bitscore_ratio" + "," + "domain" + "," + "domain_bitscore_ratio" + "," + "domain" + "," + "domain_bitscore_ratio" + "\n")
-for i in ORFS:
-    for j in ORFS[i]:
-        for k in j:
-            ORF = (i + "_" + str(k))
-            out.write(ORF + "," + str(summaryDict[i][str(k)]["gene"][0]))
-            for l in range(0, len(summaryDict[i][str(k)]["domain"])):
-                out.write("," + summaryDict[i][str(k)]["domain"][l] + "," + str(float(summaryDict[i][str(k)]["threshold"][l]) / float(summaryDict[i][str(k)]["bit"][l])))
-            out.write("\n")
-    out.write("#" + "\n")
-
-out.close()
-os.system("rm %s/wspgenie.csv" % args.outdir)
-os.system("mv %s/wspgenie-2.csv %s/wspgenie.csv" % (args.outdir, args.outdir))
+    args = parser.parse_args()
 
 
-for i in results:
-    if lastItem(i.split(".")) in ["txt", "tblout"]:
-        os.system("rm %s/%s" % (args.outdir, i))
+    bits = open(args.hmm_dir + "/bitscores.txt")
+    bitDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+    for i in bits:
+        ls = i.rstrip().split("\t")
+        bitDict[ls[0]]["gene"] = ls[1]
+        bitDict[ls[0]]["bit"] = ls[2]
 
+    if args.format == "contigs":
+        os.system("prodigal -i %s -a %s-proteins.faa -o %s-prodigal.out -q" % (args.bin, args.bin, args.bin))
+    else:
+        os.system("mv %s %s-proteins.faa" % (args.bin, args.bin))
+
+    os.system("mkdir " + args.out)
+
+    hmms = os.listdir(args.hmm_dir)
+    for i in hmms:
+        if lastItem(i.split(".")) == "hmm":
+            os.system(
+                "hmmsearch --tblout %s/%s.tblout -o %s/%s.txt %s/%s %s-proteins.faa" % (args.out, i, args.out, i, args.hmm_dir, i, args.bin))
+
+
+    results = os.listdir(args.out)
+    resultsDict = defaultdict(lambda: defaultdict(list))
+    for i in results:
+        if lastItem(i.split(".")) == "tblout":
+            result = open(args.out + "/" + i, "r")
+            for line in result:
+                if not re.match(r'#', line):
+                    ls = delim(line)
+                    evalue = float(ls[4])
+                    bit = float(ls[5])
+                    orf = ls[0]
+                    query = ls[2]
+                    threshold = bitDict[query]["bit"]
+                    gene = bitDict[query]["gene"]
+                    if float(bit) > float(threshold):
+                        resultsDict[orf]["query"].append(query)
+                        resultsDict[orf]["threshold"].append(threshold)
+                        resultsDict[orf]["gene"].append(gene)
+                        resultsDict[orf]["bit"].append(bit)
+
+    out = open(args.out + "/wspgenie.csv", "w")
+    for i in sorted(resultsDict.keys()):
+        for j in range(0, len(resultsDict[i]["query"])):
+            out.write(i + "," + str(resultsDict[i]["query"][j]) + "," + str(resultsDict[i]["gene"][j]) + "," + str(resultsDict[i]["bit"][j]) + "," + str(resultsDict[i]["threshold"][j]) + "\n")
+    out.close()
+
+
+    summaryDict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    summary = open(args.out + "/wspgenie.csv", "r")
+    for i in summary:
+        ls = i.rstrip().split(",")
+        orf = ls[0]
+        contig = allButTheLast(orf, "_")
+        orfNum = lastItem(orf.split("_"))
+        domain = ls[1]
+        gene = ls[2]
+        bit = ls[3]
+        threshold = ls[4]
+        summaryDict[contig][orfNum]["domain"].append(domain)
+        summaryDict[contig][orfNum]["gene"].append(gene)
+        summaryDict[contig][orfNum]["bit"].append(bit)
+        summaryDict[contig][orfNum]["threshold"].append(threshold)
+
+    orfs = defaultdict(list)
+    for i in summaryDict.keys():
+        for j in summaryDict[i]:
+            orfs[i].append(int(j))
+
+    ORFS = defaultdict(list)
+    for i in orfs.keys():
+        clu = cluster(orfs[i], 2)
+        for j in clu:
+            if len(j) > 3:
+                ORFS[i].append(j)
+
+    out = open(args.out + "/wspgenie-2.csv", "w")
+    out.write("orf" + "," + "gene" + "," + "domain" + "," + "domain_bitscore_ratio" + "," + "domain" + "," + "domain_bitscore_ratio" + "," + "domain" + "," + "domain_bitscore_ratio" + "\n")
+    for i in ORFS:
+        for j in ORFS[i]:
+            for k in j:
+                ORF = (i + "_" + str(k))
+                out.write(ORF + "," + str(summaryDict[i][str(k)]["gene"][0]))
+                for l in range(0, len(summaryDict[i][str(k)]["domain"])):
+                    out.write("," + summaryDict[i][str(k)]["domain"][l] + "," + str(float(summaryDict[i][str(k)]["threshold"][l]) / float(summaryDict[i][str(k)]["bit"][l])))
+                out.write("\n")
+        out.write("#" + "\n")
+
+    out.close()
+    os.system("rm %s/wspgenie.csv" % args.out)
+    os.system("mv %s/wspgenie-2.csv %s/wspgenie.csv" % (args.out, args.out))
+
+
+    for i in results:
+        if lastItem(i.split(".")) in ["txt", "tblout"]:
+            os.system("rm %s/%s" % (args.out, i))
+
+
+if __name__ == '__main__':
+    main()
 
 
