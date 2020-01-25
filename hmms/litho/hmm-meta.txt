@@ -171,7 +171,7 @@ PplA	32	iron-reduction	iron
 Ndh2	40	iron-reduction	iron
 EetA	20	iron-reduction	iron
 EetB	30	iron-reduction	iron
-DmkB	25	iron-reduction	iron
-MopA	90	manganese-oxidation	manganese
-MnxG    40      manganese-oxidation     manganese
-McoA    32      manganese-oxidation     manganese
+DmkB  25	iron-reduction	iron
+MopA  90  manganese-oxidation	manganese
+MnxG  40  manganese-oxidation manganese
+McoA  32  manganese-oxidation manganese
