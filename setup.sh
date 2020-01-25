@@ -1,7 +1,7 @@
 
 conda create -n magiccave hmmer diamond prodigal blast --yes
 
-source activate aladdin
+source activate magiccave
 
 mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
 
