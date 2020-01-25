@@ -1,5 +1,5 @@
 
-conda create -n aladdin hmmer diamond prodigal blast --yes
+conda create -n magiccave hmmer diamond prodigal blast --yes
 
 source activate aladdin
 
