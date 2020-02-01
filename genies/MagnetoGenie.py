@@ -257,6 +257,14 @@ def main():
                                                 "(provide full path to the BAM file). BAM files are only required if you would like to create "
                                                 "a heatmap that summarizes the abundance of a certain gene that is based on "
                                                 "read coverage, rather than gene counts.", default="NA")
+
+    parser.add_argument('-bam', type=str, help="BAM file. This option is only required if you would like to create "
+                                               "a heatmap that summarizes the abundance of a certain gene that is based on "
+                                               "read coverage, rather than gene counts. If you have more than one BAM file"
+                                               "corresponding to different genomes that you are providing, please use the \'-bams\' "
+                                               "argument to provide a tab-delimited file that denotes which BAM file (or files) belongs "
+                                               "with which genome", default="NA")
+
     parser.add_argument('--d', type=int, help="maximum distance between genes to be considered in a genomic \'cluster\'."
                                               "This number should be an integer and should reflect the maximum number of "
                                               "genes in between putative iron-related genes identified by the HMM database "
@@ -287,7 +295,7 @@ def main():
         #                          "installed on your system). The R scripts directory is in the same directory as the "
         #                          "Genie.py code", default="NA")
 
-    args = parser.parse_args()
+    args = parser.parse_known_args()[0]
 
     # CHECKING ARGUMENTS AND PATHS
     cwd = os.getcwd()
@@ -339,7 +347,7 @@ def main():
         bitDict[ls[0]]["bit"] = ls[1]
     print("...")
 
-
+    os.system("mkdir -p %s" % args.out)
     count = 0
     BinDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
     out = open("%s/magnetogenie.csv" % (args.out), "w")
@@ -534,16 +542,17 @@ def main():
     clusterDict = defaultdict(lambda: defaultdict(list))
     summary = open("%s/magnetogenie-2.csv" % (args.out), "r")
     for i in summary:
+        print(i.rstrip())
         if not re.match(r'#', i):
             ls = i.rstrip().split(",")
             clu = int(ls[9])
             clusterDict[clu]["line"].append(ls)
             clusterDict[clu]["gene"].append(ls[2])
-            clusterDict[clu]["category"].append(ls[0])
 
     print("..")
     print("...")
     out = open("%s/magnetogenie-3.csv" % (args.out), "w")
+    out.write("file" + "," + "gene" + "," "orf" + "," "eval" + "," "bit_score" + "," "bit_score_cutoff" + "," "AA_seq" + "," + "cluster_id" + "\n")
     for i in sorted(clusterDict.keys()):
         ls = (clusterDict[i]["gene"])
 
@@ -558,9 +567,7 @@ def main():
 
             else:
                 for j in clusterDict[i]["line"]:
-                    out.write(
-                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
-                            7] + "," + j[8] + "," + j[9] + "\n")
+                    out.write(j[3] + "," + j[2] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                 out.write("####################################################" + "\n")
 
@@ -620,12 +627,12 @@ def main():
         final = open("%s/magnetogenie-summary.csv" % (args.out), "r")
         for i in final:
             ls = (i.rstrip().split(","))
-            if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome":
+            if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
                 if not re.match(r'#', i):
                     cell = ls[0]
-                    orf = ls[3]
-                    contig = allButTheLast(orf, "_")
+                    orf = ls[2]
                     gene = ls[1]
+                    contig = allButTheLast(orf, "_")
                     Dict[cell][gene].append(float(depthDict[cell][contig]))
 
         outHeat = open("%s/magnetogenie.readDepth.heatmap.csv" % (args.out), "w")
@@ -669,10 +676,10 @@ def main():
         final = open("%s/magnetogenie-summary.csv" % (args.out), "r")
         for i in final:
             ls = (i.rstrip().split(","))
-            if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome":
+            if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
                 if not re.match(r'#', i):
                     cell = ls[0]
-                    orf = ls[3]
+                    orf = ls[2]
                     gene = ls[1]
                     contig = allButTheLast(orf, "_")
                     Dict[cell][gene].append(float(depthDict[contig]))
@@ -702,11 +709,11 @@ def main():
         Dict = defaultdict(lambda: defaultdict(list))
         final = open("%s/magnetogenie-summary.csv" % (args.out), "r")
         for i in final:
-            ls = (i.rstrip().split(","))
-            if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome":
-                if not re.match(r'#', i):
+            if not re.match(r'#', i):
+                ls = (i.rstrip().split(","))
+                if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
                     cell = ls[0]
-                    orf = ls[3]
+                    orf = ls[2]
                     gene = ls[1]
                     Dict[cell][gene].append(gene)
 
@@ -714,8 +721,10 @@ def main():
         normDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
         for i in os.listdir(args.bin_dir):
             if lastItem(i.split(".")) == args.bin_ext:
-                file = open("%s/%s" % (args.bin_dir, i), "r")
+                file = open("%s/%s-proteins.faa" % (args.bin_dir, i), "r")
                 file = fasta(file)
+                for j in file.keys():
+                    print(j)
                 normDict[i] = len(file.keys())
 
         print("\n\n")
@@ -729,6 +738,9 @@ def main():
             outHeat.write(i + ",")
             for j in sorted(Dict.keys()):
                 if not re.match(r'#', j):
+                    print(len(Dict[j][i]))
+                    print(int(normDict[j]))
+                    print("")
                     outHeat.write(str((len(Dict[j][i]) / int(normDict[j])) * float(100)) + ",")
             outHeat.write("\n")
         outHeat.close()

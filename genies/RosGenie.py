@@ -261,6 +261,13 @@ def main():
 
     parser.add_argument('--cpu', type=int, help="number of threads to allow for hmmsearch (default = 1)", default=1)
 
+    parser.add_argument('--norm', type=str,
+                        help="include this flag if you would like the gene counts for each iron gene category to be normalized to "
+                             "the number of predicted ORFs in each genome or metagenome. Without "
+                             "normalization, FeGenie will create a heatmap-compatible "
+                             "CSV output with raw gene counts. With normalization, FeGenie will create a "
+                             "heatmap-compatible with \'normalized gene abundances\'", const=True, nargs="?")
+
     parser.add_argument('-bams', type=str, help="a tab-delimited file with two columns: first column has the genome or "
                                                 "metagenome file names; second column has the corresponding BAM file "
                                                 "(provide full path to the BAM file). Use this option if you have genomes "
@@ -311,7 +318,7 @@ def main():
         #                          "installed on your system). The R scripts directory is in the same directory as the "
         #                          "Genie.py code", default="NA")
 
-    args = parser.parse_args()
+    args = parser.parse_known_args()[0]
 
     # CHECKING ARGUMENTS AND PATHS
     cwd = os.getcwd()
@@ -364,7 +371,7 @@ def main():
     print("...")
 
 
-    os.system("mkdir " + args.out)
+    os.system("mkdir -p " + args.out)
     count = 0
     BinDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
     out = open("%s/rosgenie.csv" % (args.out), "w")
@@ -376,7 +383,7 @@ def main():
 
             fastaFile = open(args.bin_dir + "/" + i, "r")
             fastaFile = fasta(fastaFile)
-            os.system("mkdir " + args.bin_dir + "/" + i + "-HMM")
+            os.system("mkdir -p " + args.bin_dir + "/" + i + "-HMM")
             count = 0
             for hmm in HMMdirLS:
                 if hmm != "hmm-meta.txt":
@@ -489,7 +496,7 @@ def main():
                     if LS[0] != "contigName":
                         depthDict[cell][LS[0]] = LS[2]
 
-        os.system("mkdir %s/contigDepths" % args.out)
+        os.system("mkdir -p %s/contigDepths" % args.out)
         os.system("mv %s/*depth %s/contigDepths/" % (args.out, args.out))
 
         cats = ["1-cysPeroxiredoxin_Cterminal", "Alkyl-hydroperoxide-reductase-ThiolSpecificAntioxidant", "catalase_Dyp_perox",
@@ -616,9 +623,10 @@ def main():
             outHeat.write(i + ",")
             for j in sorted(Dict.keys()):
                 if not re.match(r'#', j):
-                    print(j)
-                    print(normDict[j])
-                    outHeat.write(str((len(Dict[j][i]) / int(normDict[j])) * float(100)) + ",")
+                    if args.norm:
+                        outHeat.write(str((len(Dict[j][i]) / int(normDict[j])) * float(100)) + ",")
+                    else:
+                        outHeat.write(str(len(Dict[j][i])) + ",")
             outHeat.write("\n")
         outHeat.close()
 

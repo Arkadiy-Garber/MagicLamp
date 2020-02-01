@@ -289,8 +289,6 @@ def main():
     parser.add_argument('-contigs_source', type=str, help="By default Lucifer runs Prodigal to predict protein-coding regions. "
                                                           "Please specify whether you are providing a directory of genomes "
                                                           "or metagenomes (default=genomes)", default="genomes")
-    parser.add_argument('-out', type=str, help="name output directory (default=wspgenie_out)",
-                        default="wspgenie_out")
     parser.add_argument('--makeplots', type=str,
                         help="Would you like Lucifer to make some figures from your data? y = yes, n = no (default = n). "
                              "If so, you will need to have Rscipt installed. It is a way for R to be called directly from the command line. "
@@ -331,7 +329,7 @@ def main():
         #                          "installed on your system). The R scripts directory is in the same directory as the "
         #                          "Genie.py code", default="NA")
 
-    args = parser.parse_args()
+    args = parser.parse_known_args()[0]
 
     # CHECKING ARGUMENTS AND PATHS
     cwd = os.getcwd()

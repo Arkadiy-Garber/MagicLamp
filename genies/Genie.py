@@ -291,7 +291,7 @@ def main():
 
     parser.add_argument('--cpu', type=int, help="number of threads to allow for hmmsearch (default = 1)", default=1)
 
-    args = parser.parse_args()
+    args = parser.parse_known_args()[0]
 
     # CHECKING ARGUMENTS AND PATHS
     cwd = os.getcwd()

@@ -256,11 +256,10 @@ def main():
                                                   "Default = contigs", default = "contigs")
     parser.add_argument('-out', type=str, help="name output directory (default=wspgenie_out)",
                         default="wspgenie_out")
-    parser.add_argument('-hmm_dir', type=str, help='directory of HMMs. Provide the directory path (e.g. hmms/iron or hmms/lux) if you do not have conda installed and were not able to run the setup.sh script', default="NA")
 
 
     # CHECKING FOR CONDA INSTALL
-    os.system("echo ${magneto_hmms}/hmm-meta.txt > HMMlib.txt")
+    os.system("echo ${wsp_hmms}/bitscores.txt > HMMlib.txt")
     file = open("HMMlib.txt")
     for i in file:
         location = i.rstrip()
@@ -282,28 +281,38 @@ def main():
         #                          "installed on your system). The R scripts directory is in the same directory as the "
         #                          "Genie.py code", default="NA")
 
-    args = parser.parse_args()
-
-
-    bits = open(args.hmm_dir + "/bitscores.txt")
-    bitDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-    for i in bits:
-        ls = i.rstrip().split("\t")
-        bitDict[ls[0]]["gene"] = ls[1]
-        bitDict[ls[0]]["bit"] = ls[2]
+    args = parser.parse_known_args()[0]
 
     if args.format == "contigs":
         os.system("prodigal -i %s -a %s-proteins.faa -o %s-prodigal.out -q" % (args.bin, args.bin, args.bin))
     else:
         os.system("mv %s %s-proteins.faa" % (args.bin, args.bin))
 
-    os.system("mkdir " + args.out)
+    os.system("mkdir -p " + args.out)
 
-    hmms = os.listdir(args.hmm_dir)
+    if conda == 1:
+        os.system("echo ${wsp_hmms} > HMMlib.txt")
+        file = open("HMMlib.txt")
+        for i in file:
+            HMMdir = (i.rstrip())
+            hmms = os.listdir(HMMdir)
+            bits = open(HMMdir + "/bitscores.txt")
+        os.system("rm HMMlib.txt")
+    else:
+        HMMdir = args.hmm_dir
+        hmms = os.listdir(args.hmm_dir)
+        bits = open(args.hmm_dir + "/bitscores.txt")
+
+    bitDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+    for i in bits:
+        ls = i.rstrip().split("\t")
+        bitDict[ls[0]]["gene"] = ls[1]
+        bitDict[ls[0]]["bit"] = ls[2]
+
     for i in hmms:
         if lastItem(i.split(".")) == "hmm":
             os.system(
-                "hmmsearch --tblout %s/%s.tblout -o %s/%s.txt %s/%s %s-proteins.faa" % (args.out, i, args.out, i, args.hmm_dir, i, args.bin))
+                "hmmsearch --tblout %s/%s.tblout -o %s/%s.txt %s/%s %s-proteins.faa" % (args.out, i, args.out, i, HMMdir, i, args.bin))
 
 
     results = os.listdir(args.out)
