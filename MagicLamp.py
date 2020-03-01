@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from sys import argv, stderr
-from genies import FeGenie, LithoGenie, RosGenie, MagnetoGenie, WspGenie, Lucifer, Genie
+from genies import FeGenie, LithoGenie, RosGenie, MagnetoGenie, WspGenie, Lucifer, Genie, GasGenie
 
 """
 MagicLamp.py: A script for querying HMMs against provided datasets and processing output.
@@ -15,7 +15,7 @@ __version__ = "1"
 __maintainer__ = "Arkadiy Garber"
 __email__ = "rkdgarber@gmail.com"
 
-errorMessage = "Options: MagicLamp.py [ FeGenie | LithoGenie | RosGenie.py | MagnetoGenie.py | WspGenie | Lucifer | Genie | help ]\n"
+errorMessage = "Options: MagicLamp.py [ FeGenie | LithoGenie | RosGenie.py | MagnetoGenie.py | WspGenie | Lucifer | Genie | GasGenie | help ]\n"
 
 try:
     argv[1]
@@ -34,9 +34,11 @@ elif argv[1] == "RosGenie":
 elif argv[1] == "WspGenie":
     WspGenie.main()
 elif argv[1] == "MagnetoGenie":
-    WspGenie.main()
+    MagnetoGenie.main()
+elif argv[1] == "GasGenie":
+    GasGenie.main()
 elif argv[1] == "Genie":
-    WspGenie.main()
+    Genie.main()
 elif argv[1] == "help":
     stderr.write("\tMagicLamp.py FeGenie: HMM-based identification and categorization of iron genes and iron gene operons in genomes and metagenomes.\n"
                  
@@ -50,7 +52,9 @@ elif argv[1] == "help":
                  
                  "\tMagicLamp.py Lucifer: HMM-based identification of light-sensing and light-producing genes\n"
                  
-                 "\tMagicLamp.py Genie: Identification of a user-provided set of HMMs\n")
+                 "\tMagicLamp.py Genie: Identification of a user-provided set of HMMs\n"
+
+                 "\tMagicLamp.py GasGenie: HMM-based identification of genes responsible for gas vesicle formation.\n")
 
     exit()
 else:
