@@ -1676,7 +1676,7 @@ def main():
                                   "clu"] + "\n")
         out.close()
 
-        os.system("mv %s/lithogenie-summary-fixed.csv %s/%s-summary.csv" % (args.out, args.out))
+        os.system("mv %s/lithogenie-summary-fixed.csv %s/lithogenie-summary.csv" % (args.out, args.out))
 
         # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
         print("....")
