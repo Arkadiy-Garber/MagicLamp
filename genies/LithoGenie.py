@@ -451,7 +451,7 @@ def main():
     if args.only_heat == "n":
         count = 0
         BinDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-        out = open("/lithogenie.csv" % (args.out), "w")
+        out = open("%s/lithogenie.csv" % (args.out), "w")
         out.write(
             "bin" + "," + "gene" + "," + "process" + "," + "substrate" + "," + "ORF" + "," + "evalue" + "," + "bitscore" + "," + "sequence" + "\n")
         for i in binDirLS:
