@@ -228,7 +228,7 @@ def delim(line):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog=GasGenie.py",
+        prog="GasGenie.py",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''
         *******************************************************
@@ -389,7 +389,7 @@ def main():
             os.system("mkdir " + args.bin_dir + "/" + i + "-HMM")
             count = 0
             for hmm in HMMdirLS:
-                if lastItem(hmm.split(".")) == "hmm":
+                if hmm != "hmm-meta.txt" and hmm != "alignments" and hmm != "hmm-meta-no-score.txt":
                     count += 1
                     perc = (count / len(HMMdirLS)) * 100
                     # print(str(perc) + "%")
