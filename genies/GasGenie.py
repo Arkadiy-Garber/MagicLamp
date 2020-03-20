@@ -228,7 +228,7 @@ def delim(line):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="MagnetoGenie.py",
+        prog=GasGenie.py",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''
         *******************************************************
@@ -247,7 +247,7 @@ def main():
     parser.add_argument('-bin_ext', type=str, help="extension for bins (do not include the period)")
 
     parser.add_argument('-out', type=str, help="name output directory (default=magnetogenie_out)",
-                        default="magnetogenie_out")
+                        default="gasgenie_out")
 
     parser.add_argument('--contigs_source', type=str, help="are the provided contigs from a single organism (single)"
                                                            "or are you providing this program with metagenomic/metatranscriptomic assemblies (meta)? "
@@ -268,7 +268,7 @@ def main():
     parser.add_argument('--d', type=int,
                         help="maximum distance between genes to be considered in a genomic \'cluster\'."
                              "This number should be an integer and should reflect the maximum number of "
-                             "genes in between putative iron-related genes identified by the HMM database "
+                             "genes in between putative gas vesicle-related genes identified by the HMM database "
                              "(default=10)", default=10)
 
     parser.add_argument('--cpu', type=int, help="number of threads to allow for hmmsearch (default = 1)", default=1)
@@ -389,7 +389,7 @@ def main():
             os.system("mkdir " + args.bin_dir + "/" + i + "-HMM")
             count = 0
             for hmm in HMMdirLS:
-                if hmm != "hmm-meta.txt":
+                if lastItem(hmm.split(".")) == "hmm":
                     count += 1
                     perc = (count / len(HMMdirLS)) * 100
                     # print(str(perc) + "%")
