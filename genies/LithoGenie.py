@@ -7,300 +7,399 @@ import argparse
 import sys
 
 
-def SUM(ls):
-    count = 0
-    for i in ls:
-        count += float(i)
-    return count
-
-
-def deExt(string):
-    ls = string.split(".")
-    ls2 = ls[0:len(ls) - 1]
-    outstring = "".join(ls2)
-    return outstring
-
-
-def unique(ls, ls2):
-    unqlist = []
-    for i in ls:
-        if i not in unqlist and i in ls2:
-            unqlist.append(i)
-    return len(unqlist)
-
-
-def checkFleet(ls):
-    count = 0
-    uniqueLS = []
-    for i in ls:
-        hmm = i.split("|")[0]
-        if hmm not in uniqueLS:
-            uniqueLS.append(hmm)
-            if memoryDict[hmm] in FLEET:
-                count += 1
-    return count
-
-
-def derep(ls):
-    outLS = []
-    for i in ls:
-        if i not in outLS:
-            outLS.append(i)
-    return outLS
-
-
-def cluster(data, maxgap):
-    '''Arrange data into groups where successive elements
-       differ by no more than *maxgap*
-
-        #->>> cluster([1, 6, 9, 100, 102, 105, 109, 134, 139], maxgap=10)
-        [[1, 6, 9], [100, 102, 105, 109], [134, 139]]
-
-        #->>> cluster([1, 6, 9, 99, 100, 102, 105, 134, 139, 141], maxgap=10)
-        [[1, 6, 9], [99, 100, 102, 105], [134, 139, 141]]
-
-    '''
-    # data = sorted(data)
-    data.sort(key=int)
-    groups = [[data[0]]]
-    for x in data[1:]:
-        if abs(x - groups[-1][-1]) <= maxgap:
-            groups[-1].append(x)
-        else:
-            groups.append([x])
-    return groups
-
-
-def lastItem(ls):
-    x = ''
-    for i in ls:
-        x = i
-    return x
-
-
-def RemoveDuplicates(ls):
-    empLS = []
-    for i in ls:
-        if i not in empLS:
-            empLS.append(i)
-        else:
-            pass
-    return empLS
-
-
-def allButTheLast(iterable, delim):
-    x = ''
-    length = len(iterable.split(delim))
-    for i in range(0, length - 1):
-        x += iterable.split(delim)[i]
-        x += delim
-    return x[0:len(x) - 1]
-
-
-def secondToLastItem(ls):
-    x = ''
-    for i in ls[0:len(ls) - 1]:
-        x = i
-    return x
-
-
-def pull(item, one, two):
-    ls = []
-    counter = 0
-    for i in item:
-        if counter == 0:
-            if i != one:
-                pass
-            else:
-                counter += 1
-                ls.append(i)
-        else:
-            if i != two:
-                ls.append(i)
-            else:
-                ls.append(i)
-                counter = 0
-    outstr = "".join(ls)
-    return outstr
-
-
-def stabilityCounter(int):
-    if len(str(int)) == 1:
-        string = (str(0) + str(0) + str(0) + str(0) + str(int))
-        return (string)
-    if len(str(int)) == 2:
-        string = (str(0) + str(0) + str(0) + str(int))
-        return (string)
-    if len(str(int)) == 3:
-        string = (str(0) + str(0) + str(int))
-        return (string)
-    if len(str(int)) == 4:
-        string = (str(0) + str(int))
-        return (string)
-
-
-def replace(stringOrlist, list, item):
-    emptyList = []
-    for i in stringOrlist:
-        if i not in list:
-            emptyList.append(i)
-        else:
-            emptyList.append(item)
-    outString = "".join(emptyList)
-    return outString
-
-
-def remove(stringOrlist, list):
-    emptyList = []
-    for i in stringOrlist:
-        if i not in list:
-            emptyList.append(i)
-        else:
-            pass
-    outString = "".join(emptyList)
-    return outString
-
-
-def remove2(stringOrlist, list):
-    emptyList = []
-    for i in stringOrlist:
-        if i not in list:
-            emptyList.append(i)
-        else:
-            pass
-    # outString = "".join(emptyList)
-    return emptyList
-
-
-def removeLS(stringOrlist, list):
-    emptyList = []
-    for i in stringOrlist:
-        if i not in list:
-            emptyList.append(i)
-        else:
-            pass
-    return emptyList
-
-
-def fasta(fasta_file):
-    seq = ''
-    header = ''
-    Dict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-    for i in fasta_file:
-        i = i.rstrip()
-        if re.match(r'^>', i):
-            if len(seq) > 0:
-                Dict[header] = seq
-                header = i[1:]
-                header = header.split(" # ")[0]
-                seq = ''
-            else:
-                header = i[1:]
-                header = header.split(" # ")[0]
-                seq = ''
-        else:
-            seq += i
-    Dict[header] = seq
-    # print(count)
-    return Dict
-
-
-def filter(list, items):
-    outLS = []
-    for i in list:
-        if i not in items:
-            outLS.append(i)
-    return outLS
-
-
-def delim(line):
-    ls = []
-    string = ''
-    for i in line:
-        if i != " ":
-            string += i
-        else:
-            ls.append(string)
-            string = ''
-    ls = filter(ls, [""])
-    return ls
+# TODO: ADD CYTOCHROME 579 HMM
+# TODO: ADD COLUMN WITH ORF STRAND
 
 
 def main():
+    def SUM(ls):
+        count = 0
+        for i in ls:
+            count += float(i)
+        return count
+
+    def Strip(ls):
+        outList = []
+        for i in ls:
+            gene = i.split("|")[0]
+            outList.append(gene)
+        return outList
+
+    def unique(ls, ls2):
+        unqlist = []
+        for i in ls:
+            if i not in unqlist and i in ls2:
+                unqlist.append(i)
+        return len(unqlist)
+
+    def Unique(ls):
+        unqList = []
+        for i in ls:
+            if i not in unqList:
+                unqList.append(i)
+        return unqList
+
+    def Unique2(ls):
+        unqList = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in unqList:
+                unqList.append(hmm)
+        return unqList
+
+    def checkFe(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if geneToCatDict[hmm] in ["iron_reduction", "iron_oxidation"]:
+                    count += 1
+        return count
+
+    def checkDFE1(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if hmm in ["DFE_0461", "DFE_0462", "DFE_0463", "DFE_0464", "DFE_0465"]:
+                    count += 1
+        return count
+
+    def checkDFE2(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if hmm in ["DFE_0448", "DFE_0449", "DFE_0450", "DFE_0451"]:
+                    count += 1
+        return count
+
+    def check1(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if geneToCatDict[hmm] in ["iron_aquisition-siderophore_transport", "iron_aquisition-heme_transport"]:
+                    count += 1
+        return count
+
+    def check1_2(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if geneToCatDict[hmm] in ["iron_aquisition-siderophore_synthesis"]:
+                    count += 1
+        return count
+
+    def check2(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if geneToCatDict[hmm] in ["iron_aquisition-iron_transport", "iron_aquisition-heme_oxygenase"]:
+                    count += 1
+        return count
+
+    def check3(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if geneToCatDict[hmm] in ["iron_aquisition-siderophore_synthesis"]:
+                    count += 1
+        return count
+
+    def checkReg(ls):
+        count = 0
+        for i in ls:
+            hmm = i.split("|")[0]
+            if re.findall(r'aquisition', geneToCatDict[hmm]):
+                count += 1
+        return count
+
+    def checkMam(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if geneToCatDict[hmm] == "magnetosome_formation":
+                    count += 1
+        return count
+
+    def derep(ls):
+        outLS = []
+        for i in ls:
+            if i not in outLS:
+                outLS.append(i)
+        return outLS
+
+    def cluster(data, maxgap):
+        '''Arrange data into groups where successive elements
+           differ by no more than *maxgap*
+
+            #->>> cluster([1, 6, 9, 100, 102, 105, 109, 134, 139], maxgap=10)
+            [[1, 6, 9], [100, 102, 105, 109], [134, 139]]
+
+            #->>> cluster([1, 6, 9, 99, 100, 102, 105, 134, 139, 141], maxgap=10)
+            [[1, 6, 9], [99, 100, 102, 105], [134, 139, 141]]
+
+        '''
+        # data = sorted(data)
+        data.sort(key=int)
+        groups = [[data[0]]]
+        for x in data[1:]:
+            if abs(x - groups[-1][-1]) <= maxgap:
+                groups[-1].append(x)
+            else:
+                groups.append([x])
+        return groups
+
+    def lastItem(ls):
+        x = ''
+        for i in ls:
+            x = i
+        return x
+
+    def RemoveDuplicates(ls):
+        empLS = []
+        for i in ls:
+            if i not in empLS:
+                empLS.append(i)
+            else:
+                pass
+        return empLS
+
+    def allButTheLast(iterable, delim):
+        x = ''
+        length = len(iterable.split(delim))
+        for i in range(0, length - 1):
+            x += iterable.split(delim)[i]
+            x += delim
+        return x[0:len(x) - 1]
+
+    def secondToLastItem(ls):
+        x = ''
+        for i in ls[0:len(ls) - 1]:
+            x = i
+        return x
+
+    def pull(item, one, two):
+        ls = []
+        counter = 0
+        for i in item:
+            if counter == 0:
+                if i != one:
+                    pass
+                else:
+                    counter += 1
+                    ls.append(i)
+            else:
+                if i != two:
+                    ls.append(i)
+                else:
+                    ls.append(i)
+                    counter = 0
+        outstr = "".join(ls)
+        return outstr
+
+    def stabilityCounter(int):
+        if len(str(int)) == 1:
+            string = (str(0) + str(0) + str(0) + str(0) + str(int))
+            return (string)
+        if len(str(int)) == 2:
+            string = (str(0) + str(0) + str(0) + str(int))
+            return (string)
+        if len(str(int)) == 3:
+            string = (str(0) + str(0) + str(int))
+            return (string)
+        if len(str(int)) == 4:
+            string = (str(0) + str(int))
+            return (string)
+
+    def replace(stringOrlist, list, item):
+        emptyList = []
+        for i in stringOrlist:
+            if i not in list:
+                emptyList.append(i)
+            else:
+                emptyList.append(item)
+        outString = "".join(emptyList)
+        return outString
+
+    def remove(stringOrlist, list):
+        emptyList = []
+        for i in stringOrlist:
+            if i not in list:
+                emptyList.append(i)
+            else:
+                pass
+        outString = "".join(emptyList)
+        return outString
+
+    def remove2(stringOrlist, list):
+        emptyList = []
+        for i in stringOrlist:
+            if i not in list:
+                emptyList.append(i)
+            else:
+                pass
+        # outString = "".join(emptyList)
+        return emptyList
+
+    def removeLS(stringOrlist, list):
+        emptyList = []
+        for i in stringOrlist:
+            if i not in list:
+                emptyList.append(i)
+            else:
+                pass
+        return emptyList
+
+    def fasta(fasta_file):
+        seq = ''
+        header = ''
+        Dict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        for i in fasta_file:
+            i = i.rstrip()
+            if re.match(r'^>', i):
+                if len(seq) > 0:
+                    Dict[header] = seq
+                    header = i[1:]
+                    seq = ''
+                else:
+                    header = i[1:]
+                    seq = ''
+            else:
+                seq += i
+        Dict[header] = seq
+        # print(count)
+        return Dict
+
+    def fastaRename(fasta_file):
+        counter = 0
+        seq = ''
+        header = ''
+        Dict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        for i in fasta_file:
+            i = i.rstrip()
+            if re.match(r'^>', i):
+                if len(seq) > 0:
+                    Dict[header] = seq
+                    header = i[1:]
+                    header = header.split(" ")[0]
+                    counter += 1
+                    header = header + "_" + str(counter)
+                    seq = ''
+                else:
+                    header = i[1:]
+                    header = header.split(" ")[0]
+                    counter += 1
+                    header = header + "_" + str(counter)
+                    seq = ''
+            else:
+                seq += i
+        Dict[header] = seq
+        # print(count)
+        return Dict
+
+    def filter(list, items):
+        outLS = []
+        for i in list:
+            if i not in items:
+                outLS.append(i)
+        return outLS
+
+    def delim(line):
+        ls = []
+        string = ''
+        for i in line:
+            if i != " ":
+                string += i
+            else:
+                ls.append(string)
+                string = ''
+        ls = filter(ls, [""])
+        return ls
+
     parser = argparse.ArgumentParser(
-        prog="LithoGenie.py",
+        prog="MagicLamp.py",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''
         *******************************************************
-    
-        Developed by Arkadiy Garber and Gustavo Ramírez;
+
+        Developed by Arkadiy Garber and Nancy Merino;
         University of Southern California, Earth Sciences
         Please send comments and inquiries to arkadiyg@usc.edu
-    
-    
-    ...............**/((#((((((/**,..    ...                                   ..,(##,.......,,,,***,,,
-    ...........,*/(%%&%####((*,..             .....,/%@@&%#*....              ,&&@@@@@&(....,.....,***,
-    .....,,,.,*(#&&&&%##(/,...       .........,#%%###%&@@@&&%(.....           ,/%&%##&(...,,,....,,,,
-    ,,,,,,,*/#%&&&&%%(/,..        ........,,,*@@@% ,,,.  ,(%&%#/,......      .%/,.,,*(%%(,.....,,..,,,,
-    ,,,,,*/#%&&&&&%#/,.           .....,,****%@@%..**,.    /&@@@&%*%@@/      (/     .*((/,.......,,..,,
-    ,***/(%&&&&&%(,.             ..,,********&@&, .**...     ,(&@@@((##(      . .,...,***.............,
-    **/(#%&&@&%(*.   .*(/,    ....,,,,*&&%//(%       ...    ((%@&***/#(      .,*..       ............
-    //#%%&@&%(*.  *&&&&&&*.....,,,,(%%###%%&&,  .,**///,.    /%#/*,,**/(&%,,%/*....,,,,,,............
-    (#%%&&%(*,.  (@&%#(//(#/*,.*/(***(%%%####&%  ..,**///,.   %%(   .,,,,,(#%&%/,.,**/(((#%%%%,  ......
-    ##%&%(*,.    @&(*,.  .*((((#%@@&&%%##(##/  ........,,,/(((%#/.    *   ***/(####((/*,,***///,.   .,/
-    #%%#/*..    .%/..    .,,. .,,.   ,/(/,      .****/((/,..,,.   ,.  .#. ..       ..    .*///(#%%(.   
-    ##(%&&%(*    .     .  ..,,*///(/,.   .               .*/*. ,  ..         ..,*////*,..  ,(#%&@@@. 
-    (/&@@*         .   ..,,**///(/*.         ... .    .*/,.. *.     *@(    ..,,*/((((((*,... *(&@@@& 
-    *,#&&&%*.      .,    ...,,**///,,.     ,      ..     ,*..   .,,  ,. .*/(##(*.,*//((/,....  (&@@#*
-    ..*####/*,..,*/*     ...,,,***,..      ,*  .,    ,*. .,..   .,. .        .*#&@@#.//*,.....  (&%(,
-    . .,....,*#%&%#.         .....       .  /* ..   .,/,       .,, #%      .,,***,  /&@%.,.  ....  #(**
-             /##(/. ..,***//(%%*         .   #,      ,*,      .  ,%      ..,**///((*. #@@,  .....  ,(*,
-           ,***,   .,*//(/*,.   .(      .,.   (#.              ,,       ..,**//(((((/, ,%@, ....    (##
-          .*** ..,,,,,*,.    .    .    ..,.    ,#%.           ......     .,**/(((((/*.  .&& ...     (&%
-          ,,. .....   ,**/***,.               . .. *     .,,**///////*,...,*/((((//**.   /@.        &@@
-     **,,,,  .       .,**/((//////*,.  *%.# (( &%.&   .,,*///((((((((/******//////*,..   ,@*       *@@@
-    &&&&%*         . ,///////*****,,,.*%.&,%& %%.&( .,***////////////**,,,,,,****,,,..   .&.       @@@@
-    @@/.    .,.   ..,**********,,.. #*.& &(.%/.&..,,,************,,,..      ,,,,...    ,(       (@@&&
-    /,    .,***.   .////***,,,,,... ,.,# #/.(.,%  .,,,,,**,,,,,,... .,*/(/*. ....      *       #@@%
-    #*. .. .,***,.   ..**//***,,.....    , ,/ ,. /.   .......,,,,,,,,,**////*.          ..     .&@@%((%
-    %, .,,..,****.    .,,,,........     ,                .........   .......                 ,@@@%/,,**
-    &(     ...,,,.    .                                                                    .&&&%#**,,**
-    @,     .,,.                   /% &( (.,#                                            (%#(/***%&%**
-    @@&(*     .......        ..  /# /&.@(,@.(%    ....                                 .(&%(*,,**&@@&/*
-    *#%#/,.      .......          ,  * .* *../     .........                        *&@@@@@@@&@@&(/**
-    .,/##(***                      .                     .,,,,.     .  ,         ,**/**(##(#%@@&&/..,,,
-    ..,/##*,*#%&&%(//*,......,*(((####&%%                  ,,,   . ,,            ...  .,,/(##(*,.......
-    ...,*/*,....,*/(((/***/**,,,,,*(%@@&&%/    .......       ,  .. ..      .,.        ..,..............
-    ....,,*,,.             ..../*,,*&@@@(.   .,**,,..                   ,*,         .........       .
-    ...  .,,,,..             ..**/////#%#((.   .,**/**,,,.... ..          .*, //       ......          
-    .... .....                 ..,#@@@@@@&( .,  .,,*******,,,,..     .    ..,*(&&      ....    .       
-    ,.... ...,.              .. ,&&&&&@@&%#,  .(%%(/*,,....,,*(##(,        ,,,*//      ...   ,/.       
-    *........,,..             .,(%&%#((((,.   ,#%#/*,...     .,/((*     ,@@&&&(.     ...    /&(      .,
-    #/,.......,,..     ,,.   ./((%&%#/,....   /##(*,. ..*(#*.    ,/*,. &@@@@@@@@&   ....   #&&(.    .. 
-    @&%(/, .....,.,..,(/*    /%&@@@&%/,,,/(*  /,.  /&@@&@@@@@#/,   .*,**,*#@@@@&&*  ...   /(/*/(   .   
-    @@@@(//////((#%#(*..   ,*#&@@@&(,/((.      .%@@@&&&@@@@@&&&(/. .,   #@@@/. ..    ,(/,..(#/.    
-    (#&@@@@@@@@@@@(,,,......,*/%@@@@#**##/*. //#@@/*//#&@@@@@&.   .(#@@&%##/**/*    ,((/,  */.     
-    ,***/((######(/,,,,,,,,...,**(&@@@@&%(/*//%&&@@%#/*,,,,(&@@@@%//**%@@@%/*,,,*##.   *#((.   .,     .
-    ,,...        ...,,,,//,....****,,*/%&@@@@@@@%(///*,,,,**/%%%(/%&&@&%%%#/* ./%@#.  /*.         ..,
-    .,,....       ....,,(#,,,,.......,*((#&&&(//////*****((##//(((##/****,  *%@@%..*#/,.        .,,,.
-    *,,,.....      ....../%,,,,,,,,,,..,*/(#(((///////(###((((/*,,.        #%@@@%/,,,.        .,....,
-    //*,,,.....      ....,/&@&/,,,,,,,*#/**,,/#%#(/**/(((//((%#/*((....... ,*#(//****,        ..,...,**
-    *///**,..  ...    ..,,**/#&@@@@&&%#//,,,,*%@@@//((/////(###%&/,,,.*@///*,.,,,,.       .,,,,,,***,
-    ,*////*,,.  .....  ....,,*/((((((/**,*,,,,*(%@@@@@@@@#(#%&&&&&%##//%%%///,...*,      ..,,****,*,,,,
-    
-        Image design: Kazuki Takahashi (1996);
-        ASCII art: https://manytools.org/hacker-tools/convert-images-to-ascii-art/ 
+
+     )\   )\     /`-.      )\.-.    )\  )\   )\.---.  .-,.-.,-.    .-./(     )\.-.    )\.---.   )\  )\  .'(   )\.---.  
+    (  ',/ /   ,' _  \   ,' ,-,_)  (  \, /  (   ,-._( ) ,, ,. (  ,'     )  ,' ,-,_)  (   ,-._( (  \, /  \  ) (   ,-._( 
+     )    (   (  '-' (  (  .   __   ) \ (    \  '-,   \( |(  )/ (  .-, (  (  .   __   \  '-,    ) \ (   ) (   \  '-,   
+    (  \(\ \   )   _  )  ) '._\ _) ( ( \ \    ) ,-`      ) \     ) '._\ )  ) '._\ _)   ) ,-`   ( ( \ \  \  )   ) ,-`   
+     `.) /  ) (  ,' ) \ (  ,   (    `.)/  )  (  ``-.     \ (    (  ,   (  (  ,   (    (  ``-.   `.)/  )  ) \  (  ``-.  
+         '.(   )/    )/  )/'._.'       '.(    )..-.(      )/     )/ ._.'   )/'._.'     )..-.(      '.(    )/   )..-.(                                                                              
+                                  %(?/////////&//%                                                
+              .,,.                   (%((&@@@#/*.                      .,,.        
+              .,,.                     @(((/&@@@#///**                  ...        
+                                         #&((///////////////*/@                                
+                                                             #*@.                             
+                                      ()                   * )//*
+                                      <^^>             *     (/*   .
+                                     .-""-.                  *)
+                          .---.    ."-....-"-._     _...---''`/. '
+                         ( (`\ \ .'            ``-''    _.-"'`
+                          \ \ \ : :.                 .-'
+                           `\`.\: `:.             _.'
+                           (  .'`.`            _.'
+                            ``    `-..______.-'
+                                      ):.  (
+                                    ."-....-".
+                                  .':.        `.
+                                  "-..______..-"
+
+        Image design: Nancy Merino (2018);
+        ASCII art: https://manytools.org/hacker-tools/convert-images-to-ascii-art/
+        https://ascii.co.uk/text
         *******************************************************
         '''))
 
-    parser.add_argument('-bin_dir', type=str, help="directory of bins")
-    parser.add_argument('-bin_ext', type=str, help="extension for bins (do not include the period)")
-    parser.add_argument('-out', type=str, help="name output directory (default=lithogenie_out)",
-                        default="lithogenie_out")
+    parser.add_argument('-bin_dir', type=str, help="directory of bins", default="NA")
 
-    parser.add_argument('--contigs_source', type=str, help="are the provided contigs from a single organism (single)"
-                                                           "or are you providing this program with metagenomic/metatranscriptomic assemblies (meta)? "
-                                                           "(default=single)", default="single")
+    parser.add_argument('-bin_ext', type=str, help="extension for bins (do not include the period)", default="NA")
+
+    parser.add_argument('-d', type=int, help="maximum distance between genes to be considered in a genomic \'cluster\'."
+                                             "This number should be an integer and should reflect the maximum number of "
+                                             "genes in between putative iron-related genes identified by the HMM database "
+                                             "(default=5)", default=5)
+
+    parser.add_argument('-ref', type=str, help="path to a reference protein database, which must be in FASTA format",
+                        default="NA")
+
+    parser.add_argument('-out', type=str, help="name output directory (default=magnetogenie_out)",
+                        default="magnetogenie_out")
+
+    parser.add_argument('-inflation', type=int, help="inflation factor for final gene category counts (default=1000)",
+                        default=1000)
+
+    parser.add_argument('-t', type=int, help="number of threads to use for DIAMOND BLAST and HMMSEARCH "
+                                             "(default=1, max=16)", default=1)
+
     parser.add_argument('-bams', type=str, help="a tab-delimited file with two columns: first column has the genome or "
                                                 "metagenome file names; second column has the corresponding BAM file "
                                                 "(provide full path to the BAM file). Use this option if you have genomes "
@@ -316,70 +415,84 @@ def main():
                                                "corresponding to different genomes that you are providing, please use the \'-bams\' "
                                                "argument to provide a tab-delimited file that denotes which BAM file (or files) belongs "
                                                "with which genome", default="NA")
-
-    parser.add_argument('--d', type=int, help="maximum distance between genes to be considered in a genomic \'cluster\'."
-                                              "This number should be an integer and should reflect the maximum number of "
-                                              "genes in between putative iron-related genes identified by the HMM database "
-                                              "(default=3)", default=3)
-    parser.add_argument('--makeplots', type=str,
-                        help="Would you like LithoGenie to make some figures from your data? y = yes, n = no (default = n). "
-                             "If so, you will need to have Rscipt installed. It is a way for R to be called directly from the command line. "
-                             "Warning: this part of the program is currently under beta-testing, and if there are any problems running Rscript, "
-                             "or installing any of the required packages, you may get a bunch of error messages at the end. "
-                             "This will not crash the program, however, and you can still expect to "
-                             "see the main output (CSV files) from Genie.", default="n")
-
-    parser.add_argument('--element', type=str,
+    parser.add_argument('-cat', type=str,
                         help="which element do you want to highlight in the heatmap output? [sulfur, hydrogen, "
                              "methane, nitrogen, oxygen, carbon-monoxide, C1compounds, carbon, urea,"
                              "halogenetated-compounds, arsenic, selenium, nitriles, iron, ALL] (default = ALL)",
                         default="ALL")
 
-    parser.add_argument('--only_heat', type=str, help="subvert all other functions of this scpript and only make the"
-                                                      " heatmap. Please provide the output directory using the \'-outdir\' flag; this already must "
-                                                      "contain the output summary file from a previously completed run. y = yes, n = no (default = n)",
-                        default="n")
+    parser.add_argument('--skip', type=str, help="skip the main algorithm and just redo the heatmap with different parameters", const=True,
+                        nargs="?")
 
-    parser.add_argument('--cpu', type=int, help="number of threads to allow for hmmsearch (default = 1)", default=1)
+    parser.add_argument('--gbk', type=str, help="include this flag if your bins are in Genbank format", const=True,
+                        nargs="?")
 
-    parser.add_argument('--norm', type=str, help="normalize gene counts to total number of predicted ORFs in each genome or metagenome (y = yes, n = no) (default = yes)", default="y")
+    parser.add_argument('--orfs', type=str,
+                        help="include this flag if you are providing bins as open-reading frames or genes in FASTA amino-acid format",
+                        const=True,
+                        nargs="?")
+
+    parser.add_argument('--meta', type=str,
+                        help="include this flag if the provided contigs are from metagenomic/metatranscriptomic assemblies",
+                        const=True, nargs="?")
+
+    parser.add_argument('--norm', type=str,
+                        help="include this flag if you would like the gene counts for each iron gene category to be normalized to "
+                             "the number of predicted ORFs in each genome or metagenome. Without "
+                             "normalization, MagnetoGenie will create a heatmap-compatible "
+                             "CSV output with raw gene counts. With normalization, MagnetoGenie will create a "
+                             "heatmap-compatible with \'normalized gene abundances\'", const=True, nargs="?")
+
+    parser.add_argument('--makeplots', type=str,
+                        help="include this flag if you would like MagnetoGenie to make some figures from your data?. "
+                             "To take advantage of this part of the pipeline, you will need to have Rscipt installed. It is a way for R to be called directly from the command line. "
+                             "Please be sure to install all the required R packages as instrcuted in the MagnetoGenie Wiki: "
+                             "https://github.com/Arkadiy-Garber/MagnetoGenie/wiki/Installation. "
+                             "If you see error or warning messages associated with Rscript, you can still expect to "
+                             "see the main output (CSV files) from MagnetoGenie.", const=True, nargs="?")
 
     # CHECKING FOR CONDA INSTALL
-    os.system("echo ${litho_hmms}/hmm-meta.txt > HMMlib.txt")
+    os.system("echo ${litho_hmms} > HMMlib.txt")
+    os.system("echo ${rscripts} > rscripts.txt")
     file = open("HMMlib.txt")
     for i in file:
-        location = i.rstrip()
+        HMMdir = i.rstrip()
+    bits = HMMdir + "/" + "hmm-meta.txt"
 
-    os.system("rm HMMlib.txt")
+    file = open("rscripts.txt")
+    for i in file:
+        rscriptDir = i.rstrip()
+
     try:
-        bitscores = open(location)
-        conda = 1
+        test = open(bits)
+
     except FileNotFoundError:
-        conda = 0
+        os.system("which MagicLamp.py > mainDir.txt")
 
-    if conda == 0:
-        parser.add_argument('-hmm_dir', type=str,
-                            help='directory of HMMs. Provide the directory path (e.g. hmms/iron or hmms/lux) if you do not have conda installed and were not able to run the setup.sh script',
-                            default="NA")
+        file = open("mainDir.txt")
+        for i in file:
+            location = i.rstrip()
+        location = allButTheLast(location, "/")
 
-        parser.add_argument('--R', type=str,
-                            help="location of R scripts directory (note: this optional argument requires Rscript to be "
-                                 "installed on your system). The R scripts directory is in the same directory as the "
-                                 "Genie.py code", default="NA")
+        HMMdir = location + "/hmms/magneto/"
+        bits = HMMdir + "/" + "hmm-meta.txt"
+        rscriptDir = location + "/rscripts/"
+
+        try:
+            test = open(bits)
+        except FileNotFoundError:
+            print("MagicLamp script could not locate the required directories. Please run the setup.sh script if \n"
+                  "you have Conda installed. Otherwise, please run the setupe-noconda.sh script and put MagicLamp.py \n"
+                  "into your $PATH")
+            raise SystemExit
+
+    os.system("rm -f HMMlib.txt rscripts.txt mainDir.txt")
 
     args = parser.parse_known_args()[0]
 
-    # CHECKING ARGUMENTS AND PATHS
+    # ************** Checking for the required arguments ******************* #
     cwd = os.getcwd()
     print("checking arguments")
-    if conda == 0:
-        if args.hmm_dir != "NA":
-            print(".")
-        else:
-            print("You have not provided the location of the HMM library via the -hmm_dir argument. Please do so, and try "
-                  "again. The HMM library is found within the same directory as the FeGenie executable.")
-            print("Exiting")
-            raise SystemExit
 
     if args.bin_dir != "NA":
         binDir = args.bin_dir + "/"
@@ -390,222 +503,360 @@ def main():
         print("Exiting")
         raise SystemExit
 
+    if args.bam != "NA" and args.bams != "NA":
+        print("Please provide only one of the following flags: \'-bam\' or \'-bams\'.")
+        raise SystemExit
+
     if args.bin_ext != "NA":
         print(".")
     else:
-        print('Looks like you did not provide an extension for your genomes/bins or assemblies, so FeGenie does not know'
-              ' which files in the provided directory are fasta files that you would like analyzed.')
+        print(
+            'Looks like you did not provide an extension for your genomes/bins or assemblies, so MagnetoGenie does not know'
+            ' which files in the provided directory are fasta files that you would like analyzed.')
         print("Exiting")
         raise SystemExit
 
-    if args.makeplots == 'y':
-        if conda == 0:
-            if args.R != "NA":
-                print(".")
-            else:
-                print('Looks like you told LithoGenie to automatically generate R plots. '
-                      'However, you have not provided the location of the directory that contains the R scripts '
-                      '(as required of you because you did not go through the conda-based installation.')
-                print("Exiting")
-                raise SystemExit
+    try:
+        os.listdir(args.out)
+        print("Looks like you already have a directory with the name: " + args.out)
 
-    if conda == 1:
-        os.system("echo ${litho_hmms} > HMMlib.txt")
-        file = open("HMMlib.txt")
-        for i in file:
-            HMMdir = (i.rstrip())
-            HMMdirLS = os.listdir(HMMdir)
-        os.system("rm HMMlib.txt")
-    else:
-        HMMdir = args.hmm_dir
-        HMMdirLS = os.listdir(args.hmm_dir)
-
-    if args.only_heat != "y":
-        try:
-            os.listdir(args.out)
-            print("Looks like you already have a directory with the name: " + args.out)
-            print("To avoid overwriting potentially valuable files, FeGenie will now exit. "
-                  "Please delete or rename said directory and try running again.")
+        answer = input("Would you like MagnetoGenie to proceed and potentially overwrite files in this directory? (y/n): ")
+        if answer == "y":
+            print("Ok, proceeding with analysis!")
+        else:
             print("Exiting")
             raise SystemExit
-        except FileNotFoundError:
-            print(".")
-            os.system("mkdir %s" % args.out)
-            outDirectory = "%s" % args.out
-            outDirectoryLS = os.listdir("%s" % args.out)
+
+    except FileNotFoundError:
+        print(".")
+        os.system("mkdir %s" % args.out)
+        os.system("mkdir %s/ORF_calls" % args.out)
+
+    if lastItem(args.out) == "/":
+        outDirectory = "%s" % args.out[0:len(args.out)-1]
+        outDirectoryLS = os.listdir(outDirectory)
     else:
         outDirectory = "%s" % args.out
         outDirectoryLS = os.listdir("%s" % args.out)
 
-    # STARTING MAIN ALGORITHM
-    bits = open(HMMdir + "/hmm-meta.txt", "r")
-    bitDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-    print("\nreading in HMM bitscore cut-offs...")
-    for i in bits:
-        ls = i.rstrip().split("\t")
-        bitDict[ls[0]]["bit"] = ls[1]
-        bitDict[ls[0]]["process"] = ls[2]
-        bitDict[ls[0]]["element"] = ls[3]
-    print("...")
+    print("All required arguments provided!")
+    print("")
 
-    if args.only_heat == "n":
-        count = 0
+    # *************** MAKE NR A DIAMOND DB AND READ THE FILE INTO HASH MEMORY ************************ #
+    if args.ref != "NA":
+        try:
+            testFile = open(args.ref + ".dmnd")
+
+        except FileNotFoundError:
+            print("Making diamond database out of provided reference file")
+            os.system("diamond makedb --in %s -d %s" % (args.ref, args.ref))
+
+
+    # *************** CALL ORFS FROM BINS AND READ THE ORFS INTO HASH MEMORY ************************ #
+    if not args.skip:
         BinDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-        out = open("%s/lithogenie.csv" % (args.out), "w")
-        out.write(
-            "bin" + "," + "gene" + "," + "process" + "," + "substrate" + "," + "ORF" + "," + "evalue" + "," + "bitscore" + "," + "sequence" + "\n")
         for i in binDirLS:
-            print()
-            HMMdict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-            if not re.match(r'^\.', i) and lastItem(i.split(".")) == args.bin_ext:
+            if lastItem(i.split(".")) == args.bin_ext:
+                cell = i
+                if not args.gbk:
 
-                try:
-                    testFile = open("%s/%s-proteins.faa" % (binDir, i), "r")
-                    print("")
-                    print(".")
-                    print("ORFS for %s found. Skipping Prodigal, and going with %s-proteins.faa" % (i, i))
+                    if args.orfs:
+                        testFile = open("%s/%s" % (binDir, i), "r")
+                        for line in testFile:
+                            if re.match(r'>', line):
+                                if re.findall(r'\|]', line):
+                                    print("Looks like one of your fasta files has a header containing the character: \|")
+                                    print(
+                                        "Unfortunately, this is a problem for MagnetoGenie because it uses that character as delimiter to store important information.")
+                                    print("Please rename your FASTA file headers")
+                                    raise SystemExit
 
-                except FileNotFoundError:
-                    print("")
-                    print(".")
-                    print("Finding ORFs for " + i)
-                    if args.contigs_source == "single":
-                        os.system("prodigal -i %s/%s -a %s/%s-proteins.faa -o %s/%s-prodigal.out -q" % (
-                        binDir, i, binDir, i, binDir, i))
-                    elif args.contigs_source == "meta":
-                        os.system("prodigal -i %s/%s -a %s/%s-proteins.faa -o %s/%s-prodigal.out -p meta -q" % (
-                        binDir, i, binDir, i, binDir, i))
                     else:
-                        print("WARNING: you did not specify whether the provided FASTA files are single genomes or "
-                              "metagenome/metatranscriptome assemblies. By default, FeGenie is assuming that these are "
-                              "single genomes, and running Prodigal accordingly. Just an FYI.")
-                        os.system("prodigal -i %s%s -a %s%s-proteins.faa -o %s%s-prodigal.out -q" % (
-                        binDir, i, binDir, i, binDir, i))
+                        try:
+                            testFile = open("%s/ORF_calls/%s-proteins.faa" % (outDirectory, i), "r")
+                            print("ORFS for %s found. Skipping Prodigal, and going with %s-proteins.faa" % (i, i))
+                            for line in testFile:
+                                if re.match(r'>', line):
+                                    if re.findall(r'\|]', line):
+                                        print(
+                                            "Looks like one of your fasta files has a header containing the character: \|")
+                                        print(
+                                            "Unfortunately, this is a problem for MagnetoGenie because it uses that character as delimiter to store important information.")
+                                        print("Please rename your FASTA file headers")
+                                        raise SystemExit
 
-                # print("")
-                # print("analyzing " + i)
-                fastaFile = open(args.bin_dir + "/" + i + "-proteins.faa", "r")
-                fastaFile = fasta(fastaFile)
-                os.system("mkdir " + args.bin_dir + "/" + i + "-HMM")
+                        except FileNotFoundError:
+                            binFile = open("%s/%s" % (binDir, i), "r")
+                            for line in binFile:
+                                if re.match(r'>', line):
+                                    if re.findall(r'\|]', line):
+                                        print("Looks like one of your fasta files has a header containing the character: \|")
+                                        print(
+                                            "Unfortunately, this is a problem for MagnetoGenie because it uses that character as delimiter to store important information.")
+                                        print("Please rename your FASTA file headers")
+                                        raise SystemExit
+
+                            print("Finding ORFs for " + cell)
+                            if args.meta:
+                                os.system("prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -p meta -q" % (
+                                    binDir, i, outDirectory, i, outDirectory, i))
+                            else:
+                                os.system(
+                                    "prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -q" % (
+                                        binDir, i, outDirectory, i, outDirectory, i))
+                else:
+                    os.system('gtt-genbank-to-AA-seqs -i %s/%s -o %s/%s.faa' % (binDir, i, outDirectory, i))
+
+                    faa = open("%s/%s.faa" % (binDir, i))
+                    faa = fasta(faa)
+
+                    gbkDict = defaultdict(list)
+                    counter = 0
+
+                    count = 0
+                    gbk = open("%s/%s" % (binDir, i))
+                    for gbkline in gbk:
+                        ls = gbkline.rstrip()
+                        if re.findall(r'/locus_tag', ls):
+                            count += 1
+
+                    if count > 0:
+                        gbk = open("%s/%s" % (binDir, i))
+                        for gbkline in gbk:
+                            ls = gbkline.rstrip()
+                            if re.findall(r'LOCUS', ls):
+                                locus = (ls)
+                                locus = (locus.split("       ")[1])
+                                locus = locus.split(" ")[0]
+                            if re.findall(r'gene   ', ls):
+                                gene = (ls)
+                                gene = (gene.split("            ")[1])
+                                start = (gene.split("..")[0])
+                                end = (gene.split("..")[1])
+                                start = remove(start, ["c", "o", "m", "p", "l", "e", "m", "e", "n", "t", "(", ")"])
+                                end = remove(end, ["c", "o", "m", "p", "l", "e", "m", "e", "n", "t", "(", ")"])
+                                altContigName = (locus + "_" + start + "_" + end)
+
+                            if re.findall(r'/locus_tag', ls):
+                                locusTag = (ls)
+                                locusTag = (locusTag.split("=")[1])
+                                locusTag = remove(locusTag, ["\""])
+                                counter += 1
+
+                            if counter > 0:
+                                gbkDict[locus].append(locusTag)
+                                counter = 0
+                    else:
+                        # print(i)
+                        gbk = open("%s/%s" % (binDir, i))
+                        for gbkline in gbk:
+                            ls = gbkline.rstrip()
+                            if re.findall(r'LOCUS', ls):
+                                locus = (ls)
+                                locus = (locus.split("       ")[1])
+                                locus = locus.split(" ")[0]
+                            if re.findall(r'gene   ', ls):
+                                gene = (ls)
+                                gene = (gene.split("            ")[1])
+                                start = (gene.split("..")[0])
+                                end = (gene.split("..")[1])
+                                start = remove(start, ["c", "o", "m", "p", "l", "e", "m", "e", "n", "t", "(", ")"])
+                                end = remove(end, ["c", "o", "m", "p", "l", "e", "m", "e", "n", "t", "(", ")"])
+                                altContigName = (locus + "_" + start + "_" + end)
+                                counter += 1
+
+                            if re.findall(r'/locus_tag', ls):
+                                locusTag = (ls)
+                                locusTag = (locusTag.split("=")[1])
+                                locusTag = remove(locusTag, ["\""])
+
+                            if counter > 0:
+                                gbkDict[locus].append(altContigName)
+                                counter = 0
+
+                    idxOut = open("%s/ORF_calls/%s-proteins.idx" % (outDirectory, i), "w")
+                    faaOut = open("%s/ORF_calls/%s-proteins.faa" % (outDirectory, i), "w")
+
+                    for gbkkey1 in gbkDict.keys():
+                        counter = 0
+                        for gbkey2 in gbkDict[gbkkey1]:
+                            counter += 1
+                            if len(faa[gbkey2]) > 0:
+                                newOrf = gbkkey1 + "_" + str(counter)
+                                idxOut.write(gbkey2 + "," + newOrf + "\n")
+                                faaOut.write(">" + newOrf + "\n")
+                                faaOut.write(str(faa[gbkey2]) + "\n")
+
+                    idxOut.close()
+                    faaOut.close()
+
+                if args.orfs:
+                    file = open("%s/%s" % (binDir, i))
+                else:
+                    file = open("%s/ORF_calls/%s-proteins.faa" % (outDirectory, i))
+                file = fasta(file)
+                for j in file.keys():
+                    orf = j.split(" # ")[0]
+                    BinDict[cell][orf] = file[j]
+
+        # ******************** READ BITSCORE CUT-OFFS INTO HASH MEMORY ****************************** #
+
+        meta = open(bits, "r")
+        metaDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        print("\nreading in HMM bitscore cut-offs...")
+        for i in meta:
+            ls = i.rstrip().split("\t")
+            metaDict[ls[0]]["bit"] = ls[1]
+            metaDict[ls[0]]["process"] = ls[2]
+            metaDict[ls[0]]["element"] = ls[3]
+        print("...")
+
+        # ******************* BEGINNING MAIN ALGORITHM **********************************))))
+        print("starting main pipeline...")
+        HMMdirLS = os.listdir(HMMdir)
+        HMMdict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: "EMPTY")))
+        for i in binDirLS:  # ITERATION THROUGH EACH BIN IN A GIVEN DIRECTORY OF BINS
+            if lastItem(i.split(".")) == args.bin_ext:  # FILTERING OUT ANY NON-BIN-RELATED FILES
+                os.system(
+                    "mkdir -p " + outDirectory + "/" + i + "-HMM")  # CREATING DIRECTORY, FOR EACH BIN, TO WHICH HMMSEARCH RESULTS WILL BE WRITTEN
+
                 count = 0
-                for hmm in HMMdirLS:
-                    if hmm != "hmm-meta.txt":
+                for hmm in HMMdirLS:  # ITERATING THROUGH ALL THE HMM FILES IN THE HMM DIRECTORY
+                    if lastItem(hmm.split(".")) == "hmm":
                         count += 1
                         perc = (count / len(HMMdirLS)) * 100
-                        # print(str(perc) + "%")
-                        # print("%.2f" % perc + "% done")
-                        sys.stdout.write("analyzing " + i + ": %d%%   \r" % (perc + 1))
+                        sys.stdout.write("analyzing " + i + ": %d%%   \r" % (perc))
                         sys.stdout.flush()
-                        if not re.match(r'^\.', hmm):
-                            os.system("hmmsearch --cpu " + str(args.cpu) +
-                                      " --tblout " + binDir + "/" + i + "-HMM/" + i + "__" + hmm +
-                                      " -o " + binDir + "/" + i + "-HMM/" + i + "__" + hmm + ".txt " +
-                                      HMMdir + "/" + hmm + " " +
-                                      binDir + "/" + i + "-proteins.faa")
-                            os.system("rm " + binDir + "/" + i + "-HMM/" + i + "__" + hmm + ".txt")
+                        if len(metaDict[hmm.split(".")[0]]["bit"]) == 0:
+                            bit = 0
+                        else:
+                            bit = metaDict[hmm.split(".")[0]]["bit"]
+                            if args.orfs:
+                                os.system(
+                                    "hmmsearch --cpu %d -T %d --tblout %s/%s-HMM/%s.tblout -o %s/%s-HMM/%s.txt %s/%s %s/%s"
+                                    % (int(args.t), float(bit), outDirectory, i, hmm, outDirectory, i, hmm, HMMdir, hmm, binDir, i)
+                                )
+                            else:
+                                os.system(
+                                    "hmmsearch --cpu %d -T %d --tblout %s/%s-HMM/%s.tblout -o %s/%s-HMM/%s.txt %s/%s %s/ORF_calls/%s-proteins.faa"
+                                    % (int(args.t), float(bit), outDirectory, i, hmm, outDirectory, i, hmm, HMMdir, hmm, outDirectory, i)
+                                )
 
-                HMMresults = os.listdir(args.bin_dir + "/" + i + "-HMM")
-                for result in HMMresults:
-                    if not re.match(r'^\.', result):
-                        file = open(args.bin_dir + "/" + i + "-HMM/" + result)
-                        for line in file:
-                            line = line.rstrip()
-                            if not re.match(r'^#', line):
-                                ls = (delim(line))
-                                orf = ls[0]
-                                gene = ls[2]
-                                evalue = ls[4]
-                                bitscore = ls[5]
-                                hmmFileName = (result.split("__")[1])
-                                hmmFileName = hmmFileName.split(".hm")[0]
-                                hmmName = deExt(result.split("__")[1])
-                                threshold = bitDict[hmmFileName]["bit"]
-                                process = bitDict[hmmFileName]["process"]
-                                element = bitDict[hmmFileName]["element"]
-                                if float(threshold) > 0:
-                                    if float(bitscore) > float(threshold):
-                                        if orf not in HMMdict.keys():
-                                            HMMdict[orf]["hmm"] = hmmName
-                                            HMMdict[orf]["evalue"] = evalue
-                                            HMMdict[orf]["bitscore"] = bitscore
-                                            HMMdict[orf]["process"] = process
-                                            HMMdict[orf]["element"] = element
-                                        else:
-                                            if float(bitscore) > float(HMMdict[orf]["bitscore"]):
-                                                HMMdict[orf]["hmm"] = hmmName
-                                                HMMdict[orf]["evalue"] = evalue
-                                                HMMdict[orf]["bitscore"] = bitscore
-                                                HMMdict[orf]["process"] = process
-                                                HMMdict[orf]["element"] = element
-                                            else:
-                                                pass
-                                else:
-                                    if float(evalue) <= float(1E-20):
-                                        if orf not in HMMdict.keys():
-                                            HMMdict[orf]["hmm"] = hmmName
-                                            HMMdict[orf]["evalue"] = evalue
-                                            HMMdict[orf]["bitscore"] = bitscore
-                                            HMMdict[orf]["process"] = process
-                                            HMMdict[orf]["element"] = element
-                                        else:
-                                            if float(bitscore) > float(HMMdict[orf]["bitscore"]):
-                                                HMMdict[orf]["hmm"] = hmmName
-                                                HMMdict[orf]["evalue"] = evalue
-                                                HMMdict[orf]["bitscore"] = bitscore
-                                                HMMdict[orf]["process"] = process
-                                                HMMdict[orf]["element"] = element
-                                            else:
-                                                pass
+                            # REMOVING THE STANDARD OUTPUT FILE
+                            os.system(
+                                "rm " + outDirectory + "/" + i + "-HMM/" + hmm + ".txt"
+                            )
 
-                for key in HMMdict.keys():
-                    out.write(
-                        i + "," + HMMdict[key]["hmm"] + "," + HMMdict[key]["process"] + "," + HMMdict[key]["element"] +
-                        "," + key + "," + HMMdict[key]["evalue"] + "," + HMMdict[key]["bitscore"] + "," + fastaFile[key]
-                        + "\n")
-                os.system("rm -r " + args.bin_dir + "/" + i + "-HMM")
+                            # READING IN THE HMMSEARCH RESULTS (TBLOUT) OUT FILE
+                            hmmout = open(outDirectory + "/" + i + "-HMM/" + hmm + ".tblout", "r")
+
+                            # COLLECTING SIGNIFICANT HMM HITS IN THE FILE
+                            for line in hmmout:
+                                if not re.match(r'#', line):
+                                    hmmName = hmm.split(".")[0]
+                                    substrate = metaDict[hmmName]["element"]
+                                    reaction = metaDict[hmmName]["process"]
+                                    bitcut = metaDict[hmmName]["bit"]
+                                    ls = delim(line)
+                                    evalue = float(ls[4])
+                                    bit = float(ls[5])
+                                    orf = ls[0]
+                                    if evalue < float(1E-1):  # FILTERING OUT BACKGROUND NOISE
+                                        # LOADING HMM HIT INTO DICTIONARY, BUT ONLY IF THE ORF DID NOT HAVE ANY OTHER HMM HITS
+
+                                        if orf not in HMMdict[i]:
+                                            HMMdict[i][orf]["hmm"] = hmm
+                                            HMMdict[i][orf]["evalue"] = evalue
+                                            HMMdict[i][orf]["bit"] = bit
+                                            HMMdict[i][orf]["substrate"] = substrate
+                                            HMMdict[i][orf]["reaction"] = reaction
+                                            HMMdict[i][orf]["bitcut"] = bitcut
+                                        else:
+                                            # COMPARING HITS FROM DIFFERENT HMM FILES TO THE SAME ORF
+                                            if bit > HMMdict[i][orf]["bit"]:
+                                                HMMdict[i][orf]["hmm"] = hmm
+                                                HMMdict[i][orf]["evalue"] = evalue
+                                                HMMdict[i][orf]["bit"] = bit
+                                                HMMdict[i][orf]["substrate"] = substrate
+                                                HMMdict[i][orf]["reaction"] = reaction
+                                                HMMdict[i][orf]["bitcut"] = bitcut
+
+                print("")
+
+        out = open("%s/summary.csv" % (outDirectory), "w")
+        out.write("cell" + "," + "ORF" + "," + "HMM" + "," + "reaction" + "," + "substrate" + "," + "evalue" + "," + "bitscore" + "," + "bitscore_cutoff" + "\n")
+        for key in HMMdict.keys():
+            for j in HMMdict[key]:
+                out.write(key + "," + j + "," + HMMdict[key][j]["hmm"] + "," + HMMdict[key][j]["reaction"] + "," + HMMdict[key][j]["substrate"] + "," +
+                          str(HMMdict[key][j]["evalue"]) + "," + str(HMMdict[key][j]["bit"]) + "," + str(HMMdict[key][j]["bitcut"]) + "\n")
 
         out.close()
-
-        summaryDict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 'EMPTY')))
-        summary = open("%s/lithogenie.csv" % (args.out), "r")
+        # ****************************************** DEREPLICATION *********************************************************
+        summary = open(outDirectory + "/summary.csv", "r")
+        SummaryDict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 'EMPTY')))
         for i in summary:
             ls = i.rstrip().split(",")
-            if ls != "bin":
-                genome = ls[0]
-                gene = ls[1]
-                process = ls[2]
-                substrate = ls[3]
-                orf = ls[4]
-                evalue = ls[5]
-                bitscore = ls[6]
-                sequence = ls[7]
-                bitcut = bitDict[ls[1]]["bit"]
-                summaryDict[genome][orf]["gene"] = gene
-                summaryDict[genome][orf]["process"] = process
-                summaryDict[genome][orf]["substrate"] = substrate
-                summaryDict[genome][orf]["evalue"] = evalue
-                summaryDict[genome][orf]["bitscore"] = bitscore
-                summaryDict[genome][orf]["sequence"] = sequence
-                summaryDict[genome][orf]["bitcut"] = bitcut
+            if ls[0] != "category" and ls[0] != "MagnetoGenie":
+                if len(ls) > 0:
+                    category = ls[0]
+                    cell = ls[0]
+                    orf = ls[1]
+                    hmm = ls[2]
+                    reaction = ls[3]
+                    substrate = ls[4]
+                    evalue = ls[5]
+                    hmmBit = ls[6]
+                    bitcut = ls[7]
+                    seq = BinDict[cell][orf]
+
+                    if cell not in SummaryDict.keys():
+                        SummaryDict[cell][orf]["hmm"] = hmm
+                        SummaryDict[cell][orf]["hmmBit"] = hmmBit
+                        SummaryDict[cell][orf]["category"] = category
+                        SummaryDict[cell][orf]["e"] = evalue
+                        SummaryDict[cell][orf]["bitcut"] = bitcut
+                        SummaryDict[cell][orf]["seq"] = seq
+                        SummaryDict[cell][orf]["reaction"] = reaction
+                        SummaryDict[cell][orf]["substrate"] = substrate
+
+                    else:
+                        if orf not in SummaryDict[cell]:
+                            SummaryDict[cell][orf]["hmm"] = hmm
+                            SummaryDict[cell][orf]["hmmBit"] = hmmBit
+                            SummaryDict[cell][orf]["category"] = category
+                            SummaryDict[cell][orf]["e"] = evalue
+                            SummaryDict[cell][orf]["bitcut"] = bitcut
+                            SummaryDict[cell][orf]["seq"] = seq
+                            SummaryDict[cell][orf]["reaction"] = reaction
+                            SummaryDict[cell][orf]["substrate"] = substrate
+
+                        else:
+                            if float(hmmBit) > float(SummaryDict[cell][orf]["hmmBit"]):
+                                SummaryDict[cell][orf]["hmm"] = hmm
+                                SummaryDict[cell][orf]["hmmBit"] = hmmBit
+                                SummaryDict[cell][orf]["category"] = category
+                                SummaryDict[cell][orf]["e"] = evalue
+                                SummaryDict[cell][orf]["bitcut"] = bitcut
+                                SummaryDict[cell][orf]["seq"] = seq
+                                SummaryDict[cell][orf]["reaction"] = reaction
+                                SummaryDict[cell][orf]["substrate"] = substrate
 
         # ****************************** CLUSTERING OF ORFS BASED ON GENOMIC PROXIMITY *************************************
-        print("")
-        print("")
         print("Identifying genomic proximities and putative operons")
         CoordDict = defaultdict(lambda: defaultdict(list))
-        for i in summaryDict.keys():
-            if i != "bin":
-                for j in summaryDict[i]:
+        for i in SummaryDict.keys():
+            if i != "cell":
+                for j in SummaryDict[i]:
                     contig = allButTheLast(j, "_")
                     numOrf = lastItem(j.split("_"))
                     CoordDict[i][contig].append(int(numOrf))
 
         counter = 0
-        print(".")
         print("Clustering ORFs...")
-        print(".")
-        out = open("%s/lithogenie-2.csv" % (args.out), "w")
+        print("")
+        out = open(outDirectory + "/summary-2.csv", "w")
         for i in CoordDict.keys():
+            print(".")
             for j in CoordDict[i]:
                 LS = (CoordDict[i][j])
                 clusters = (cluster(LS, args.d))
@@ -613,47 +864,33 @@ def main():
                     if len(RemoveDuplicates(k)) == 1:
                         orf = j + "_" + str(k[0])
 
-                        out.write(summaryDict[i][orf]["substrate"] + "," + summaryDict[i][orf]["process"] + "," +
-                                  summaryDict[i][orf]["gene"] + "," + i + "," + orf + "," + summaryDict[i][orf]["evalue"] +
-                                  "," + str(summaryDict[i][orf]["bitscore"]) + "," + str(
-                            summaryDict[i][orf]["bitcut"]) + "," +
-                                  str(summaryDict[i][orf]["sequence"]) + "," + str(counter) + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                        out.write(i + "," + orf + "," + SummaryDict[i][orf]["hmm"] + "," + SummaryDict[i][orf]["reaction"] + "," + SummaryDict[i][orf]["substrate"] + "," + SummaryDict[i][orf]["e"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(SummaryDict[i][orf]["bitcut"]) + "," + str(counter) + "," + str(SummaryDict[i][orf]["seq"]) + "\n")
+                        out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
                         counter += 1
 
                     else:
                         for l in RemoveDuplicates(k):
                             orf = j + "_" + str(l)
 
-                            out.write(summaryDict[i][orf]["substrate"] + "," + summaryDict[i][orf]["process"] + "," +
-                                      summaryDict[i][orf]["gene"] + "," + i + "," + orf + "," + summaryDict[i][orf][
-                                          "evalue"] +
-                                      "," + str(summaryDict[i][orf]["bitscore"]) + "," + str(
-                                summaryDict[i][orf]["bitcut"]) +
-                                      "," + str(summaryDict[i][orf]["sequence"]) + "," + str(counter) + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                            out.write(i + "," + orf + "," + SummaryDict[i][orf]["hmm"] + "," + SummaryDict[i][orf]["reaction"] + "," + SummaryDict[i][orf]["substrate"] + "," + SummaryDict[i][orf]["e"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(SummaryDict[i][orf]["bitcut"]) + "," + str(counter) + "," + str(SummaryDict[i][orf]["seq"]) + "\n")
+                        out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
                         counter += 1
-
         out.close()
 
         # ****************************** FILTERING OUT LIKELY FALSE POSITIVES *************************************
         clusterDict = defaultdict(lambda: defaultdict(list))
-        summary = open("%s/lithogenie-2.csv" % (args.out), "r")
+        summary = open("%s/summary-2.csv" % (args.out), "r")
         for i in summary:
             if not re.match(r'#', i):
                 ls = i.rstrip().split(",")
-                clu = int(ls[9])  ###############################
+                clu = int(ls[8])  ###############################
                 clusterDict[clu]["line"].append(ls)
                 clusterDict[clu]["gene"].append(ls[2])
-                clusterDict[clu]["category"].append(ls[0])
+                clusterDict[clu]["category"].append(ls[4])
 
         print("..")
         print("...")
-        out = open("%s/lithogenie-3.csv" % (args.out), "w")
+        out = open("%s/summary-3.csv" % (args.out), "w")
         for i in sorted(clusterDict.keys()):  ###########################
             ls = (clusterDict[i]["gene"])
 
@@ -666,8 +903,9 @@ def main():
                     else:  # If there are other genes in the cluster that are not FLEET
                         for j in clusterDict[i]["line"]:
                             if j[2] not in fleet:  # avoiding the fleet genes
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -684,12 +922,13 @@ def main():
                     for j in clusterDict[i]["line"]:
                         if j[2] in ["MtrB_TIGR03509", "MtoA"]:
                             out.write(
-                                j[0] + "," + "iron-oxidation" + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                j[0] + "," + j[1] + "," + j[2] + "," + "iron-oxidation" + "," + j[4] + "," + j[
+                                    5] + "," + j[6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         else:
                             out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                    6] + "," +
                                 j[7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -699,12 +938,14 @@ def main():
                     for j in clusterDict[i]["line"]:
                         if j[2] in ["MtrA", "MtrB_TIGR03509"]:
                             out.write(
-                                j[0] + "," + "iron-reduction" + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                j[0] + "," + j[1] + "," + j[2] + "," + "iron-reduction" + "," + j[4] + "," + j[
+                                    5] + "," + j[
                                     6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         else:
                             out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                    6] + "," +
                                 j[7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -769,9 +1010,11 @@ def main():
                     pass
                 else:
                     if "MtrC_TIGR03507" in ls:
-                        out.write(j[0] + "," + "iron-reduction" + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+                        out.write(
+                            j[0] + "," + j[1] + "," + j[2] + "," + "iron-reduction" + "," + j[4] + "," + j[5] + "\n")
                     else:
-                        out.write(j[0] + "," + "iron-oxidation" + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+                        out.write(
+                            j[0] + "," + j[1] + "," + j[2] + "," + "iron-oxidation" + "," + j[4] + "," + j[5] + "\n")
 
             ############################################################################################################
             elif "thiosulfate_oxidation_soxB" in ls or "thiosulfate_oxidation_soxY" in ls or "thiosulfate_oxidation_soxC" in ls \
@@ -785,8 +1028,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in soxabcxyz:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -794,8 +1038,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
                         "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -810,8 +1054,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in asrabc:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -819,7 +1064,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -835,8 +1081,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in pmoabc:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -844,8 +1091,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
                         "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -859,8 +1106,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in mmoBD:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -868,8 +1116,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
                         "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -884,8 +1132,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in mcrabc:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -893,7 +1142,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -908,8 +1158,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in fenitrogenase:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -917,7 +1168,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -932,8 +1184,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in mofenitrogenase:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -941,7 +1194,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -957,8 +1211,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in vnitrogenase:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -966,7 +1221,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -981,8 +1237,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in nxrab:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -990,7 +1247,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1005,8 +1263,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in napab:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1014,7 +1273,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1029,8 +1289,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in nargh:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1038,7 +1299,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1053,8 +1315,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in nrfhad:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1062,7 +1325,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1078,8 +1342,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in nirbdks:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1087,7 +1352,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1103,8 +1369,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in nirbdks:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1112,7 +1379,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1127,8 +1395,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in norbc:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1136,7 +1405,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1152,8 +1422,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in nosdz:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1161,7 +1432,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1177,8 +1449,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in coxab:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1186,7 +1459,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1201,8 +1475,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in cconop:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1210,7 +1485,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1226,8 +1502,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in cyoade:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1235,7 +1512,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1250,8 +1528,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in cydab:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1259,8 +1538,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
                         "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1274,8 +1553,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in qoxab:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1283,8 +1563,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
                         "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1298,8 +1578,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in mauab:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1307,15 +1588,16 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
                         "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
 
             ############################################################################################################
             elif "formate_dehydrogenase_alpha" in ls or "formate_dehydrogenase_beta" in ls or "formate_dehydrogenase_gamma" in ls:
-                formatedehyd = ["formate_dehydrogenase_alpha", "formate_dehydrogenase_beta", "formate_dehydrogenase_gamma"]
+                formatedehyd = ["formate_dehydrogenase_alpha", "formate_dehydrogenase_beta",
+                                "formate_dehydrogenase_gamma"]
 
                 if unique(ls, formatedehyd) < 2:
                     if len(remove2(ls, formatedehyd)) < 1:
@@ -1323,8 +1605,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in formatedehyd:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1332,8 +1615,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
                         "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1349,8 +1632,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in coxsml:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1358,7 +1642,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1375,8 +1660,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in codhdccat:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1384,7 +1670,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1401,8 +1688,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in aclab:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1410,7 +1698,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1426,8 +1715,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in ureabc:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1435,7 +1725,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1451,8 +1742,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in arsenite:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1460,7 +1752,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1476,8 +1769,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in pcrab:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1485,7 +1779,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1501,8 +1796,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in ygfmk:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1510,7 +1806,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1526,8 +1823,9 @@ def main():
                     else:
                         for j in clusterDict[i]["line"]:
                             if j[2] not in nthab:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1535,7 +1833,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1562,7 +1861,8 @@ def main():
                 else:
                     for j in clusterDict[i]["line"]:
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                            j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
@@ -1580,12 +1880,14 @@ def main():
                     for j in clusterDict[i]["line"]:
                         if j[2] not in dsr:
                             out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                    6] + "," +
                                 j[
                                     7] + "," + j[8] + "," + j[9] + "\n")
                         else:
                             out.write(
-                                "sulfur-oxidation" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," +
+                                "sulfur-oxidation" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[
+                                    5] + "," +
                                 j[6] + "," + j[
                                     7] + "," + j[8] + "," + j[9] + "\n")
 
@@ -1593,12 +1895,14 @@ def main():
                     for j in clusterDict[i]["line"]:
                         if j[2] not in dsr:
                             out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                    6] + "," +
                                 j[
                                     7] + "," + j[8] + "," + j[9] + "\n")
                         else:
                             out.write(
-                                "sulfite-reduction" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," +
+                                "sulfite-reduction" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[
+                                    5] + "," +
                                 j[6] + "," + j[
                                     7] + "," + j[8] + "," + j[9] + "\n")
 
@@ -1606,20 +1910,24 @@ def main():
             else:
                 linels = (clusterDict[i]["line"])
                 for j in linels:
-                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
-                        7] + "," + j[8] + "," + j[9] + "\n")
+                    out.write(
+                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                            7] + "," + j[8] + "," + j[9] + "\n")
 
                 out.write(
                     "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
 
         out.close()
 
-        os.system("rm %s/lithogenie.csv" % (args.out))
-        os.system("rm %s/lithogenie-2.csv" % (args.out))
-        os.system("mv %s/lithogenie-3.csv %s/lithogenie-summary.csv" % (args.out, args.out))
+        os.system("rm %s/summary.csv" % (args.out))
+        os.system("rm %s/summary-2.csv" % (args.out))
+        os.system("mv %s/summary-3.csv %s/lithogenie-summary.csv" % (args.out, args.out))
 
         # ****************************** FILTERING OUT FALSE POSITIVES *************************************
         out = open("%s/lithogenie-summary-fixed.csv" % (args.out), "w")
+        out.write(
+            "cell" + "," + "ORF" + "," + "HMM" + "," + "reaction" + "," + "substrate" + "," + "evalue" + "," + "bitscore" + "," + "bitscore_cutoff" + "\n")
+
         clusterDict = defaultdict(list)
         memoryDict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 'EMPTY')))
         summary = open("%s/lithogenie-summary.csv" % (args.out))
@@ -1627,16 +1935,16 @@ def main():
             if not re.match(r'#', i):
                 try:
                     ls = i.rstrip().split(",")
-                    clu = ls[9]
-                    cat = ls[1]
-                    dataset = ls[3]
-                    orf = ls[4]
+                    dataset = ls[0]
+                    orf = ls[1]
                     gene = ls[2]
-                    element = ls[0]
+                    cat = ls[3]
+                    element = ls[4]
                     e = ls[5]
                     bit = ls[6]
                     cutoff = ls[7]
-                    seq = ls[8]
+                    clu = ls[8]
+                    seq = ls[9]
                     clusterDict[clu].append(gene + "|" + dataset + "|" + orf)
                     memoryDict[dataset][orf]["cat"] = cat
                     memoryDict[dataset][orf]["gene"] = gene
@@ -1661,110 +1969,117 @@ def main():
                     if checkFleet(clusterDict[i]) < 6:
                         pass
                     else:
-                        out.write(memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["cat"] + "," +
-                                  memoryDict[dataset][orf]["gene"] + "," + dataset + "," +
-                                  orf + "," + memoryDict[dataset][orf]["e"] + "," + memoryDict[dataset][orf]["bit"] + "," +
-                                  memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["seq"] + "," +
-                                  memoryDict[dataset][orf]["clu"] + "\n")
+                        out.write(dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," + memoryDict[dataset][orf]["cat"] + "," +
+                                  memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," + memoryDict[dataset][orf]["bit"] + "," +
+                                  memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
 
                 else:
-                    out.write(memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["cat"] + "," +
-                              memoryDict[dataset][orf]["gene"] + "," + dataset + "," +
-                              orf + "," + memoryDict[dataset][orf]["e"] + "," + memoryDict[dataset][orf]["bit"] + "," +
-                              memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["seq"] + "," +
-                              memoryDict[dataset][orf][
-                                  "clu"] + "\n")
+                    out.write(
+                        dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," + memoryDict[dataset][orf]["cat"] + "," +
+                        memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," +
+                        memoryDict[dataset][orf]["bit"] + "," +
+                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                        memoryDict[dataset][orf]["seq"] + "\n")
         out.close()
 
         os.system("mv %s/lithogenie-summary-fixed.csv %s/lithogenie-summary.csv" % (args.out, args.out))
 
-        # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
-        print("....")
-        print(".....")
-        # COVERAGE-BASED ABUNDANCE
-        if args.bams != "NA":
-            depthDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-            BAMmapDict = defaultdict(lambda: defaultdict(lambda: "EMPTY"))
-            BAMmap = open(args.bams)
-            normDict = defaultdict(lambda: defaultdict(lambda: "EMPTY"))
-            for i in BAMmap:
-                string = ''
-                ls = i.rstrip().split("\t")
-                cell = ls[0]
-                for j in ls[1:]:
-                    string += " "
-                    string += j
+    # COVERAGE-BASED ABUNDANCE
+    if args.bams != "NA":
+        depthDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        BAMmapDict = defaultdict(lambda: defaultdict(lambda: "EMPTY"))
+        normDict = defaultdict(lambda: defaultdict(lambda: "EMPTY"))
+        BAMmap = open(args.bams)
+        for i in BAMmap:
+            string = ''
+            ls = i.rstrip().split("\t")
+            cell = ls[0]
+            for j in ls[1:]:
+                string += " "
+                string += j
 
-                try:
-                    depth = open("%s/%s.depth" % (args.out, cell))
-                    total = 0
-                    for k in depth:
-                        LS = k.rstrip().split("\t")
-                        if LS[0] != "contigName":
-                            depthDict[cell][LS[0]] = LS[2]
-                            total += LS[2]
-                    normDict[cell] = total/1000000
+            try:
+                print("processing... " + cell)
+                depth = open("%s/contigDepths/%s.depth" % (args.out, cell))
+                total = 0
+                for k in depth:
+                    LS = k.rstrip().split("\t")
+                    if LS[0] != "contigName":
+                        depthDict[cell][LS[0]] = LS[2]
+                        total += float(LS[2])
+                normDict[cell] = total
 
-                except FileNotFoundError:
-                    os.system("jgi_summarize_bam_contig_depths --outputDepth %s/%s.depth%s" % (args.out, cell, string))
-                    print("processing... " + cell)
-                    depth = open("%s/%s.depth" % (args.out, cell))
-                    total = 0
-                    for k in depth:
-                        LS = k.rstrip().split("\t")
-                        if LS[0] != "contigName":
-                            depthDict[cell][LS[0]] = LS[2]
-                            total += float(LS[2])
-                    normDict[cell] = total / 1000000
+            except FileNotFoundError:
+                os.system("jgi_summarize_bam_contig_depths --outputDepth %s.depth%s" % (cell, string))
+                print("processing... " + cell)
+                depth = open("%s/contigDepths/%s.depth" % (args.out, cell))
+                total = 0
+                for k in depth:
+                    LS = k.rstrip().split("\t")
+                    if LS[0] != "contigName":
+                        depthDict[cell][LS[0]] = LS[2]
+                        total += float(LS[2])
+                normDict[cell] = total
 
-            os.system("mkdir %s/contigDepths" % args.out)
-            os.system("mv %s/*depth %s/contigDepths/" % (args.out, args.out))
+        if args.cat == "ALL":
+            bits = open(HMMdir + "/hmm-meta.txt", "r")
+            cats = []
+            for i in bits:
+                ls = (i.rstrip().split("\t"))
+                element = ls[3]
+                if element not in cats:
+                    cats.append(element)
+            cats = sorted(cats)
 
-            if args.element == "ALL":
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                cats = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in cats:
-                        cats.append(element)
-                elements = sorted(cats)
+            Dict = defaultdict(lambda: defaultdict(list))
+            final = open("%s/lithogenie-summary.csv" % (args.out), "r")
+            for i in final:
+                ls = (i.rstrip().split(","))
+                if ls[0] != "" and ls[0] != "cell":
+                    if not re.match(r'#', i):
+                        cell = ls[0]
+                        orf = ls[1]
+                        gene = ls[2].split(".hm")[0]
+                        process = ls[3]
+                        substrate = ls[4]
+                        contig = allButTheLast(orf, "_")
+                        Dict[cell][process].append(float(depthDict[cell][contig]))
 
-                Dict = defaultdict(lambda: defaultdict(list))
-                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                for i in final:
-                    ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                        if not re.match(r'#', i):
-                            process = ls[0]
-                            cell = ls[3]
-                            orf = ls[4]
-                            contig = allButTheLast(orf, "_")
-                            gene = ls[2]
-                            Dict[cell][process].append(float(depthDict[cell][contig]))
+            outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.cat), "w")
+            outHeat.write("X" + ',')
+            for i in sorted(Dict.keys()):
+                outHeat.write(i + ",")
+            outHeat.write("\n")
 
-                outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.element), "w")
-                outHeat.write("X" + ',')
-                for i in sorted(Dict.keys()):
-                    outHeat.write(i + ",")
+            for i in cats:
+                outHeat.write(i + ",")
+                for j in sorted(Dict.keys()):
+                    if not re.match(r'#', j):
+                        outHeat.write(str(SUM(Dict[j][i]) / normDict[j]) + ",")
                 outHeat.write("\n")
 
-                for i in cats:
-                    outHeat.write(i + ",")
-                    for j in sorted(Dict.keys()):
-                        if not re.match(r'#', j):
-                            outHeat.write(str(SUM(Dict[j][i])/normDict[j]) + ",")
-                    outHeat.write("\n")
+            outHeat.close()
+            print('......')
+            print(".......")
+            print("Finished!")
 
-                outHeat.close()
+        else:
+            bits = open(HMMdir + "/hmm-meta.txt", "r")
+            elements = []
+            for i in bits:
+                ls = (i.rstrip().split("\t"))
+                element = ls[3]
+                if element not in elements:
+                    elements.append(element)
+            elements = sorted(elements)
 
-            else:
+            if args.cat in elements:
                 elementDict = defaultdict(lambda: defaultdict(list))
                 bits = open(HMMdir + "/hmm-meta.txt", "r")
                 for i in bits:
                     ls = (i.rstrip().split("\t"))
                     if ls[0] != "hmm":
-                        if ls[3] == args.element:
+                        if ls[3] == args.cat:
                             elementDict[ls[3]][ls[2]].append(ls[0])
 
                 catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
@@ -1777,14 +2092,14 @@ def main():
                 final = open("%s/lithogenie-summary.csv" % (args.out), "r")
                 for i in final:
                     ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
+                    if ls[0] != "" and ls[0] != "cell":
                         if not re.match(r'#', i):
-                            element = ls[0]
-                            cell = ls[3]
-                            orf = ls[4]
+                            cell = ls[0]
+                            orf = ls[1]
+                            gene = ls[2].split(".hm")[0]
+                            process = ls[3]
+                            substrate = ls[4]
                             contig = allButTheLast(orf, "_")
-                            gene = ls[2]
-                            reaction = ls[1]
                             Dict[cell][gene].append(float(depthDict[cell][contig]))
 
                 cats = []
@@ -1796,7 +2111,7 @@ def main():
                                 cats.append(j)
                                 CatOrgDict[catDict[j]].append(j)
 
-                outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.element), "w")
+                outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.cat), "w")
                 outHeat.write("X" + ',')
                 for i in sorted(Dict.keys()):
                     outHeat.write(i + ",")
@@ -1810,201 +2125,92 @@ def main():
                         outHeat.write("\n")
 
                 outHeat.close()
-
-        # COVERAGE-BASED ABUNDANCE USING ONLY ONE BAM FILE
-        elif args.bam != "NA":
-            depthDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-
-            try:
-                total = 0
-                depth = open("%s.depth" % (args.bam))
-                for k in depth:
-                    LS = k.rstrip().split("\t")
-                    if LS[0] != "contigName":
-                        depthDict[LS[0]] = LS[2]
-                        total += float(LS[2])
-
-            except FileNotFoundError:
-                os.system("jgi_summarize_bam_contig_depths --outputDepth %s.depth %s" % (args.bam, args.bam))
-                depth = open("%s.depth" % (args.bam))
-                total = 0
-                for k in depth:
-                    LS = k.rstrip().split("\t")
-                    if LS[0] != "contigName":
-                        depthDict[LS[0]] = LS[2]
-                        total += float(LS[2])
-
-            if args.element == "ALL":
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                cats = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in cats:
-                        cats.append(element)
-                elements = sorted(cats)
-
-                Dict = defaultdict(lambda: defaultdict(list))
-                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                for i in final:
-                    ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                        if not re.match(r'#', i):
-                            process = ls[0]
-                            cell = ls[3]
-                            orf = ls[4]
-                            contig = allButTheLast(orf, "_")
-                            gene = ls[2]
-                            Dict[cell][process].append(float(depthDict[contig]))
-
-                outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.element), "w")
-                outHeat.write("X" + ',')
-                for i in sorted(Dict.keys()):
-                    outHeat.write(i + ",")
-                outHeat.write("\n")
-
-                for i in cats:
-                    outHeat.write(i + ",")
-                    for j in sorted(Dict.keys()):
-                        if not re.match(r'#', j):
-                            outHeat.write(str(SUM(Dict[j][i])) + ",")
-                    outHeat.write("\n")
-
-                outHeat.close()
                 print('......')
                 print(".......")
                 print("Finished!")
 
             else:
+                print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please "
+                      "try again by choosing another element, or checking your spelling.")
 
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                elements = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in elements:
-                        elements.append(element)
-                elements = sorted(elements)
+    # COVERAGE-BASED ABUNDANCE USING ONLY ONE BAM FILE
+    elif args.bam != "NA":
+        depthDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
 
-                if args.element in elements:
-                    elementDict = defaultdict(lambda: defaultdict(list))
-                    bits = open(HMMdir + "/hmm-meta.txt", "r")
-                    for i in bits:
-                        ls = (i.rstrip().split("\t"))
-                        if ls[0] != "hmm":
-                            if ls[3] == args.element:
-                                elementDict[ls[3]][ls[2]].append(ls[0])
+        try:
+            depth = open("%s.depth" % (args.bam))
+            for k in depth:
+                LS = k.rstrip().split("\t")
+                if LS[0] != "contigName":
+                    depthDict[LS[0]] = LS[2]
 
-                    catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                    for i in elementDict.keys():
-                        for j in elementDict[i]:
-                            for k in elementDict[i][j]:
-                                catDict[k] = j
+        except FileNotFoundError:
+            os.system("jgi_summarize_bam_contig_depths --outputDepth %s.depth %s" % (args.bam, args.bam))
+            depth = open("%s.depth" % (args.bam))
+            for k in depth:
+                LS = k.rstrip().split("\t")
+                if LS[0] != "contigName":
+                    depthDict[LS[0]] = LS[2]
 
-                    Dict = defaultdict(lambda: defaultdict(list))
-                    final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                    for i in final:
-                        ls = (i.rstrip().split(","))
-                        if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                            if not re.match(r'#', i):
-                                element = ls[0]
-                                cell = ls[3]
-                                orf = ls[4]
-                                contig = allButTheLast(orf, "_")
-                                gene = ls[2]
-                                reaction = ls[1]
-                                Dict[cell][gene].append(float(depthDict[contig]))
+        if args.cat == "ALL":
+            bits = open(HMMdir + "/hmm-meta.txt", "r")
+            cats = []
+            for i in bits:
+                ls = (i.rstrip().split("\t"))
+                element = ls[3]
+                if element not in cats:
+                    cats.append(cats)
+            cats = sorted(cats)
 
-                    cats = []
-                    CatOrgDict = defaultdict(list)
-                    for i in Dict.keys():
-                        for j in Dict[i]:
-                            if len(catDict[j]) > 0:
-                                if j not in cats:
-                                    cats.append(j)
-                                    CatOrgDict[catDict[j]].append(j)
+            Dict = defaultdict(lambda: defaultdict(list))
+            final = open("%s/lithogenie-summary.csv" % (args.out), "r")
+            for i in final:
+                ls = (i.rstrip().split(","))
+                if ls[0] != "" and ls[0] != "cell":
+                    if not re.match(r'#', i):
+                        cell = ls[0]
+                        orf = ls[1]
+                        gene = ls[2].split(".hm")[0]
+                        process = ls[3]
+                        substrate = ls[4]
+                        contig = allButTheLast(orf, "_")
+                        Dict[cell][process].append(float(depthDict[contig]))
 
-                    outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.element), "w")
-                    outHeat.write("X" + ',')
-                    for i in sorted(Dict.keys()):
-                        outHeat.write(i + ",")
-                    outHeat.write("\n")
+            outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.cat), "w")
+            outHeat.write("X" + ',')
+            for i in sorted(Dict.keys()):
+                outHeat.write(i + ",")
+            outHeat.write("\n")
 
-                    for i in CatOrgDict.keys():
-                        for j in CatOrgDict[i]:
-                            outHeat.write(i + "--" + j + ",")
-                            for k in sorted(Dict.keys()):
-                                outHeat.write(str(SUM(Dict[k][j])) + ",")
-                            outHeat.write("\n")
+            for i in cats:
+                outHeat.write(i + ",")
+                for j in sorted(Dict.keys()):
+                    if not re.match(r'#', j):
+                        outHeat.write(str(SUM(Dict[j][i])) + ",")
+                outHeat.write("\n")
 
-                    outHeat.close()
-                    print('......')
-                    print(".......")
-                    print("Finished!")
+            outHeat.close()
+            print('......')
+            print(".......")
+            print("Finished!")
 
-                else:
-                    print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please"
-                          "try again by choosing another element, or checking your spelling.")
-
-        # GENE COUNTS-BASED ABUNDANCE
         else:
-            if args.element == "ALL":
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                cats = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in cats:
-                        cats.append(element)
-                elements = sorted(cats)
+            bits = open(HMMdir + "/hmm-meta.txt", "r")
+            elements = []
+            for i in bits:
+                ls = (i.rstrip().split("\t"))
+                element = ls[3]
+                if element not in elements:
+                    elements.append(element)
+            elements = sorted(elements)
 
-                Dict = defaultdict(lambda: defaultdict(list))
-                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                for i in final:
-                    ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                        if not re.match(r'#', i):
-                            process = ls[0]
-                            cell = ls[3]
-                            orf = ls[4]
-                            gene = ls[2]
-                            Dict[cell][process].append(gene)
-
-                normDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                for i in os.listdir(args.bin_dir):
-                    if lastItem(i.split(".")) == args.bin_ext:
-                        file = open("%s/%s-proteins.faa" % (args.bin_dir, i), "r")
-                        file = fasta(file)
-                        normDict[i] = len(file.keys())
-
-                outHeat = open("%s/lithogenie.%s.heatmap.csv" % (args.out, args.element), "w")
-                outHeat.write("X" + ',')
-                for i in sorted(Dict.keys()):
-                    outHeat.write(i + ",")
-                outHeat.write("\n")
-
-                for i in cats:
-                    outHeat.write(i + ",")
-                    for j in sorted(Dict.keys()):
-                        if not re.match(r'#', j):
-                            if args.norm == "y":
-                                outHeat.write(str((len(Dict[j][i]) / int(normDict[j])) * float(100)) + ",")
-                            else:
-                                outHeat.write(str((len(Dict[j][i]))) + ",")
-                    outHeat.write("\n")
-                outHeat.close()
-
-                print('......')
-                print(".......")
-                print("Finished!")
-
-            else:
+            if args.cat in elements:
                 elementDict = defaultdict(lambda: defaultdict(list))
                 bits = open(HMMdir + "/hmm-meta.txt", "r")
                 for i in bits:
                     ls = (i.rstrip().split("\t"))
                     if ls[0] != "hmm":
-                        if ls[3] == args.element:
+                        if ls[3] == args.cat:
                             elementDict[ls[3]][ls[2]].append(ls[0])
 
                 catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
@@ -2017,13 +2223,140 @@ def main():
                 final = open("%s/lithogenie-summary.csv" % (args.out), "r")
                 for i in final:
                     ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
+                    if ls[0] != "" and ls[0] != "cell":
                         if not re.match(r'#', i):
-                            element = ls[0]
-                            cell = ls[3]
-                            orf = ls[4]
-                            gene = ls[2]
-                            reaction = ls[1]
+                            cell = ls[0]
+                            orf = ls[1]
+                            gene = ls[2].split(".hm")[0]
+                            process = ls[3]
+                            substrate = ls[4]
+                            contig = allButTheLast(orf, "_")
+                            Dict[cell][gene].append(float(depthDict[contig]))
+
+                cats = []
+                CatOrgDict = defaultdict(list)
+                for i in Dict.keys():
+                    for j in Dict[i]:
+                        if len(catDict[j]) > 0:
+                            if j not in cats:
+                                cats.append(j)
+                                CatOrgDict[catDict[j]].append(j)
+
+                outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.cat), "w")
+                outHeat.write("X" + ',')
+                for i in sorted(Dict.keys()):
+                    outHeat.write(i + ",")
+                outHeat.write("\n")
+
+                for i in CatOrgDict.keys():
+                    for j in CatOrgDict[i]:
+                        outHeat.write(i + "--" + j + ",")
+                        for k in sorted(Dict.keys()):
+                            outHeat.write(str(SUM(Dict[k][j])) + ",")
+                        outHeat.write("\n")
+
+                outHeat.close()
+                print('......')
+                print(".......")
+                print("Finished!")
+
+            else:
+                print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please "
+                      "try again by choosing another element, or checking your spelling.")
+
+    # GENE COUNTS-BASED ABUNDANCE
+    else:
+        if args.cat == "ALL":
+            bits = open(HMMdir + "/hmm-meta.txt", "r")
+            cats = []
+            for i in bits:
+                ls = (i.rstrip().split("\t"))
+                element = ls[3]
+                if element not in cats:
+                    cats.append(element)
+            cats = sorted(cats)
+
+            Dict = defaultdict(lambda: defaultdict(list))
+            final = open("%s/lithogenie-summary.csv" % (args.out), "r")
+            for i in final:
+                ls = (i.rstrip().split(","))
+                if ls[0] != "" and ls[0] != "cell":
+                    if not re.match(r'#', i):
+                        cell = ls[0]
+                        orf = ls[1]
+                        gene = ls[2].split(".hm")[0]
+                        process = ls[3]
+                        substrate = ls[4]
+                        Dict[cell][substrate].append(gene)
+
+            normDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+            for i in os.listdir(args.bin_dir):
+                if lastItem(i.split(".")) == args.bin_ext:
+                    if args.orfs:
+                        file = open("%s/%s" % (args.bin_dir, i), "r")
+                        file = fasta(file)
+                    else:
+                        file = open("%s/ORF_calls/%s-proteins.faa" % (outDirectory, i), "r")
+                        file = fasta(file)
+                    normDict[i] = len(file.keys())
+
+            outHeat = open("%s/lithogenie.%s.heatmap.csv" % (args.out, args.cat), "w")
+            outHeat.write("X" + ',')
+            for i in sorted(Dict.keys()):
+                outHeat.write(i + ",")
+            outHeat.write("\n")
+
+            for i in cats:
+                outHeat.write(i + ",")
+                for j in sorted(Dict.keys()):
+                    if not re.match(r'#', j):
+                        if args.norm:
+                            outHeat.write(str((len(Dict[j][i]) / int(normDict[j])) * float(100)) + ",")
+                        else:
+                            outHeat.write(str((len(Dict[j][i]))) + ",")
+                outHeat.write("\n")
+            outHeat.close()
+
+            print('......')
+            print(".......")
+            print("Finished!")
+
+        else:
+            bits = open(HMMdir + "/hmm-meta.txt", "r")
+            elements = []
+            for i in bits:
+                ls = (i.rstrip().split("\t"))
+                element = ls[3]
+                if element not in elements:
+                    elements.append(element)
+            elements = sorted(elements)
+
+            if args.cat in elements:
+                elementDict = defaultdict(lambda: defaultdict(list))
+                bits = open(HMMdir + "/hmm-meta.txt", "r")
+                for i in bits:
+                    ls = (i.rstrip().split("\t"))
+                    if ls[0] != "hmm":
+                        if ls[3] == args.cat:
+                            elementDict[ls[3]][ls[2]].append(ls[0])
+
+                catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+                for i in elementDict.keys():
+                    for j in elementDict[i]:
+                        for k in elementDict[i][j]:
+                            catDict[k] = j
+
+                Dict = defaultdict(lambda: defaultdict(list))
+                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
+                for i in final:
+                    ls = (i.rstrip().split(","))
+                    if ls[0] != "" and ls[0] != "cell":
+                        if not re.match(r'#', i):
+                            cell = ls[0]
+                            orf = ls[1]
+                            gene = ls[2].split(".hm")[0]
+                            process = ls[3]
+                            substrate = ls[4]
                             Dict[cell][gene].append(orf)
 
                 cats = []
@@ -2038,11 +2371,15 @@ def main():
                 normDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
                 for i in binDirLS:
                     if lastItem(i.split(".")) == args.bin_ext:
-                        file = open("%s/%s-proteins.faa" % (binDir, i), "r")
-                        file = fasta(file)
+                        if args.orfs:
+                            file = open("%s/%s" % (args.bin_dir, i), "r")
+                            file = fasta(file)
+                        else:
+                            file = open("%s/ORF_calls/%s-proteins.faa" % (outDirectory, i), "r")
+                            file = fasta(file)
                         normDict[i] = len(file.keys())
 
-                outHeat = open("%s/lithogenie.%s.heatmap.csv" % (args.out, args.element), "w")
+                outHeat = open("%s/lithogenie.%s.heatmap.csv" % (args.out, args.cat), "w")
                 outHeat.write("X" + ',')
                 for i in sorted(Dict.keys()):
                     outHeat.write(i + ",")
@@ -2053,7 +2390,7 @@ def main():
                         outHeat.write(i + "--" + j + ",")
                         for k in sorted(Dict.keys()):
                             if not re.match(r'#', j):
-                                if args.norm == "y":
+                                if args.norm:
                                     outHeat.write(str((len(Dict[k][j]) / int(normDict[k])) * float(100)) + ",")
                                 else:
                                     outHeat.write(str((len(Dict[k][j]))) + ",")
@@ -2063,423 +2400,9 @@ def main():
                 print('......')
                 print(".......")
                 print("Finished!")
-
-
-    else:
-        print("....")
-        print(".....")
-        # COVERAGE-BASED ABUNDANCE
-        if args.bams != "NA":
-            depthDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-            BAMmapDict = defaultdict(lambda: defaultdict(lambda: "EMPTY"))
-            normDict = defaultdict(lambda: defaultdict(lambda: "EMPTY"))
-            BAMmap = open(args.bams)
-            for i in BAMmap:
-                string = ''
-                ls = i.rstrip().split("\t")
-                cell = ls[0]
-                for j in ls[1:]:
-                    string += " "
-                    string += j
-
-                try:
-                    print("processing... " + cell)
-                    depth = open("%s/contigDepths/%s.depth" % (args.out, cell))
-                    total = 0
-                    for k in depth:
-                        LS = k.rstrip().split("\t")
-                        if LS[0] != "contigName":
-                            depthDict[cell][LS[0]] = LS[2]
-                            total += float(LS[2])
-                    normDict[cell] = total
-
-                except FileNotFoundError:
-                    os.system("jgi_summarize_bam_contig_depths --outputDepth %s.depth%s" % (cell, string))
-                    print("processing... " + cell)
-                    depth = open("%s/contigDepths/%s.depth" % (args.out, cell))
-                    total = 0
-                    for k in depth:
-                        LS = k.rstrip().split("\t")
-                        if LS[0] != "contigName":
-                            depthDict[cell][LS[0]] = LS[2]
-                            total += float(LS[2])
-                    normDict[cell] = total
-
-            if args.element == "ALL":
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                cats = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in cats:
-                        cats.append(element)
-                cats = sorted(cats)
-
-                Dict = defaultdict(lambda: defaultdict(list))
-                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                for i in final:
-                    ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                        if not re.match(r'#', i):
-                            process = ls[0]
-                            cell = ls[3]
-                            orf = ls[4]
-                            contig = allButTheLast(orf, "_")
-                            gene = ls[2]
-                            Dict[cell][process].append(float(depthDict[cell][contig]))
-
-                outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.element), "w")
-                outHeat.write("X" + ',')
-                for i in sorted(Dict.keys()):
-                    outHeat.write(i + ",")
-                outHeat.write("\n")
-
-                for i in cats:
-                    outHeat.write(i + ",")
-                    for j in sorted(Dict.keys()):
-                        if not re.match(r'#', j):
-                            outHeat.write(str(SUM(Dict[j][i])/normDict[j]) + ",")
-                    outHeat.write("\n")
-
-                outHeat.close()
-                print('......')
-                print(".......")
-                print("Finished!")
-
             else:
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                elements = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in elements:
-                        elements.append(element)
-                elements = sorted(elements)
-
-                if args.element in elements:
-                    elementDict = defaultdict(lambda: defaultdict(list))
-                    bits = open(HMMdir + "/hmm-meta.txt", "r")
-                    for i in bits:
-                        ls = (i.rstrip().split("\t"))
-                        if ls[0] != "hmm":
-                            if ls[3] == args.element:
-                                elementDict[ls[3]][ls[2]].append(ls[0])
-
-                    catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                    for i in elementDict.keys():
-                        for j in elementDict[i]:
-                            for k in elementDict[i][j]:
-                                catDict[k] = j
-
-                    Dict = defaultdict(lambda: defaultdict(list))
-                    final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                    for i in final:
-                        ls = (i.rstrip().split(","))
-                        if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                            if not re.match(r'#', i):
-                                element = ls[0]
-                                cell = ls[3]
-                                orf = ls[4]
-                                contig = allButTheLast(orf, "_")
-                                gene = ls[2]
-                                reaction = ls[1]
-                                Dict[cell][gene].append(float(depthDict[cell][contig]))
-
-                    cats = []
-                    CatOrgDict = defaultdict(list)
-                    for i in Dict.keys():
-                        for j in Dict[i]:
-                            if len(catDict[j]) > 0:
-                                if j not in cats:
-                                    cats.append(j)
-                                    CatOrgDict[catDict[j]].append(j)
-
-                    outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.element), "w")
-                    outHeat.write("X" + ',')
-                    for i in sorted(Dict.keys()):
-                        outHeat.write(i + ",")
-                    outHeat.write("\n")
-
-                    for i in CatOrgDict.keys():
-                        for j in CatOrgDict[i]:
-                            outHeat.write(i + "--" + j + ",")
-                            for k in sorted(Dict.keys()):
-                                outHeat.write(str(SUM(Dict[k][j])) + ",")
-                            outHeat.write("\n")
-
-                    outHeat.close()
-                    print('......')
-                    print(".......")
-                    print("Finished!")
-
-                else:
-                    print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please "
-                          "try again by choosing another element, or checking your spelling.")
-
-        # COVERAGE-BASED ABUNDANCE USING ONLY ONE BAM FILE
-        elif args.bam != "NA":
-            depthDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-
-            try:
-                depth = open("%s.depth" % (args.bam))
-                for k in depth:
-                    LS = k.rstrip().split("\t")
-                    if LS[0] != "contigName":
-                        depthDict[LS[0]] = LS[2]
-
-            except FileNotFoundError:
-                os.system("jgi_summarize_bam_contig_depths --outputDepth %s.depth %s" % (args.bam, args.bam))
-                depth = open("%s.depth" % (args.bam))
-                for k in depth:
-                    LS = k.rstrip().split("\t")
-                    if LS[0] != "contigName":
-                        depthDict[LS[0]] = LS[2]
-
-            if args.element == "ALL":
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                cats = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in cats:
-                        cats.append(cats)
-                cats = sorted(cats)
-
-                Dict = defaultdict(lambda: defaultdict(list))
-                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                for i in final:
-                    ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                        if not re.match(r'#', i):
-                            process = ls[0]
-                            cell = ls[3]
-                            orf = ls[4]
-                            contig = allButTheLast(orf, "_")
-                            gene = ls[2]
-                            Dict[cell][process].append(float(depthDict[contig]))
-
-                outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.element), "w")
-                outHeat.write("X" + ',')
-                for i in sorted(Dict.keys()):
-                    outHeat.write(i + ",")
-                outHeat.write("\n")
-
-                for i in cats:
-                    outHeat.write(i + ",")
-                    for j in sorted(Dict.keys()):
-                        if not re.match(r'#', j):
-                            outHeat.write(str(SUM(Dict[j][i])) + ",")
-                    outHeat.write("\n")
-
-                outHeat.close()
-                print('......')
-                print(".......")
-                print("Finished!")
-
-            else:
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                elements = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in elements:
-                        elements.append(element)
-                elements = sorted(elements)
-
-                if args.element in elements:
-                    elementDict = defaultdict(lambda: defaultdict(list))
-                    bits = open(HMMdir + "/hmm-meta.txt", "r")
-                    for i in bits:
-                        ls = (i.rstrip().split("\t"))
-                        if ls[0] != "hmm":
-                            if ls[3] == args.element:
-                                elementDict[ls[3]][ls[2]].append(ls[0])
-
-                    catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                    for i in elementDict.keys():
-                        for j in elementDict[i]:
-                            for k in elementDict[i][j]:
-                                catDict[k] = j
-
-                    Dict = defaultdict(lambda: defaultdict(list))
-                    final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                    for i in final:
-                        ls = (i.rstrip().split(","))
-                        if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                            if not re.match(r'#', i):
-                                element = ls[0]
-                                cell = ls[3]
-                                orf = ls[4]
-                                contig = allButTheLast(orf, "_")
-                                gene = ls[2]
-                                reaction = ls[1]
-                                Dict[cell][gene].append(float(depthDict[contig]))
-
-                    cats = []
-                    CatOrgDict = defaultdict(list)
-                    for i in Dict.keys():
-                        for j in Dict[i]:
-                            if len(catDict[j]) > 0:
-                                if j not in cats:
-                                    cats.append(j)
-                                    CatOrgDict[catDict[j]].append(j)
-
-                    outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.element), "w")
-                    outHeat.write("X" + ',')
-                    for i in sorted(Dict.keys()):
-                        outHeat.write(i + ",")
-                    outHeat.write("\n")
-
-                    for i in CatOrgDict.keys():
-                        for j in CatOrgDict[i]:
-                            outHeat.write(i + "--" + j + ",")
-                            for k in sorted(Dict.keys()):
-                                outHeat.write(str(SUM(Dict[k][j])) + ",")
-                            outHeat.write("\n")
-
-                    outHeat.close()
-                    print('......')
-                    print(".......")
-                    print("Finished!")
-
-                else:
-                    print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please "
-                          "try again by choosing another element, or checking your spelling.")
-
-        # GENE COUNTS-BASED ABUNDANCE
-        else:
-            if args.element == "ALL":
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                cats = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in cats:
-                        cats.append(element)
-                cats = sorted(cats)
-
-                Dict = defaultdict(lambda: defaultdict(list))
-                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                for i in final:
-                    ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                        if not re.match(r'#', i):
-                            process = ls[0]
-                            cell = ls[3]
-                            orf = ls[4]
-                            gene = ls[2]
-                            Dict[cell][process].append(gene)
-
-                normDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                for i in os.listdir(args.bin_dir):
-                    if lastItem(i.split(".")) == args.bin_ext:
-                        file = open("%s/%s-proteins.faa" % (args.bin_dir, i), "r")
-                        file = fasta(file)
-                        normDict[i] = len(file.keys())
-
-                outHeat = open("%s/lithogenie.%s.heatmap.csv" % (args.out, args.element), "w")
-                outHeat.write("X" + ',')
-                for i in sorted(Dict.keys()):
-                    outHeat.write(i + ",")
-                outHeat.write("\n")
-
-                for i in cats:
-                    outHeat.write(i + ",")
-                    for j in sorted(Dict.keys()):
-                        if not re.match(r'#', j):
-                            if args.norm == "y":
-                                outHeat.write(str((len(Dict[j][i]) / int(normDict[j])) * float(100)) + ",")
-                            else:
-                                outHeat.write(str((len(Dict[j][i]))) + ",")
-                    outHeat.write("\n")
-                outHeat.close()
-
-                print('......')
-                print(".......")
-                print("Finished!")
-
-            else:
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                elements = []
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    element = ls[3]
-                    if element not in elements:
-                        elements.append(element)
-                elements = sorted(elements)
-                # elements = ["sulfur", "hydrogen", "methane", "nitrogen", "oxygen",
-                #             "carbon-monoxide", "C1compounds", "carbon",
-                #             "urea", "halogenetated-compounds", "arsenic", "selenium",
-                #             "nitriles", "iron"]
-
-                if args.element in elements:
-                    elementDict = defaultdict(lambda: defaultdict(list))
-                    bits = open(HMMdir + "/hmm-meta.txt", "r")
-                    for i in bits:
-                        ls = (i.rstrip().split("\t"))
-                        if ls[0] != "hmm":
-                            if ls[3] == args.element:
-                                elementDict[ls[3]][ls[2]].append(ls[0])
-
-                    catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                    for i in elementDict.keys():
-                        for j in elementDict[i]:
-                            for k in elementDict[i][j]:
-                                catDict[k] = j
-
-                    Dict = defaultdict(lambda: defaultdict(list))
-                    final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                    for i in final:
-                        ls = (i.rstrip().split(","))
-                        if ls[0] != "" and ls[1] != "assembly" and ls[1] != "genome":
-                            if not re.match(r'#', i):
-                                element = ls[0]
-                                cell = ls[3]
-                                orf = ls[4]
-                                gene = ls[2]
-                                reaction = ls[1]
-                                Dict[cell][gene].append(orf)
-
-                    cats = []
-                    CatOrgDict = defaultdict(list)
-                    for i in Dict.keys():
-                        for j in Dict[i]:
-                            if len(catDict[j]) > 0:
-                                if j not in cats:
-                                    cats.append(j)
-                                    CatOrgDict[catDict[j]].append(j)
-
-                    normDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                    for i in binDirLS:
-                        if lastItem(i.split(".")) == args.bin_ext:
-                            file = open("%s/%s-proteins.faa" % (binDir, i), "r")
-                            file = fasta(file)
-                            normDict[i] = len(file.keys())
-
-                    outHeat = open("%s/lithogenie.%s.heatmap.csv" % (args.out, args.element), "w")
-                    outHeat.write("X" + ',')
-                    for i in sorted(Dict.keys()):
-                        outHeat.write(i + ",")
-                    outHeat.write("\n")
-
-                    for i in CatOrgDict.keys():
-                        for j in CatOrgDict[i]:
-                            outHeat.write(i + "--" + j + ",")
-                            for k in sorted(Dict.keys()):
-                                if not re.match(r'#', j):
-                                    if args.norm == "y":
-                                        outHeat.write(str((len(Dict[k][j]) / int(normDict[k])) * float(100)) + ",")
-                                    else:
-                                        outHeat.write(str((len(Dict[k][j]))) + ",")
-                            outHeat.write("\n")
-
-                    outHeat.close()
-                    print('......')
-                    print(".......")
-                    print("Finished!")
-                else:
-                    print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please "
-                          "try again by choosing another element, or checking your spelling.")
+                print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please "
+                      "try again by choosing another element, or checking your spelling.")
 
     # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
     if args.makeplots == "y":
@@ -2494,16 +2417,35 @@ def main():
 
         if args.bams == "NA":
             os.system("Rscript --vanilla %s/DotPlot.R %s/lithogenie.%s.heatmap.csv %s" % (
-            Rdir, args.out, args.element, args.out))
+                Rdir, args.out, args.cat, args.out))
             os.system("Rscript --vanilla %s/dendro-heatmap.R %s/lithogenie.%s.heatmap.csv %s" % (
-            Rdir, args.out, args.element, args.out))
+                Rdir, args.out, args.cat, args.out))
         else:
             os.system("Rscript --vanilla %s/DotPlot.R %s/lithogenie.%s.readDepth.heatmap.csv %s" % (
-            Rdir, args.out, args.element, args.out))
+                Rdir, args.out, args.cat, args.out))
             os.system("Rscript --vanilla %s/dendro-heatmap.R %s/lithogenie.%s.readDepth.heatmap.csv %s" % (
-            Rdir, args.out, args.element, args.out))
+                Rdir, args.out, args.cat, args.out))
 
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
