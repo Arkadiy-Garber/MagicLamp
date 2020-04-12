@@ -1,8 +1,6 @@
 ## A more targetted platform for annotation of datasets using HMM sets.
 
-### Detailed tutorial and Wiki coming soon!
-
-#### quick install (if you have Conda installed)
+### quick install (if you have Conda installed)
 
     bash setup.sh
     source activate magiccave
@@ -18,4 +16,8 @@
 * R (version 3.5.1) -- if generating plots
 * Rscript -- if generating plots
 
-                                                                               
+### installation if you don't have Conda
+
+Put MagicLamp.py script $PATH into your bash profile
+    export PATH=$PATH:$(pwd)
+                                      
