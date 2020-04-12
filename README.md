@@ -24,10 +24,10 @@ Put MagicLamp.py script $PATH into your bash profile
                                       
 
 ### Usage
+*(for a list of available genies)*
     MagicLamp.py help
-*(this will provide you with a list of available genies)*
 
-
+ *(for a detailed help menu for each genie)*
       MagicLamp.py FeGenie -h
       MagicLamp.py LithoGenie -h
       MagicLamp.py WspGenie -h
@@ -36,7 +36,6 @@ Put MagicLamp.py script $PATH into your bash profile
       MagicLamp.py RosGenie -h
       MagicLamp.py Lucifer -h
       MagicLamp.py HmmGenie -h
- *(this will provide you with a detailed help menu for each genie)*
  
  
 ### Quick-start
