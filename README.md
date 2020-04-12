@@ -39,6 +39,11 @@ Put MagicLamp.py script $PATH into your bash profile
 
       MagicLamp.py FeGenie -h
  *(this will provide you with a detailed help menu)*
+ 
+ 
+ ### Quick-start
+    MagicLamp.py FeGenie -bin_dir genomes/ -bin_ext fna -out fegenie_output
+    
 
 
 
