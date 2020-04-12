@@ -72,6 +72,7 @@ Put MagicLamp.py script $PATH into your bash profile
 * C1compounds
 * urea
 * selenium
+
 *(many of the HMMs used by LithoGenie were developed and compiled by Karthik Anantharaman: https://github.com/kanantharaman/metabolic-hmms)*
 
 
