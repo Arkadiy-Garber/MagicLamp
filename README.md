@@ -19,5 +19,6 @@
 ### installation if you don't have Conda
 
 Put MagicLamp.py script $PATH into your bash profile
+
     export PATH=$PATH:$(pwd)
                                       
