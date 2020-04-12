@@ -25,9 +25,11 @@ Put MagicLamp.py script $PATH into your bash profile
 
 ### Usage
 *(for a list of available genies)*
+
     MagicLamp.py help
 
  *(for a detailed help menu for each genie)*
+ 
       MagicLamp.py FeGenie -h
       MagicLamp.py LithoGenie -h
       MagicLamp.py WspGenie -h
@@ -53,6 +55,9 @@ Put MagicLamp.py script $PATH into your bash profile
   
 #### with LithoGenie, you can also specficy a specific category for heatmap analysis
     MagicLamp.py LithoGenie -bin_dir genomes/ -bin_ext fna -out lithogenie_output --cat sulfur
+
+#### if you already ran LithoGenie once, but want to re-do the heatmap file with a different category
+    MagicLamp.py LithoGenie -bin_dir genomes/ -bin_ext fna -out lithogenie_output --cat iron --skip
 
 #### full list of LithoGenie categories (default action of the program is to create a broad-category heatmap)
 * iron
