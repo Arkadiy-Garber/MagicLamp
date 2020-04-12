@@ -2,4 +2,6 @@
 
 ### Detailed tutorial and Wiki coming soon!
 
+#### quick install 
+
                                                                                
