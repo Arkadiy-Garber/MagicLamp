@@ -22,3 +22,23 @@ Put MagicLamp.py script $PATH into your bash profile
 
     export PATH=$PATH:$(pwd)
                                       
+
+### Usage
+    MagicLamp.py help
+*(this will provide you with a list of available genies)*
+
+* MagicLamp.py FeGenie: HMM-based identification and categorization of iron genes and iron gene operons in genomes and metagenomes.
+* MagicLamp.py LithoGenie: HMM-based identification and categorization of genes and operons relevant to chemolithoautotrophic metabolisms.
+* MagicLamp.py RosGenie: HMM-based identifications of all genes responsible for neutralization of reactive-oxygen species.
+* MagicLamp.py MagnetoGenie: HMM-based identification of genes responsible for magnetosome formation.
+* MagicLamp.py WspGenie: HMM-based identification of the Wsp operon.
+* MagicLamp.py Lucifer: HMM-based identification of light-sensing and light-producing genes
+* MagicLamp.py GasGenie: HMM-based identification of genes responsible for gas vesicle formation.
+* MagicLamp.py HmmGenie: Identification of a user-provided set of HMMs
+
+
+      MagicLamp.py FeGenie -h
+ *(this will provide you with a detailed help menu)*
+
+
+
