@@ -348,12 +348,12 @@ def main():
         University of Southern California, Earth Sciences
         Please send comments and inquiries to arkadiyg@usc.edu
 
-     )\   )\     /`-.      )\.-.    )\  )\   )\.---.  .-,.-.,-.    .-./(     )\.-.    )\.---.   )\  )\  .'(   )\.---.  
-    (  ',/ /   ,' _  \   ,' ,-,_)  (  \, /  (   ,-._( ) ,, ,. (  ,'     )  ,' ,-,_)  (   ,-._( (  \, /  \  ) (   ,-._( 
-     )    (   (  '-' (  (  .   __   ) \ (    \  '-,   \( |(  )/ (  .-, (  (  .   __   \  '-,    ) \ (   ) (   \  '-,   
-    (  \(\ \   )   _  )  ) '._\ _) ( ( \ \    ) ,-`      ) \     ) '._\ )  ) '._\ _)   ) ,-`   ( ( \ \  \  )   ) ,-`   
-     `.) /  ) (  ,' ) \ (  ,   (    `.)/  )  (  ``-.     \ (    (  ,   (  (  ,   (    (  ``-.   `.)/  )  ) \  (  ``-.  
-         '.(   )/    )/  )/'._.'       '.(    )..-.(      )/     )/ ._.'   )/'._.'     )..-.(      '.(    )/   )..-.(                                                                              
+         .'(   )\   )\   )\   )\     )\.-.    )\.---.   )\  )\  .'(   )\.---.  
+     ,') \  ) (  ',/ /  (  ',/ /   ,' ,-,_)  (   ,-._( (  \, /  \  ) (   ,-._( 
+    (  '-' (   )    (    )    (   (  .   __   \  '-,    ) \ (   ) (   \  '-,   
+     ) .-.  ) (  \(\ \  (  \(\ \   ) '._\ _)   ) ,-`   ( ( \ \  \  )   ) ,-`   
+    (  ,  ) \  `.) /  )  `.) /  ) (  ,   (    (  ``-.   `.)/  )  ) \  (  ``-.  
+     )/    )/      '.(       '.(   )/'._.'     )..-.(      '.(    )/   )..-.(                                                                              
                                   %(?/////////&//%                                                
               .,,.                   (%((&@@@#/*.                      .,,.        
               .,,.                     @(((/&@@@#///**                  ...        
@@ -373,7 +373,6 @@ def main():
                                   .':.        `.
                                   "-..______..-"
 
-        Image design: Nancy Merino (2018);
         ASCII art: https://manytools.org/hacker-tools/convert-images-to-ascii-art/
         https://ascii.co.uk/text
         *******************************************************
@@ -427,7 +426,7 @@ def main():
                                                "If this file is not provided, HmmGenie will use an e-value cutoff of 1E-10. "
                                                "If you would like to set a different e-value cutoff, please provide this value using the \'eval\' flag.", default="NA")
 
-    parser.add_argument('-eval', type=str, help="e-value cutoff for hmmsearch. Default = 1E-10). "
+    parser.add_argument('-eval', type=str, help="e-value cutoff for hmmsearch. Default = 1E-10. "
                                                 "If you do not provide a file with bit score cutoffs, the default is 1E-10. "
                                                 "If the optional bit score cutoffs are provided, then the default e-value is 1000000 "
                                                 "(i.e. only the bit score cutoffs are used for filtering out potential false positives)", default=float(1E-10))
@@ -492,6 +491,8 @@ def main():
                   "you have Conda installed. Otherwise, please run the setupe-noconda.sh script and put MagicLamp.py \n"
                   "into your $PATH")
             raise SystemExit
+
+    os.system("rm rscripts.txt mainDir.txt")
 
     args = parser.parse_known_args()[0]
 
@@ -867,10 +868,10 @@ def main():
                 if len(RemoveDuplicates(k)) >= int(args.clu):
                     for l in RemoveDuplicates(k):
                         orf = j + "_" + str(l)
-                        print(i + "," + orf + "," + SummaryDict[i][orf]["hmm"] + "," + SummaryDict[i][orf][
-                            "e"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(
-                            SummaryDict[i][orf]["bitcut"]) + "," + str(counter) + "," + str(
-                            SummaryDict[i][orf]["seq"]) + "\n")
+                        # print(i + "," + orf + "," + SummaryDict[i][orf]["hmm"] + "," + SummaryDict[i][orf][
+                        #     "e"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(
+                        #     SummaryDict[i][orf]["bitcut"]) + "," + str(counter) + "," + str(
+                        #     SummaryDict[i][orf]["seq"]) + "\n")
 
                         out.write(i + "," + orf + "," + SummaryDict[i][orf]["hmm"] + "," + SummaryDict[i][orf]["e"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(SummaryDict[i][orf]["bitcut"]) + "," + str(counter) + "," + str(SummaryDict[i][orf]["seq"]) + "\n")
                     out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")

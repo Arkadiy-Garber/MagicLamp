@@ -402,7 +402,6 @@ def main():
                  .**,.*                  ..,*.,,,. ...               ..            
                  ,.**.@                    ( , .             
 
-        Image design: Nancy Merino (2018);
         ASCII art: https://manytools.org/hacker-tools/convert-images-to-ascii-art/
         https://ascii.co.uk/text
         *******************************************************
@@ -499,7 +498,6 @@ def main():
         bits = HMMdir + "/" + "bitscores.txt"
         rscriptDir = location + "/rscripts/"
 
-        os.system("rm HMMlib.txt rscripts.txt mainDir.txt")
         try:
             test = open(bits)
         except FileNotFoundError:
@@ -507,6 +505,8 @@ def main():
                   "you have Conda installed. Otherwise, please run the setupe-noconda.sh script and put MagicLamp.py \n"
                   "into your $PATH")
             raise SystemExit
+
+    os.system("rm HMMlib.txt rscripts.txt mainDir.txt")
 
     args = parser.parse_known_args()[0]
 
@@ -725,6 +725,7 @@ def main():
         ls = i.rstrip().split("\t")
         metaDict[ls[0]] = ls[1]
 
+    print("")
     # ******************* BEGINNING MAIN ALGORITHM **********************************))))
     print("starting main pipeline...")
     HMMdirLS = os.listdir(HMMdir)
