@@ -38,12 +38,40 @@ Put MagicLamp.py script $PATH into your bash profile
 
 
       MagicLamp.py FeGenie -h
- *(this will provide you with a detailed help menu)*
+ *(this will provide you with a detailed help menu for each genie)*
  
  
- ### Quick-start
+### Quick-start
+#### simplest form of the command
     MagicLamp.py FeGenie -bin_dir genomes/ -bin_ext fna -out fegenie_output
-    
+
+#### if you are providing gene-calls
+    MagicLamp.py FeGenie -bin_dir genomes/ -bin_ext fna -out fegenie_output --orfs
+ 
+#### you can also provide GenBank files
+    MagicLamp.py FeGenie -bin_dir genomes/ -bin_ext fna -out fegenie_output --gbk
+ 
+#### if you want to normalize the number of identified genes to the total number of ORFs in the dataset
+    MagicLamp.py FeGenie -bin_dir genomes/ -bin_ext fna -out fegenie_output --norm
+  
+#### with LithoGenie, you can also specficy a specific category for heatmap analysis
+    MagicLamp.py LithoGenie -bin_dir genomes/ -bin_ext fna -out lithogenie_output --cat sulfur
+
+#### full list of LithoGenie categories (default action of the program is to create a broad-category heatmap)
+* iron
+* sulfur
+* nitrogen
+* oxygen
+* methane
+* hydrogen
+* arsenic
+* nitriles
+* manganese
+* carbon-monoxide
+* halogenetated-compounds
+* C1compounds
+* urea
+* selenium
 
 
 
