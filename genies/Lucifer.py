@@ -466,7 +466,7 @@ def main():
     parser.add_argument('--makeplots', type=str,
                         help="include this flag if you would like Lucifer to make some figures from your data?. "
                              "To take advantage of this part of the pipeline, you will need to have Rscipt installed. It is a way for R to be called directly from the command line. "
-                             "Please be sure to install all the required R packages as instrcuted in the MagnetoGenie Wiki: "
+                             "Please be sure to install all the required R packages as instrcuted in the Lucifer Wiki: "
                              "https://github.com/Arkadiy-Garber/Lucifer/wiki/Installation. "
                              "If you see error or warning messages associated with Rscript, you can still expect to "
                              "see the main output (CSV files) from Lucifer.", const=True, nargs="?")

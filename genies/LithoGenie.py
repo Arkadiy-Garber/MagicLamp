@@ -440,8 +440,8 @@ def main():
     parser.add_argument('-ref', type=str, help="path to a reference protein database, which must be in FASTA format",
                         default="NA")
 
-    parser.add_argument('-out', type=str, help="name output directory (default=magnetogenie_out)",
-                        default="magnetogenie_out")
+    parser.add_argument('-out', type=str, help="name output directory (default=litho_out)",
+                        default="lithogenie_out")
 
     parser.add_argument('-inflation', type=int, help="inflation factor for final gene category counts (default=1000)",
                         default=1000)
@@ -488,17 +488,17 @@ def main():
     parser.add_argument('--norm', type=str,
                         help="include this flag if you would like the gene counts for each iron gene category to be normalized to "
                              "the number of predicted ORFs in each genome or metagenome. Without "
-                             "normalization, MagnetoGenie will create a heatmap-compatible "
-                             "CSV output with raw gene counts. With normalization, MagnetoGenie will create a "
+                             "normalization, LithoGenie will create a heatmap-compatible "
+                             "CSV output with raw gene counts. With normalization, LithoGenie will create a "
                              "heatmap-compatible with \'normalized gene abundances\'", const=True, nargs="?")
 
     parser.add_argument('--makeplots', type=str,
-                        help="include this flag if you would like MagnetoGenie to make some figures from your data?. "
+                        help="include this flag if you would like LithoGenie to make some figures from your data?. "
                              "To take advantage of this part of the pipeline, you will need to have Rscipt installed. It is a way for R to be called directly from the command line. "
-                             "Please be sure to install all the required R packages as instrcuted in the MagnetoGenie Wiki: "
-                             "https://github.com/Arkadiy-Garber/MagnetoGenie/wiki/Installation. "
+                             "Please be sure to install all the required R packages as instrcuted in the LithoGenie Wiki: "
+                             "https://github.com/Arkadiy-Garber/LithoGenie/wiki/Installation. "
                              "If you see error or warning messages associated with Rscript, you can still expect to "
-                             "see the main output (CSV files) from MagnetoGenie.", const=True, nargs="?")
+                             "see the main output (CSV files) from LithoGenie.", const=True, nargs="?")
 
     # CHECKING FOR CONDA INSTALL
     os.system("echo ${litho_hmms} > HMMlib.txt")
@@ -523,7 +523,7 @@ def main():
             location = i.rstrip()
         location = allButTheLast(location, "/")
 
-        HMMdir = location + "/hmms/magneto/"
+        HMMdir = location + "/hmms/litho/"
         bits = HMMdir + "/" + "hmm-meta.txt"
         rscriptDir = location + "/rscripts/"
 
@@ -560,7 +560,7 @@ def main():
         print(".")
     else:
         print(
-            'Looks like you did not provide an extension for your genomes/bins or assemblies, so MagnetoGenie does not know'
+            'Looks like you did not provide an extension for your genomes/bins or assemblies, so LithoGenie does not know'
             ' which files in the provided directory are fasta files that you would like analyzed.')
         print("Exiting")
         raise SystemExit
@@ -569,7 +569,7 @@ def main():
         os.listdir(args.out)
         print("Looks like you already have a directory with the name: " + args.out)
 
-        answer = input("Would you like MagnetoGenie to proceed and potentially overwrite files in this directory? (y/n): ")
+        answer = input("Would you like LithoGenie to proceed and potentially overwrite files in this directory? (y/n): ")
         if answer == "y":
             print("Ok, proceeding with analysis!")
         else:
@@ -616,7 +616,7 @@ def main():
                                 if re.findall(r'\|]', line):
                                     print("Looks like one of your fasta files has a header containing the character: \|")
                                     print(
-                                        "Unfortunately, this is a problem for MagnetoGenie because it uses that character as delimiter to store important information.")
+                                        "Unfortunately, this is a problem for LithoGenie because it uses that character as delimiter to store important information.")
                                     print("Please rename your FASTA file headers")
                                     raise SystemExit
 
@@ -630,7 +630,7 @@ def main():
                                         print(
                                             "Looks like one of your fasta files has a header containing the character: \|")
                                         print(
-                                            "Unfortunately, this is a problem for MagnetoGenie because it uses that character as delimiter to store important information.")
+                                            "Unfortunately, this is a problem for LithoGenie because it uses that character as delimiter to store important information.")
                                         print("Please rename your FASTA file headers")
                                         raise SystemExit
 
@@ -641,7 +641,7 @@ def main():
                                     if re.findall(r'\|]', line):
                                         print("Looks like one of your fasta files has a header containing the character: \|")
                                         print(
-                                            "Unfortunately, this is a problem for MagnetoGenie because it uses that character as delimiter to store important information.")
+                                            "Unfortunately, this is a problem for LithoGenie because it uses that character as delimiter to store important information.")
                                         print("Please rename your FASTA file headers")
                                         raise SystemExit
 
@@ -845,7 +845,7 @@ def main():
         SummaryDict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 'EMPTY')))
         for i in summary:
             ls = i.rstrip().split(",")
-            if ls[0] != "category" and ls[0] != "MagnetoGenie":
+            if ls[0] != "category" and ls[0] != "LithoGenie":
                 if len(ls) > 0:
                     category = ls[0]
                     cell = ls[0]
