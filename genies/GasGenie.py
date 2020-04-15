@@ -873,9 +873,9 @@ def main():
         if "gvpA" in ls or "gvpB" in ls or "gvpC" in ls or "gvpD" in ls or "gvpE" in ls or "gvpF" in ls or "gvpG" in ls or "gvpH" \
                 in ls or "gvpI" in ls or "gvpJ" in ls or "gvpK" in ls or "gvpM" in ls or "gvpN" in ls or "gvpO" in ls or "gvpP" \
                 in ls or "gvpQ" in ls or "gvpR" in ls or "gvpS" in ls or "gvpT" in ls or "gvpU" in ls or "gvpV" in ls or \
-                        "gvpW" in ls or "gvpX" in ls or "gvpY" in ls or "gvpZ" in ls:
+                        "gvpW" in ls or "gvpX" in ls or "gvpY" in ls or "gvpZ" in ls or "gvpAB" in ls:
 
-            gvp = ["gvpA", "gvpB", "gvpC", "gvpD", "gvpE", "gvpF", "gvpG", "gvpH", "gvpI", "gvpJ", "gvpK", "gvpM",
+            gvp = ["gvpA", "gvpB", "gvpAB", "gvpC", "gvpD", "gvpE", "gvpF", "gvpG", "gvpH", "gvpI", "gvpJ", "gvpK", "gvpM",
                    "gvpN", "gvpO", "gvpP", "gvpQ", "gvpR", "gvpS", "gvpJ", "gvpT", "gvpU", "gvpV", "gvpW", "gvpX",
                    "gvpY", "gvpZ"]
 
@@ -934,7 +934,7 @@ def main():
         os.system("mkdir %s/contigDepths" % args.out)
         os.system("mv %s/*depth %s/contigDepths/" % (args.out, args.out))
 
-        cats = ["gvpA", "gvpB", "gvpC", "gvpD", "gvpE", "gvpF", "gvpG", "gvpH", "gvpI", "gvpJ", "gvpK", "gvpM",
+        cats = ["gvpA", "gvpB", "gvpAB", "gvpC", "gvpD", "gvpE", "gvpF", "gvpG", "gvpH", "gvpI", "gvpJ", "gvpK", "gvpM",
                "gvpN", "gvpO", "gvpP", "gvpQ", "gvpR", "gvpS", "gvpJ", "gvpT", "gvpU", "gvpV", "gvpW", "gvpX",
                "gvpY", "gvpZ"]
 
@@ -985,7 +985,7 @@ def main():
                 if LS[0] != "contigName":
                     depthDict[LS[0]] = LS[2]
 
-        cats = ["gvpA", "gvpB", "gvpC", "gvpD", "gvpE", "gvpF", "gvpG", "gvpH", "gvpI", "gvpJ", "gvpK", "gvpM",
+        cats = ["gvpA", "gvpB", "gvpAB", "gvpC", "gvpD", "gvpE", "gvpF", "gvpG", "gvpH", "gvpI", "gvpJ", "gvpK", "gvpM",
                "gvpN", "gvpO", "gvpP", "gvpQ", "gvpR", "gvpS", "gvpJ", "gvpT", "gvpU", "gvpV", "gvpW", "gvpX",
                "gvpY", "gvpZ"]
 
@@ -1021,7 +1021,7 @@ def main():
 
     # GENE COUNTS-BASED ABUNDANCE
     else:
-        cats = ["gvpA", "gvpB", "gvpC", "gvpD", "gvpE", "gvpF", "gvpG", "gvpH", "gvpI", "gvpJ", "gvpK", "gvpM",
+        cats = ["gvpA", "gvpB", "gvpAB", "gvpC", "gvpD", "gvpE", "gvpF", "gvpG", "gvpH", "gvpI", "gvpJ", "gvpK", "gvpM",
                "gvpN", "gvpO", "gvpP", "gvpQ", "gvpR", "gvpS", "gvpJ", "gvpT", "gvpU", "gvpV", "gvpW", "gvpX",
                "gvpY", "gvpZ"]
 
