@@ -743,7 +743,7 @@ def main():
                     if args.orfs:
                         os.system(
                             "hmmsearch --cpu %d --tblout %s/%s-HMM/%s.tblout -o %s/%s-HMM/%s.txt %s/%s %s/%s"
-                            % (int(args.t), outDirectory, i, hmm, outDirectory, i, hmm, hmm_dir, hmm, binDir, i)
+                            % (int(args.t), outDirectory, i, hmm, outDirectory, i, hmm, args.hmm_dir, hmm, binDir, i)
                         )
                     else:
                         os.system(
