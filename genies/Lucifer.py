@@ -924,6 +924,73 @@ def main():
     os.system("rm -rf %s/HMM_results/*-HMM" % outDirectory)
     os.system("mv -f %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
 
+    # LOOKING FOR RETINAL-BINDING AND PROTON-PUMPING MOTIF MOTIF
+
+    summary = open("%s/lucifer-summary.csv" % args.out)
+    out = open("%s/lucifer-summary2.csv" % args.out, "w")
+    for i in summary:
+        ls = i.rstrip().split(",")
+        if not re.match(r'#', i):
+            if ls[7] != "seq":
+                seq = ls[7]
+                if (re.findall(r'D(...)T(...)Q(..)E', seq)):
+
+                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        print(i + "\t" + "DTE-Q" + "\t" + "K")
+                        motif = "DTE-Q"
+                        lysine = "+"
+                    else:
+                        motif = "DTE-Q"
+                        lysine = "-"
+
+                elif (re.findall(r'D(...)T(...)M(..)E', seq)):
+                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        motif = "DTE-M"
+                        lysine = "+"
+
+                    else:
+                        motif = "DTE-M"
+                        lysine = "-"
+
+                elif (re.findall(r'D(...)T(...)L(..)E', seq)):
+                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        motif = "DTE-L"
+                        lysine = "+"
+
+                    else:
+                        motif = "DTE-L"
+                        lysine = "+"
+
+                elif (re.findall(r'D(...)T(...)Q(..)Q', seq)):
+                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        motif = "DTQ-Q"
+                        lysine = "+"
+
+                    else:
+                        motif = "DTQ-Q"
+                        lysine = "-"
+
+                else:
+                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        motif = "not_found"
+                        lysine = "+"
+
+                    else:
+                        motif = "not_found"
+                        lysine = "-"
+
+                out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + ls[5] + "," + motif + "," + lysine + "," + ls[6] + "," + ls[7] + "\n")
+
+            else:
+                out.write(
+                    "file" + "," + "ORF" + "," "gene" + "," "evalue" + "," "bit_score" + "," "bit_score_cutoff" + "," +
+                    "Olson_et_al_2018_motif" + "," + "retinal_binding_lysine" + "," "cluster_id" + "," "seq" + "\n")
+        else:
+            out.write("####################################################" + "\n")
+
+    out.close()
+    os.system("mv %s/lucifer-summary2.csv %s/lucifer-summary.csv" % (args.out, args.out))
+
 # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
     print("....")
     print(".....")
