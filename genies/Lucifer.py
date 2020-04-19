@@ -933,50 +933,56 @@ def main():
         if not re.match(r'#', i):
             if ls[7] != "seq":
                 seq = ls[7]
-                if (re.findall(r'D(...)T(...)Q(..)E', seq)):
+                if ls[2] in ["Proteorhodopsin.hmm", "Xantharhodopsin.hmm", "Bac_rhodopsin.hmm", "7tm_1.hmm", "GpcrRhopsn4.hmm", "Heliorhodopsin_Pfam.hmm", "Htr2.hmm"]:
 
-                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
-                        motif = "DTE-Q"
-                        lysine = "+"
+                    if (re.findall(r'D(...)T(...)Q(..)E', seq)):
+
+                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                            motif = "DTE-Q"
+                            lysine = "+"
+                        else:
+                            motif = "DTE-Q"
+                            lysine = "-"
+
+                    elif (re.findall(r'D(...)T(...)M(..)E', seq)):
+                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                            motif = "DTE-M"
+                            lysine = "+"
+
+                        else:
+                            motif = "DTE-M"
+                            lysine = "-"
+
+                    elif (re.findall(r'D(...)T(...)L(..)E', seq)):
+                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                            motif = "DTE-L"
+                            lysine = "+"
+
+                        else:
+                            motif = "DTE-L"
+                            lysine = "+"
+
+                    elif (re.findall(r'D(...)T(...)Q(..)Q', seq)):
+                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                            motif = "DTQ-Q"
+                            lysine = "+"
+
+                        else:
+                            motif = "DTQ-Q"
+                            lysine = "-"
+
                     else:
-                        motif = "DTE-Q"
-                        lysine = "-"
+                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                            motif = "not_found"
+                            lysine = "+"
 
-                elif (re.findall(r'D(...)T(...)M(..)E', seq)):
-                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
-                        motif = "DTE-M"
-                        lysine = "+"
-
-                    else:
-                        motif = "DTE-M"
-                        lysine = "-"
-
-                elif (re.findall(r'D(...)T(...)L(..)E', seq)):
-                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
-                        motif = "DTE-L"
-                        lysine = "+"
-
-                    else:
-                        motif = "DTE-L"
-                        lysine = "+"
-
-                elif (re.findall(r'D(...)T(...)Q(..)Q', seq)):
-                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
-                        motif = "DTQ-Q"
-                        lysine = "+"
-
-                    else:
-                        motif = "DTQ-Q"
-                        lysine = "-"
+                        else:
+                            motif = "not_found"
+                            lysine = "-"
 
                 else:
-                    if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
-                        motif = "not_found"
-                        lysine = "+"
-
-                    else:
-                        motif = "not_found"
-                        lysine = "-"
+                    motif = "NA"
+                    lysine = "NA"
 
                 out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + ls[5] + "," + motif + "," + lysine + "," + ls[6] + "," + ls[7] + "\n")
 
