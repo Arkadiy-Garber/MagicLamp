@@ -514,6 +514,11 @@ def main():
         answer = input("Would you like FeGenie to proceed and potentially overwrite files in this directory? (y/n): ")
         if answer == "y":
             print("Ok, proceeding with analysis!")
+            try:
+                os.listdir(args.out + "/ORF_calls")
+            except FileNotFoundError:
+                os.system("mkdir %s/ORF_calls" % args.out)
+
         else:
             print("Exiting")
             raise SystemExit
@@ -533,6 +538,7 @@ def main():
     print("All required arguments provided!")
     print("")
 
+    prodigal = 0
     # *************** MAKE NR A DIAMOND DB AND READ THE FILE INTO HASH MEMORY ************************ #
     if args.ref != "NA":
         try:
@@ -585,6 +591,7 @@ def main():
                                     print("Please rename your FASTA file headers")
                                     raise SystemExit
 
+                        prodigal = 1
                         print("Finding ORFs for " + cell)
                         if args.meta:
                             os.system("prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -p meta -q" % (
@@ -1719,10 +1726,18 @@ def main():
 
     out.close()
 
-    os.system("mkdir %s/HMM_results" % outDirectory)
-    os.system("mv %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
-    os.system("rm %s/ORF_calls/*-prodigal.out" % outDirectory)
-    os.system("rm %s/makedbfile.txt.perf" % outDirectory)
+    try:
+        hmmout = os.listdir("%s/HMM_results" % outDirectory)
+        os.system("rm -rf %s/HMM_results/*" % outDirectory)
+        os.system("mv %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
+    except FileNotFoundError:
+        os.system("mkdir %s/HMM_results" % outDirectory)
+        os.system("mv %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
+
+    # if prodigal == 1:
+    #     os.system("rm %s/ORF_calls/*-prodigal.out" % outDirectory)
+
+    os.system("rm -rf %s/makedbfile.txt.perf" % outDirectory)
 
     # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
     print("Writing heatmap-formatted output file: %s/FeGenie-heatmap-data.csv\n" % outDirectory)

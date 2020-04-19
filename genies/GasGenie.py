@@ -514,6 +514,10 @@ def main():
         answer = input("Would you like GasGenie to proceed and potentially overwrite files in this directory? (y/n): ")
         if answer == "y":
             print("Ok, proceeding with analysis!")
+            try:
+                os.listdir(args.out + "/ORF_calls")
+            except FileNotFoundError:
+                os.system("mkdir %s/ORF_calls" % args.out)
         else:
             print("Exiting")
             raise SystemExit
@@ -850,7 +854,7 @@ def main():
     out.close()
 
 
-# ****************************** FILTERING OUT LIKELY FALSE POSITIVES *************************************
+# ****************************** FILTERING OUT POTENTIAL FALSE POSITIVES *************************************
     clusterDict = defaultdict(lambda: defaultdict(list))
     summary = open("%s/summary-2.csv" % (args.out), "r")
     for i in summary:
@@ -896,7 +900,7 @@ def main():
     os.system("mv %s/summary-3.csv %s/gasgenie-summary.csv" % (args.out, args.out))
 
     os.system("mkdir -p %s/HMM_results" % outDirectory)
-    os.system("rm -f %s/ORF_calls/*-prodigal.out" % outDirectory)
+    # os.system("rm -f %s/ORF_calls/*-prodigal.out" % outDirectory)
     os.system("rm -rf %s/HMM_results/*-HMM" % outDirectory)
     os.system("mv -f %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
 

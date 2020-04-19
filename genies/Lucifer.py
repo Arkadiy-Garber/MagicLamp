@@ -543,6 +543,10 @@ def main():
         answer = input("Would you like Lucifer to proceed and potentially overwrite files in this directory? (y/n): ")
         if answer == "y":
             print("Ok, proceeding with analysis!")
+            try:
+                os.listdir(args.out + "/ORF_calls")
+            except FileNotFoundError:
+                os.system("mkdir %s/ORF_calls" % args.out)
         else:
             print("Exiting")
             raise SystemExit

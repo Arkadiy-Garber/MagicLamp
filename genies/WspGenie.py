@@ -522,6 +522,10 @@ def main():
         answer = input("Would you like WspGenie to proceed and potentially overwrite files in this directory? (y/n): ")
         if answer == "y":
             print("Ok, proceeding with analysis!")
+            try:
+                os.listdir(args.out + "/ORF_calls")
+            except FileNotFoundError:
+                os.system("mkdir %s/ORF_calls" % args.out)
         else:
             print("Exiting")
             raise SystemExit
@@ -899,7 +903,7 @@ def main():
     os.system("mv %s/summary-3.csv %s/wspgenie-summary.csv" % (args.out, args.out))
 
     os.system("mkdir -p %s/HMM_results" % outDirectory)
-    os.system("rm -f %s/ORF_calls/*-prodigal.out" % outDirectory)
+    # os.system("rm -f %s/ORF_calls/*-prodigal.out" % outDirectory)
     os.system("rm -rf %s/HMM_results/*-HMM" % outDirectory)
     os.system("mv -f %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
 

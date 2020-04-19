@@ -572,6 +572,10 @@ def main():
         answer = input("Would you like LithoGenie to proceed and potentially overwrite files in this directory? (y/n): ")
         if answer == "y":
             print("Ok, proceeding with analysis!")
+            try:
+                os.listdir(args.out + "/ORF_calls")
+            except FileNotFoundError:
+                os.system("mkdir %s/ORF_calls" % args.out)
         else:
             print("Exiting")
             raise SystemExit
@@ -774,7 +778,7 @@ def main():
                     if lastItem(hmm.split(".")) == "hmm":
                         count += 1
                         perc = (count / len(HMMdirLS)) * 100
-                        sys.stdout.write("analyzing " + i + ": %d%%   \r" % (perc))
+                        sys.stdout.write("analyzing " + i + ": %d%%   \r" % (perc+2))
                         sys.stdout.flush()
                         if len(metaDict[hmm.split(".")[0]]["bit"]) == 0:
                             bit = 0
@@ -934,7 +938,7 @@ def main():
                 ls = i.rstrip().split(",")
                 clu = int(ls[8])  ###############################
                 clusterDict[clu]["line"].append(ls)
-                clusterDict[clu]["gene"].append(ls[2])
+                clusterDict[clu]["gene"].append(ls[2].split(".hm")[0])
                 clusterDict[clu]["category"].append(ls[4])
 
         print("..")
@@ -1491,7 +1495,6 @@ def main():
             ############################################################################################################
             elif "CytCoxidase_aa3_coxA" in ls or "CytCoxidase_aa3_coxB" in ls:
                 coxab = ["CytCoxidase_aa3_coxA", "CytCoxidase_aa3_coxB"]
-
                 if unique(ls, coxab) < 2:
                     if len(remove2(ls, coxab)) < 1:
                         pass
@@ -1925,7 +1928,7 @@ def main():
                 dsr = ["dissimilatory_sulfite_reductase_DsrD", "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrA",
                        "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrB", "dsrK", "dsrM", "dsrE", "dsrF", "dsrH",
                        "dsrC"]
-                if unique(ls, ["dsrE", "dsrF", "dsrH"]):
+                if unique(ls, ["dsrE", "dsrF", "dsrH"]) > 1:
                     for j in clusterDict[i]["line"]:
                         if j[2] not in dsr:
                             out.write(
@@ -2033,6 +2036,19 @@ def main():
 
         os.system("mv %s/lithogenie-summary-fixed.csv %s/lithogenie-summary.csv" % (args.out, args.out))
 
+    try:
+        hmmout = os.listdir("%s/HMM_results" % outDirectory)
+        os.system("rm -rf %s/HMM_results/*" % outDirectory)
+        os.system("mv %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
+    except FileNotFoundError:
+        os.system("mkdir %s/HMM_results" % outDirectory)
+        os.system("mv %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
+
+    # if prodigal == 1:
+    #     os.system("rm %s/ORF_calls/*-prodigal.out" % outDirectory)
+
+
+    # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
     # COVERAGE-BASED ABUNDANCE
     if args.bams != "NA":
         depthDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
