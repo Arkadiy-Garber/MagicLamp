@@ -936,7 +936,6 @@ def main():
                 if (re.findall(r'D(...)T(...)Q(..)E', seq)):
 
                     if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
-                        print(i + "\t" + "DTE-Q" + "\t" + "K")
                         motif = "DTE-Q"
                         lysine = "+"
                     else:
