@@ -2041,8 +2041,9 @@ def main():
         os.system("rm -rf %s/HMM_results/*" % outDirectory)
         os.system("mv %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
     except FileNotFoundError:
-        os.system("mkdir %s/HMM_results" % outDirectory)
-        os.system("mv %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
+        if not args.skip:
+            os.system("mkdir %s/HMM_results" % outDirectory)
+            os.system("mv %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
 
     # if prodigal == 1:
     #     os.system("rm %s/ORF_calls/*-prodigal.out" % outDirectory)
