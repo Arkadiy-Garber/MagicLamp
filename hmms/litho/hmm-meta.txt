@@ -66,8 +66,8 @@ nitrous_oxide_reductase_nosD	290	nitrous-oxide-reduction	nitrogen
 nitrous_oxide_reductase_nosZ	550	nitrous-oxide-reduction	nitrogen
 hydrazine_oxidase_hzoA	325	anammox	nitrogen
 hydrazine_synthase_hzsA	466	anammox	nitrogen
-CytCoxidase_aa3_coxA	617	oxygen-reduction	oxygen
-CytCoxidase_aa3_coxB	144	oxygen-reduction	oxygen
+CytCoxidase_aa3_coxA	600	oxygen-reduction	oxygen
+CytCoxidase_aa3_coxB	100	oxygen-reduction	oxygen
 CytCoxidase_cbb3_ccoN	168	oxygen-reduction	oxygen
 CytCoxidase_cbb3_ccoO	62	oxygen-reduction	oxygen
 CytCoxidase_cbb3_ccoP	54	oxygen-reduction	oxygen
