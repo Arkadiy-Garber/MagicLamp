@@ -10,3 +10,5 @@ catalase_Glutathione_peroxidase	39	hydrogen-peroxide-reduction	ROS
 Sod_CuZn	19.3	superoxide-dismutation	ROS
 SOD_FeMn_Cterminal	21.3	superoxide-dismutation	ROS
 SOD_FeMn_Nterminal	20.3	superoxide-dismutation	ROS
+Mn_catalase		20.80	hydrogen-peroxide-decomposition ROS
+
