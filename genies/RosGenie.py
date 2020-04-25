@@ -897,7 +897,7 @@ def main():
         cats = ["1-cysPeroxiredoxin_Cterminal", "Alkyl-hydroperoxide-reductase-ThiolSpecificAntioxidant",
                 "catalase_Dyp_perox",
                 "catalase_Glutathione_peroxidase", "Catalase", "catalase-peroxidase", "Catalase-rel-immune-response",
-                "CCP_MauG", "Sod_CuZn", "SOD_FeMn_Cterminal", "SOD_FeMn_Nterminal"]
+                "CCP_MauG", "Sod_CuZn", "SOD_FeMn_Cterminal", "SOD_FeMn_Nterminal", "Mn_catalase"]
 
         Dict = defaultdict(lambda: defaultdict(list))
         final = open("%s/rosgenie-summary.csv" % (args.out), "r")
@@ -949,7 +949,7 @@ def main():
         cats = ["1-cysPeroxiredoxin_Cterminal", "Alkyl-hydroperoxide-reductase-ThiolSpecificAntioxidant",
                 "catalase_Dyp_perox",
                 "catalase_Glutathione_peroxidase", "Catalase", "catalase-peroxidase", "Catalase-rel-immune-response",
-                "CCP_MauG", "Sod_CuZn", "SOD_FeMn_Cterminal", "SOD_FeMn_Nterminal"]
+                "CCP_MauG", "Sod_CuZn", "SOD_FeMn_Cterminal", "SOD_FeMn_Nterminal", "Mn_catalase"]
 
         Dict = defaultdict(lambda: defaultdict(list))
         final = open("%s/rosgenie-summary.csv" % (args.out), "r")
@@ -986,7 +986,7 @@ def main():
         cats = ["1-cysPeroxiredoxin_Cterminal", "Alkyl-hydroperoxide-reductase-ThiolSpecificAntioxidant",
                 "catalase_Dyp_perox",
                 "catalase_Glutathione_peroxidase", "Catalase", "catalase-peroxidase", "Catalase-rel-immune-response",
-                "CCP_MauG", "Sod_CuZn", "SOD_FeMn_Cterminal", "SOD_FeMn_Nterminal"]
+                "CCP_MauG", "Sod_CuZn", "SOD_FeMn_Cterminal", "SOD_FeMn_Nterminal", "Mn_catalase"]
 
         Dict = defaultdict(lambda: defaultdict(list))
         final = open("%s/rosgenie-summary.csv" % (args.out), "r")
