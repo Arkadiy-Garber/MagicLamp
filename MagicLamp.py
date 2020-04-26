@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from sys import argv, stderr
-from genies import FeGenie, LithoGenie, RosGenie, MagnetoGenie, WspGenie, Lucifer, HmmGenie, GasGenie
+from genies import FeGenie, LithoGenie, RosGenie, MagnetoGenie, WspGenie, Lucifer, HmmGenie, GasGenie, MnGenie
 
 """
 MagicLamp.py: A script for querying HMMs against provided datasets and processing output.
@@ -16,7 +16,7 @@ __version__ = "1"
 __maintainer__ = "Arkadiy Garber"
 __email__ = "rkdgarber@gmail.com"
 
-errorMessage = "Options: MagicLamp.py [ FeGenie | LithoGenie | RosGenie.py | MagnetoGenie.py | WspGenie | Lucifer | GasGenie | HmmGenie | help ]\n"
+errorMessage = "Options: MagicLamp.py [ FeGenie | LithoGenie | RosGenie.py | MagnetoGenie.py | WspGenie | Lucifer | GasGenie | MnGenie | HmmGenie | help ]\n"
 
 try:
     argv[1]
@@ -38,6 +38,8 @@ elif argv[1] == "MagnetoGenie":
     MagnetoGenie.main()
 elif argv[1] == "GasGenie":
     GasGenie.main()
+elif argv[1] == "MnGenie":
+    MnGenie.main()
 elif argv[1] == "HmmGenie":
     HmmGenie.main()
 elif argv[1] == "help":
@@ -55,7 +57,9 @@ elif argv[1] == "help":
                  
                  "\tMagicLamp.py GasGenie: HMM-based identification of genes responsible for gas vesicle formation.\n"
 
-                 "\tMagicLamp.py HmmGenie: Identification of a user-provided set of HMMs\n")
+                 "\tMagicLamp.py MnGenie: HMM-based identification of genes related to manganese transport and oxidation. Also includes genes that are known to bind manganese.\n"
+    
+                 "\tMagicLamp.py HmmGenie: Identification of a user-provided set of HMMs.\n")
 
     exit()
 else:
