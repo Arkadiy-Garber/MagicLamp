@@ -1,0 +1,17 @@
+mntA	20	transport	ABC-transporter
+mntB	18.8	transport	ABC-transporter
+mntH	18.5	transport	ABC-transporter
+mntA1	100	transport	ABC-transporter
+ArsP_2	32.90	transport	10TM heavy-metal exporter
+Mntp	24.40	transport	Putative manganese efflux pump
+McoA	32	oxidation	manganese oxidase
+MnxG	40	oxidation	manganese oxidase
+An_peroxidase	25.50	oxidation	Animal haem peroxidase
+catalase_Glutathione_peroxidase	20.70	binding	Glutathione peroxidase
+Mn_catalase	20.80	binding	Manganese containing catalase
+MSP	28.90	binding	Manganese-stabilising protein / photosystem II polypeptide
+PEPCK_ATP	26.50	binding	Phosphoenolpyruvate carboxykinase
+PsbY	20.40	binding	Photosystem II protein Y (PsbY)
+Ribonuc_red_sm	33.60	binding	Ribonucleotide reductase
+SOD_FeMn_Cterminal	21.00	binding	Iron/manganese superoxide dismutases
+SOD_FeMn_Nterminal	21.10	binding	Iron/manganese superoxide dismutases
