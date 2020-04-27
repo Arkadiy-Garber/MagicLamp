@@ -891,6 +891,23 @@ def main():
                     out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[7] + "\n")
 
                 out.write("####################################################" + "\n")
+
+        elif "CymA" in ls or "MtrA" in ls or "MtrC_TIGR03507" in ls or "MtrB_TIGR03509" in ls:
+            mtr = ["CymA", "MtrA", "MtrC_TIGR03507", "MtrB_TIGR03509"]
+
+            if unique(ls, mtr) < 2:
+                pass
+
+            else:
+                if "MtrC_TIGR03507" in ls:
+                    for j in clusterDict[i]["line"]:
+                        out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[7] + "\n")
+
+                    out.write("####################################################" + "\n")
+                else:
+                    pass
+
+
         else:
             for j in clusterDict[i]["line"]:
                 out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
@@ -944,7 +961,8 @@ def main():
         os.system("mkdir %s/contigDepths" % args.out)
         os.system("mv %s/*depth %s/contigDepths/" % (args.out, args.out))
 
-        cats = ["mntA", "mntA1", "mntB", "mntH", "ArsP_2", "Mntp", "MnxG", "An_peroxidase",
+        cats = ["mntA", "mntA1", "mntB", "mntH", "ArsP_2", "Mntp",
+                "MtrC_TIGR03507", "MtrA", "MtrB_TIGR03509", "CymA", "MnxG", "McoA", "An_peroxidase",
                 "catalase_Glutathione_peroxidase", "Mn_catalase", "MSP",
                 "PEPCK_ATP", "PsbY", "Ribonuc_red_sm", "SOD_FeMn_Cterminal",  "SOD_FeMn_Nterminal"]
 
@@ -996,9 +1014,10 @@ def main():
                 if LS[0] != "contigName":
                     depthDict[LS[0]] = LS[2]
 
-        cats = ["mntA", "mntA1", "mntB", "mntH", "ArsP_2", "Mntp", "MnxG", "An_peroxidase",
+        cats = ["mntA", "mntA1", "mntB", "mntH", "ArsP_2", "Mntp",
+                "MtrC_TIGR03507", "MtrA", "MtrB_TIGR03509", "CymA", "MnxG", "McoA", "An_peroxidase",
                 "catalase_Glutathione_peroxidase", "Mn_catalase", "MSP",
-                "PEPCK_ATP", "PsbY", "Ribonuc_red_sm", "SOD_FeMn_Cterminal", "SOD_FeMn_Nterminal"]
+                "PEPCK_ATP", "PsbY", "Ribonuc_red_sm", "SOD_FeMn_Cterminal",  "SOD_FeMn_Nterminal"]
 
         Dict = defaultdict(lambda: defaultdict(list))
         final = open("%s/mngenie-summary.csv" % (args.out), "r")
@@ -1033,9 +1052,10 @@ def main():
 
     # GENE COUNTS-BASED ABUNDANCE
     else:
-        cats = ["mntA", "mntA1", "mntB", "mntH", "ArsP_2", "Mntp", "MnxG", "An_peroxidase",
+        cats = ["mntA", "mntA1", "mntB", "mntH", "ArsP_2", "Mntp",
+                "MtrC_TIGR03507", "MtrA", "MtrB_TIGR03509", "CymA", "MnxG", "McoA", "An_peroxidase",
                 "catalase_Glutathione_peroxidase", "Mn_catalase", "MSP",
-                "PEPCK_ATP", "PsbY", "Ribonuc_red_sm", "SOD_FeMn_Cterminal", "SOD_FeMn_Nterminal"]
+                "PEPCK_ATP", "PsbY", "Ribonuc_red_sm", "SOD_FeMn_Cterminal",  "SOD_FeMn_Nterminal"]
 
         Dict = defaultdict(lambda: defaultdict(list))
         final = open("%s/mngenie-summary.csv" % (args.out), "r")
