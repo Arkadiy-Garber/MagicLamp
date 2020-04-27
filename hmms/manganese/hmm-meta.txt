@@ -1,17 +1,21 @@
-mntA	20	Mn transport	ABC-transporter
-mntB	18.8	Mn transport	ABC-transporter
-mntH	18.5	Mn transport	ABC-transporter
-mntA1	100	Mn transport	ABC-transporter
-ArsP_2	32.90	Mn transport	10TM heavy-metal exporter
-Mntp	24.40	Mn transport	Putative manganese efflux pump
-McoA	32	Mn oxidation	manganese oxidase
-MnxG	40	Mn oxidation	manganese oxidase
-An_peroxidase	25.50	Mn oxidation	Animal haem peroxidase
-catalase_Glutathione_peroxidase	20.70	Mn binding	Glutathione peroxidase
-Mn_catalase	20.80	Mn binding	Manganese containing catalase
-MSP	28.90	Mn binding	Manganese-stabilising protein / photosystem II polypeptide
-PEPCK_ATP	26.50	Mn binding	Phosphoenolpyruvate carboxykinase
-PsbY	20.40	Mn binding	Photosystem II protein Y (PsbY)
-Ribonuc_red_sm	33.60	Mn binding	Ribonucleotide reductase
-SOD_FeMn_Cterminal	21.00	Mn binding	Iron/manganese superoxide dismutases
-SOD_FeMn_Nterminal	21.10	Mn binding	Iron/manganese superoxide dismutases
+mntA	20	Mn-transport	ABC-transporter
+mntB	18.8	Mn-transport	ABC-transporter
+mntH	18.5	Mn-transport	ABC-transporter
+mntA1	100	Mn-transport	ABC-transporter
+ArsP_2	32.90	Mn-transport	10TM heavy-metal exporter
+Mntp	24.40	Mn-transport	Putative manganese efflux pump
+McoA	32	Mn-oxidation	manganese oxidase
+MnxG	40	Mn-oxidation	manganese oxidase
+An_peroxidase	25.50	Mn-oxidation	Animal haem peroxidase
+catalase_Glutathione_peroxidase	20.70	Mn-binding	Glutathione peroxidase
+Mn_catalase	20.80	Mn-binding	Manganese containing catalase
+MSP	28.90	Mn-binding	Manganese-stabilising protein / photosystem II polypeptide
+PEPCK_ATP	26.50	Mn-binding	Phosphoenolpyruvate carboxykinase
+PsbY	20.40	Mn-binding	Photosystem II protein Y (PsbY)
+Ribonuc_red_sm	33.60	Mn-binding	Ribonucleotide reductase
+SOD_FeMn_Cterminal	21.00	Mn-binding	Iron/manganese superoxide dismutases
+SOD_FeMn_Nterminal	21.10	Mn-binding	Iron/manganese superoxide dismutases
+MtrC_TIGR03507	209.3	Mn/Fe-reduction	extracellular decaheme cytochrome
+MtrB_TIGR03509	240.05	Mn/Fe-reduction	beta-barrel porin
+CymA	237	Mn/Fe-reduction	cyplasmic membrane tetraheme cytochrome
+MtrA	140	Mn/Fe-reduction	periplasmic decaheme cytochrome
