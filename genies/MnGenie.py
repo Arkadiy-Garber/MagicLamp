@@ -715,7 +715,7 @@ def main():
                 if lastItem(hmm.split(".")) == "hmm":
                     count += 1
                     perc = (count / len(HMMdirLS)) * 100
-                    sys.stdout.write("analyzing " + i + ": %d%%   \r" % (perc + 6))
+                    sys.stdout.write("analyzing " + i + ": %d%%   \r" % (perc + 11))
                     sys.stdout.flush()
                     if len(metaDict[hmm.split(".")[0]]["bit"]) == 0:
                         bit = 0
