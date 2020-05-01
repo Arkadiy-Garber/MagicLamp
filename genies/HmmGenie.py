@@ -768,7 +768,7 @@ def main():
                             orf = ls[0]
 
                             if args.bit != "NA":
-                                bitcut = float(metaDict[ls[2]])
+                                bitcut = float(metaDict[hmm])
                                 if args.eval != "NA":
                                     evalCutoff = float(args.eval)
                                 else:
@@ -894,13 +894,7 @@ def main():
     cats = []
     for hmm in HMMdirLS:
         if lastItem(hmm.split(".")) == args.hmm_ext:
-            HMMfile = open(args.hmm_dir + "/" + hmm)
-            for i in HMMfile:
-                if re.findall(r'NAME', i):
-                    name = lastItem(delim(i))
-                    cats.append(name)
-                    break
-
+            cats.append(hmm)
 
     print("....")
     print(".....")
@@ -1022,7 +1016,7 @@ def main():
                 if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
                     cell = ls[0]
                     orf = ls[1]
-                    gene = ls[2].split(".")[0]
+                    gene = ls[2]
                     Dict[cell][gene].append(gene)
 
         normDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
