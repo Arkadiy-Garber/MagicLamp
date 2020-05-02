@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from sys import argv, stderr
-from genies import FeGenie, LithoGenie, RosGenie, MagnetoGenie, WspGenie, Lucifer, HmmGenie, GasGenie, MnGenie
+from genies import FeGenie, LithoGenie, RosGenie, MagnetoGenie, WspGenie, Lucifer, HmmGenie, GasGenie, MnGenie, CircGenie
 
 """
 MagicLamp.py: A script for querying HMMs against provided datasets and processing output.
@@ -40,6 +40,8 @@ elif argv[1] == "GasGenie":
     GasGenie.main()
 elif argv[1] == "MnGenie":
     MnGenie.main()
+elif argv[1] == "CircGenie":
+    CircGenie.main()
 elif argv[1] == "HmmGenie":
     HmmGenie.main()
 elif argv[1] == "help":
@@ -58,6 +60,8 @@ elif argv[1] == "help":
                  "\tMagicLamp.py GasGenie: HMM-based identification of genes responsible for gas vesicle formation.\n"
 
                  "\tMagicLamp.py MnGenie: HMM-based identification of genes related to manganese transport and oxidation. Also includes genes that are known to bind manganese.\n"
+                 
+                 "\tMagicLamp.py CircGenie: HMM-based identification of genes related to circadian rhythm in cyanobacteria.\n"
     
                  "\tMagicLamp.py HmmGenie: Identification of a user-provided set of HMMs.\n")
 
