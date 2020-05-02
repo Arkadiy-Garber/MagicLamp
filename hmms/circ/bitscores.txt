@@ -1,0 +1,13 @@
+CikA_GAF	22.40
+CikA_HATPase_c	26.40
+CikA_HisKA	26.90
+KaiA	22.20
+KaiB	20.40
+KaiC_ATPase	26.60
+LdpA_C	22.70
+CikA_HisKA ; CikA_HATPase_c ; CikA_GAF	26.9
+CikA_HATPase_c ; CikA_HisKA ; CikA_GAF	26.9
+CikA_HisKA ; CikA_GAF ; CikA_HATPase_c	26.9
+CikA_HATPase_c ; CikA_GAF ; CikA_HisKA	26.9
+CikA_GAF ; CikA_HATPase_c ; CikA_HisKA	26.9
+CikA_GAF ; CikA_HisKA ; CikA_HATPase_c	26.9
