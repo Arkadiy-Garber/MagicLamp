@@ -35,6 +35,10 @@ export magneto_hmms=\"$(pwd)/hmms/magneto\"
 
 export litho_hmms=\"$(pwd)/hmms/litho\"
 
+export mn_hmms=\"$(pwd)/hmms/manganese\"
+
+export circ_hmms=\"$(pwd)/hmms/circ\"
+
 export iron_hmms=\"$(pwd)/hmms/iron\"" >> ${CONDA_PREFIX}/etc/conda/activate.d/env_vars.sh
 
 # re-activating environment so variable and PATH changes take effect
