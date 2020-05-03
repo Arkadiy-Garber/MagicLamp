@@ -1320,6 +1320,7 @@ def main():
             cell = lst[0].split("|")[0]
             orf = lst[0].split("|")[1]
             target = lst[12]
+            target = replace(target, [","], ";")
             dmndblastDict[cell][orf]["e"] = evalue
             dmndblastDict[cell][orf]["target"] = target
 
@@ -1410,7 +1411,10 @@ def main():
                     memoryDict[dataset][orf]["cutoff"] = ls[5]
                     memoryDict[dataset][orf]["clu"] = clu
                     memoryDict[dataset][orf]["heme"] = ls[7]
-                    memoryDict[dataset][orf]["seq"] = ls[8]
+                    memoryDict[dataset][orf]["seq"] = ls[10]
+                    if args.ref != "NA":
+                        memoryDict[dataset][orf]["blastHit"] = ls[8]
+                        memoryDict[dataset][orf]["blastEval"] = ls[9]
                 else:
                     cat = ls[0]
                     dataset = ls[1]
@@ -1421,9 +1425,13 @@ def main():
                     memoryDict[dataset][orf]["gene"] = ls[3]
                     memoryDict[dataset][orf]["bit"] = ls[4]
                     memoryDict[dataset][orf]["cutoff"] = "evalue-cutoff: 1E-10"
-                    memoryDict[dataset][orf]["clu"] = ls[7]
-                    memoryDict[dataset][orf]["heme"] = ls[8]
-                    memoryDict[dataset][orf]["seq"] = ls[9]
+                    memoryDict[dataset][orf]["clu"] = ls[6]
+                    memoryDict[dataset][orf]["heme"] = ls[7]
+                    memoryDict[dataset][orf]["seq"] = ls[10]
+                    if args.ref != "NA":
+                        memoryDict[dataset][orf]["blastHit"] = ls[8]
+                        memoryDict[dataset][orf]["blastEval"] = ls[9]
+
                     geneToCatDict[hmm] = cat
                     clusterDict[ls[7]].append(hmm + "|" + dataset + "|" + orf)
             else:
@@ -1443,11 +1451,18 @@ def main():
                 elif check1(clusterDict[i]) < 2:
                     pass
                 else:
-
-                    out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
-                              memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
-                              memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
-                              memoryDict[dataset][orf]["seq"] + "\n")
+                    if args.ref != "NA":
+                        out.write(
+                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
+                            memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
+                            memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
+                            memoryDict[dataset][orf]["blastHit"] + "," + memoryDict[dataset][orf]["blastEval"] + "," +
+                            memoryDict[dataset][orf]["seq"] + "\n")
+                    else:
+                        out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
+                                  memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
+                                  memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
+                                  memoryDict[dataset][orf]["seq"] + "\n")
 
             elif cat in ["iron_aquisition-siderophore_synthesis"]:
                 if len(Unique2(clusterDict[i])) < 3:
@@ -1455,11 +1470,19 @@ def main():
                 elif check1_2(clusterDict[i]) < 3:
                     pass
                 else:
+                    if args.ref != "NA":
+                        out.write(
+                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
+                            memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
+                            memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
+                            memoryDict[dataset][orf]["blastHit"] + "," + memoryDict[dataset][orf]["blastEval"] + "," +
+                            memoryDict[dataset][orf]["seq"] + "\n")
+                    else:
 
-                    out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
-                              memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
-                              memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
-                              memoryDict[dataset][orf]["seq"] + "\n")
+                        out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
+                                  memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
+                                  memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
+                                  memoryDict[dataset][orf]["seq"] + "\n")
 
             elif cat in ["iron_aquisition-iron_transport", "iron_aquisition-heme_oxygenase"]:
                 if len(Unique2(clusterDict[i])) < 2:
@@ -1467,115 +1490,329 @@ def main():
                 elif check2(clusterDict[i]) < 2:
                     pass
                 else:
-                    out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
-                              memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
-                              memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
-                              memoryDict[dataset][orf]["seq"] + "\n")
+                    if args.ref != "NA":
+                        out.write(
+                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
+                            memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
+                            memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
+                            memoryDict[dataset][orf]["blastHit"] + "," + memoryDict[dataset][orf]["blastEval"] + "," +
+                            memoryDict[dataset][orf]["seq"] + "\n")
+                    else:
+                        out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
+                                  memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
+                                  memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
+                                  memoryDict[dataset][orf]["seq"] + "\n")
 
             elif cat == "iron_gene_regulation":
                 if checkReg(clusterDict[i]) < 1:
                     pass
                 else:
-                    out.write(
-                        memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
-                        memoryDict[dataset][orf]["bit"] + "," +
-                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                        memoryDict[dataset][orf]["heme"] + "," +
-                        memoryDict[dataset][orf]["seq"] + "\n")
+                    if args.ref != "NA":
+                        out.write(
+                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                            memoryDict[dataset][orf]["bit"] + "," +
+                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                            memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] + "," +
+                            memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
+                    else:
+                        out.write(
+                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                            memoryDict[dataset][orf]["bit"] + "," +
+                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                            memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
 
             elif cat == "magnetosome_formation":
                 if checkMam(clusterDict[i]) < 5:
                     pass
                 else:
-                    out.write(
-                        memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
-                        memoryDict[dataset][orf]["bit"] + "," +
-                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                        memoryDict[dataset][orf]["heme"] + "," +
-                        memoryDict[dataset][orf]["seq"] + "\n")
+                    if args.ref != "NA":
+                        out.write(
+                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                            memoryDict[dataset][orf]["bit"] + "," +
+                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                            memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] + "," +
+                            memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
+                    else:
+                        out.write(
+                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                            memoryDict[dataset][orf]["bit"] + "," +
+                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                            memoryDict[dataset][orf]["heme"] + "," +
+                            memoryDict[dataset][orf]["seq"] + "\n")
 
             elif cat == "iron_oxidation":
                 if hmm == "Cyc1":
                     if checkFe(clusterDict[i]) < 2:
                         pass
                     else:
+                        if args.ref != "NA":
+                            out.write(
+                                memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] + "," +
+                                memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                elif hmm in ["MtoA", "MtrA", "MtrB_TIGR03509", "MtrC_TIGR03507"]:
+                    operon = clusterDict[i]
+                    operon = Strip(operon)
+                    if "MtrB_TIGR03509" in operon and "MtrC_TIGR03507" in operon and "MtrA" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif "MtoA" in operon and "MtrB_TIGR03509" in operon and "MtrC_TIGR03507" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif "MtrB_TIGR03509" in operon and "MtrA" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif "MtoA" in operon and "MtrB_TIGR03509" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif "MtrC_TIGR03507" in operon and "MtrB_TIGR03509" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    else:
+                        pass
+
+                else:
+                    if args.ref != "NA":
+                        out.write(
+                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                            memoryDict[dataset][orf]["bit"] + "," +
+                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                            memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                            memoryDict[dataset][orf]["blastEval"] + "," +
+                            memoryDict[dataset][orf]["seq"] + "\n")
+                    else:
                         out.write(
                             memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                             memoryDict[dataset][orf]["bit"] + "," +
                             memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                             memoryDict[dataset][orf]["heme"] + "," +
                             memoryDict[dataset][orf]["seq"] + "\n")
-
-                elif hmm in ["MtoA", "MtrA", "MtrB_TIGR03509", "MtrC_TIGR03507"]:
-                    operon = clusterDict[i]
-                    operon = Strip(operon)
-                    if "MtrB_TIGR03509" in operon and "MtrC_TIGR03507" in operon and "MtrA" in operon:
-                        out.write(
-                            "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-
-                    elif "MtoA" in operon and "MtrB_TIGR03509" in operon and "MtrC_TIGR03507" in operon:
-                        out.write(
-                            "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-
-                    elif "MtrB_TIGR03509" in operon and "MtrA" in operon:
-                        out.write(
-                            "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-
-                    elif "MtoA" in operon and "MtrB_TIGR03509" in operon:
-                        out.write(
-                            "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-
-                    elif "MtrC_TIGR03507" in operon and "MtrB_TIGR03509" in operon:
-                        out.write(
-                            "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-
-                    else:
-                        pass
-
-                else:
-                    out.write(
-                        memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
-                        memoryDict[dataset][orf]["bit"] + "," +
-                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                        memoryDict[dataset][orf]["heme"] + "," +
-                        memoryDict[dataset][orf]["seq"] + "\n")
 
             elif cat == "iron_reduction":
                 if hmm in ["DFE_0465", "DFE_0464", "DFE_0463", "DFE_0462", "DFE_0461"]:
                     if checkDFE1(clusterDict[i]) < 3:
                         pass
                     else:
-                        out.write(
-                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
+                        if args.ref != "NA":
+                            out.write(
+                                memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
 
                 elif hmm in ["DFE_0451", "DFE_0450", "DFE_0449", "DFE_0448"]:
                     if checkDFE2(clusterDict[i]) < 3:
                         pass
                     else:
+                        if args.ref != "NA":
+                            out.write(
+                                memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                elif hmm in ["MtrC_TIGR03507", "MtrA", "MtrB_TIGR03509", "MtoA"]:
+                    operon = clusterDict[i]
+                    operon = Strip(operon)
+                    if "MtrB_TIGR03509" in operon and "MtrC_TIGR03507" in operon and "MtrA" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif "MtoA" in operon and "MtrB_TIGR03509" in operon and "MtrC_TIGR03507" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif "MtrB_TIGR03509" in operon and "MtrA" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                            # print("writing iron_reduction_or_oxidation")
+
+                    elif "MtoA" in operon and "MtrB_TIGR03509" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif "MtrC_TIGR03507" in operon and "MtrB_TIGR03509" in operon:
+                        if args.ref != "NA":
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                memoryDict[dataset][orf]["blastEval"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+                        else:
+                            out.write(
+                                "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["heme"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+
+                    else:
+                        pass
+
+                else:
+                    if args.ref != "NA":
+                        out.write(
+                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                            memoryDict[dataset][orf]["bit"] + "," +
+                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                            memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                            memoryDict[dataset][orf]["blastEval"] + "," +
+                            memoryDict[dataset][orf]["seq"] + "\n")
+                    else:
                         out.write(
                             memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                             memoryDict[dataset][orf]["bit"] + "," +
@@ -1583,53 +1820,15 @@ def main():
                             memoryDict[dataset][orf]["heme"] + "," +
                             memoryDict[dataset][orf]["seq"] + "\n")
 
-                elif hmm in ["MtrC_TIGR03507", "MtrA", "MtrB_TIGR03509", "MtoA"]:
-                    operon = clusterDict[i]
-                    operon = Strip(operon)
-                    if "MtrB_TIGR03509" in operon and "MtrC_TIGR03507" in operon and "MtrA" in operon:
-                        out.write(
-                            "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-
-                    elif "MtoA" in operon and "MtrB_TIGR03509" in operon and "MtrC_TIGR03507" in operon:
-                        out.write(
-                            "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-
-                    elif "MtrB_TIGR03509" in operon and "MtrA" in operon:
-                        out.write(
-                            "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-                        # print("writing iron_reduction_or_oxidation")
-
-                    elif "MtoA" in operon and "MtrB_TIGR03509" in operon:
-                        out.write(
-                            "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-
-                    elif "MtrC_TIGR03507" in operon and "MtrB_TIGR03509" in operon:
-                        out.write(
-                            "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
-                            memoryDict[dataset][orf]["bit"] + "," +
-                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                            memoryDict[dataset][orf]["heme"] + "," +
-                            memoryDict[dataset][orf]["seq"] + "\n")
-
-                    else:
-                        pass
-
+            else:
+                if args.ref != "NA":
+                    out.write(
+                        memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                        memoryDict[dataset][orf]["bit"] + "," +
+                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                        memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                        memoryDict[dataset][orf]["blastEval"] + "," +
+                        memoryDict[dataset][orf]["seq"] + "\n")
                 else:
                     out.write(
                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
@@ -1637,14 +1836,6 @@ def main():
                         memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                         memoryDict[dataset][orf]["heme"] + "," +
                         memoryDict[dataset][orf]["seq"] + "\n")
-
-            else:
-                out.write(
-                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
-                    memoryDict[dataset][orf]["bit"] + "," +
-                    memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                    memoryDict[dataset][orf]["heme"] + "," +
-                    memoryDict[dataset][orf]["seq"] + "\n")
 
     out.close()
     os.system("mv %s/FeGenie-summary-fixed.csv %s/FeGenie-summary.csv" % (outDirectory, outDirectory))
