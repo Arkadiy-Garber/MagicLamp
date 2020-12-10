@@ -1,12 +1,13 @@
 ### A software package for annotation of genomic datasets using discreet HMM sets.
 
-### Citing MagicLamp
+#### Citing MagicLamp
 There is no official publication for MagicLamp. If it was useful for your work, you can cite it as follows:
 
 Garber, AI and Miller, SR (2020) MagicLamp: toolkit for annotation of 'omics datasets using curated HMM sets. 2020: ParaHunter, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
 
 
-### quick install (if you have Conda installed)
+### installation
+#### quick install (if you have Conda installed)
     git clone 
     bash setup.sh
     source activate magiccave
@@ -22,7 +23,7 @@ Garber, AI and Miller, SR (2020) MagicLamp: toolkit for annotation of 'omics dat
 * R (version 3.5.1) -- if generating plots
 * Rscript -- if generating plots
 
-### installation if you don't have Conda
+#### installation if you don't have Conda
 
 Put MagicLamp.py script $PATH into your bash profile
 
