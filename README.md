@@ -1,9 +1,9 @@
 ### A software package for annotation of genomic datasets using discreet HMM sets.
 
 #### Citing MagicLamp
-There is no official publication for MagicLamp. If it was useful for your work, you can cite it as follows:
+There is no official publication for MagicLamp. If it was useful for your work, please cite as follows:
 
-Garber, AI and Miller, SR (2020) MagicLamp: toolkit for annotation of 'omics datasets using curated HMM sets. 2020: ParaHunter, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
+Garber, AI (2020) MagicLamp: toolkit for annotation of 'omics datasets using curated HMM sets. 2020: MagicLamp, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
 
 
 
