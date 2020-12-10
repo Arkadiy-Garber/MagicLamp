@@ -102,7 +102,7 @@ These videos were made as part of the [Bioinformatics Virtual Coordination Netwo
 
 ### Tutorial 1
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://gesis.mybinder.org/binder/v2/gh/biovcnet/bvcn-binder-magiclamp/master?urlpath=lab)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://gesis.mybinder.org/binder/v2/gh/biovcnet/bvcn-binder-magiclamp/master?urlpath=lab) <-- click here to begin
 
 (Initially forked from [here](https://github.com/binder-examples/conda). Thank you to the awesome [binder](https://mybinder.org/) team!)
 
@@ -189,7 +189,7 @@ check out the results
 
 ### Tutorial 2
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/biovcnet/bvcn-binder-hmmgenie/master?urlpath=lab)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/biovcnet/bvcn-binder-hmmgenie/master?urlpath=lab) <-- click here to begin
 
 You can also follow along in this linked video: 
 [Video presentation 2](https://www.youtube.com/watch?v=LKX678JzRfU)
