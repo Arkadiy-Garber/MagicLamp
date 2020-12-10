@@ -6,6 +6,7 @@ There is no official publication for MagicLamp. If it was useful for your work, 
 Garber, AI and Miller, SR (2020) MagicLamp: toolkit for annotation of 'omics datasets using curated HMM sets. 2020: ParaHunter, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
 
 
+
 ### installation
 #### quick install (if you have Conda installed)
     git clone 
