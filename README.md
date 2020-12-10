@@ -86,6 +86,7 @@ Put MagicLamp.py script $PATH into your bash profile
 *(many of the HMMs used by LithoGenie were developed and compiled by Karthik Anantharaman: https://github.com/kanantharaman/metabolic-hmms)*
 
 
+
 ## Tutorial (Binder)
 
 If you would like to learn more about what is going on under the hood of this program, and see examples of how to use it, please see the following slideshow and associated video:
@@ -97,10 +98,10 @@ If you would like to learn more about what is going on under the hood of this pr
 
 If you'd like to try out this program in a virtual terminal session with all dependencies and test dataset pre-loaded, please follow the tutorials below.
 
-
 These videos were made as part of the [Bioinformatics Virtual Coordination Network](https://biovcnet.github.io/) :)
 
-### Tutorial 1
+
+### Tutorial 1: Using pre-existing HMM sets included with MagicLamp (e.g. lithotrophy, respiration, iron, ROS, etc.)
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://gesis.mybinder.org/binder/v2/gh/biovcnet/bvcn-binder-magiclamp/master?urlpath=lab) <-- click here to begin
 
@@ -187,7 +188,7 @@ check out the results
 
 
 
-### Tutorial 2
+### Tutorial 2: Making your own HMMs to use with HmmGenie
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/biovcnet/bvcn-binder-hmmgenie/master?urlpath=lab) <-- click here to begin
 
