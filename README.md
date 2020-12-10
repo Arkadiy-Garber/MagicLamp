@@ -1,6 +1,7 @@
 ## MagicLamp
 ### A software package for annotation of genomic datasets using discreet HMM sets.
 
+
 #### Citing MagicLamp
 There is no official publication for MagicLamp. If it was useful for your work, please cite as follows:
 
