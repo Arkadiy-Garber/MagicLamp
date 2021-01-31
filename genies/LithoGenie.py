@@ -58,6 +58,17 @@ def main():
                     count += 1
         return count
 
+    def checkGACE(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if hmm in ["GACE_1843", "GACE_1844", "GACE_1845", "GACE_1846", "GACE_1847"]:
+                    count += 1
+        return count
+
     def checkDFE1(ls):
         count = 0
         uniqueLS = []
@@ -944,964 +955,43 @@ def main():
         print("..")
         print("...")
         out = open("%s/summary-3.csv" % (args.out), "w")
-        for i in sorted(clusterDict.keys()):  ###########################
-            ls = (clusterDict[i]["gene"])
 
-            if "EetA" in ls or "EetB" in ls or "Ndh2" in ls or "FmnB" in ls or "FmnA" in ls or "DmkA" in ls or "DmkB" in ls or "PplA" in ls:
-                fleet = ["EetA", "EetB", "Ndh2", "FmnB", "FmnA", "DmkA", "DmkB", "PplA"]
+        if not args.all_results:
+            for i in sorted(clusterDict.keys()):  ###########################
+                ls = (clusterDict[i]["gene"])
 
-                if unique(ls, fleet) < 5:  # If there are less than 5 FLEET genes in the cluster
-                    if len(remove2(ls, fleet)) < 1:  # If FLEET genes are the only ones in the cluster
-                        pass
-                    else:  # If there are other genes in the cluster that are not FLEET
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in fleet:  # avoiding the fleet genes
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                if "EetA" in ls or "EetB" in ls or "Ndh2" in ls or "FmnB" in ls or "FmnA" in ls or "DmkA" in ls or "DmkB" in ls or "PplA" in ls:
+                    fleet = ["EetA", "EetB", "Ndh2", "FmnB", "FmnA", "DmkA", "DmkB", "PplA"]
 
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                    if unique(ls, fleet) < 5:  # If there are less than 5 FLEET genes in the cluster
+                        if len(remove2(ls, fleet)) < 1:  # If FLEET genes are the only ones in the cluster
+                            pass
+                        else:  # If there are other genes in the cluster that are not FLEET
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in fleet:  # avoiding the fleet genes
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
-                else:  # if there are 5 or more of the FLEET genes present within cluster
-                    for j in clusterDict[i]["line"]:
-                        out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "MtoA" in ls or "MtrA" in ls or "MtrC_TIGR03507" in ls or "MtrB_TIGR03509" in ls:
-                if "MtoA" in ls and "MtrB_TIGR03509" in ls:
-                    for j in clusterDict[i]["line"]:
-                        if j[2] in ["MtrB_TIGR03509", "MtoA"]:
                             out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + "iron-oxidation" + "," + j[4] + "," + j[
-                                    5] + "," + j[6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
 
-                        else:
-                            out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," +
-                                j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                if "MtrA" in ls and "MtrB_TIGR03509" in ls:
-                    for j in clusterDict[i]["line"]:
-                        if j[2] in ["MtrA", "MtrB_TIGR03509"]:
-                            out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + "iron-reduction" + "," + j[4] + "," + j[
-                                    5] + "," + j[
-                                    6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        else:
-                            out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," +
-                                j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                elif "MtrB_TIGR03509.hmm" not in ls:
-                    pass
-            ############################################################################################################
-            elif "FoxA" in ls or "FoxB" in ls or "FoxC" in ls:
-                foxabc = ["FoxA", "FoxB", "FoxC"]
-
-                if unique(ls, foxabc) < 2:
-                    if len(remove2(ls, foxabc)) < 1:
-                        pass
-
-                    else:
+                    else:  # if there are 5 or more of the FLEET genes present within cluster
                         for j in clusterDict[i]["line"]:
-                            if j[2] not in foxabc:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-
-                    for j in clusterDict[i]["line"]:
-                        out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "FoxE" in ls or "FoxY" in ls or "FoxZ" in ls:
-                foxeyz = ["FoxE", "FoxY", "FoxZ"]
-
-                if "FoxE" not in ls:
-
-                    if len(remove2(ls, foxeyz)) < 1:
-                        pass
-
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in foxeyz:
-                                out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "Cyc1" in ls:
-                if ("Cyc2_repCluster3" not in ls and "Cyc2_repCluster2" not in ls and "Cyc2_repCluster1" not in ls and
-                            "MtoA" not in ls and "MtrB_TIGR03509" not in ls and "MtrA" not in ls and "MtrC_TIGR03507" not in ls):
-                    pass
-            ############################################################################################################
-            elif "CymA" in ls:
-                if ("MtrB_TIGR03509" not in ls and "MtrA" not in ls and "MtoA" not in ls and "MtrC_TIGR03507" not in ls):
-                    pass
-                else:
-                    if "MtrC_TIGR03507" in ls:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + "iron-reduction" + "," + j[4] + "," + j[5] + "\n")
-                    else:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + "iron-oxidation" + "," + j[4] + "," + j[5] + "\n")
-
-            ############################################################################################################
-            elif "thiosulfate_oxidation_soxB" in ls or "thiosulfate_oxidation_soxY" in ls or "thiosulfate_oxidation_soxC" in ls \
-                    or "soxA" in ls or "soxX" in ls or "soxZ" in ls:
-                soxabcxyz = ["thiosulfate_oxidation_soxB", "thiosulfate_oxidation_soxY", "thiosulfate_oxidation_soxC",
-                             "soxA", "soxX", "soxZ"]
-
-                if unique(ls, soxabcxyz) < 3:
-                    if len(remove2(ls, soxabcxyz)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in soxabcxyz:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                            out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "anaerobic_sulfite_reductase_asrA" in ls or "anaerobic_sulfite_reductase_asrB" in ls or "anaerobic_sulfite_reductase_asrC" in ls:
-                asrabc = ["anaerobic_sulfite_reductase_asrA", "anaerobic_sulfite_reductase_asrB",
-                          "anaerobic_sulfite_reductase_asrC"]
-
-                if unique(ls, asrabc) < 2:
-                    if len(remove2(ls, asrabc)) < 1:
-                        pass
-                    else:
+                ############################################################################################################
+                elif "MtoA" in ls or "MtrA" in ls or "MtrC_TIGR03507" in ls or "MtrB_TIGR03509" in ls:
+                    if "MtoA" in ls and "MtrB_TIGR03509" in ls:
                         for j in clusterDict[i]["line"]:
-                            if j[2] not in asrabc:
+                            if j[2] in ["MtrB_TIGR03509", "MtoA"]:
                                 out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+                                    j[0] + "," + j[1] + "," + j[2] + "," + "iron-oxidation" + "," + j[4] + "," + j[
+                                        5] + "," + j[6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
 
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "particulate_methane_monooxygenase_pmoA" in ls or "partiuclate_methane_monooxygenase_pmoB" in ls or "partiuclate_methane_monooxygenase_pmoC" in ls:
-                pmoabc = ["particulate_methane_monooxygenase_pmoA", "partiuclate_methane_monooxygenase_pmoB",
-                          "partiuclate_methane_monooxygenase_pmoC"]
-
-                if unique(ls, pmoabc) < 2:
-                    if len(remove2(ls, pmoabc)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in pmoabc:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "soluble_methane_monooxygenase_mmoB" in ls or "soluble_methane_monooxygenase_mmoD" in ls:
-                mmoBD = ["soluble_methane_monooxygenase_mmoB", "soluble_methane_monooxygenase_mmoD"]
-
-                if unique(ls, mmoBD) < 2:
-                    if len(remove2(ls, mmoBD)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in mmoBD:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "methyl_coenzymeM_reductase_mcrA" in ls or "methyl_coenzymeM_reductase_mcrB" in ls or "methyl_coenzymeM_reductase_mcrG" in ls:
-                mcrabc = ["methyl_coenzymeM_reductase_mcrA", "methyl_coenzymeM_reductase_mcrB",
-                          "methyl_coenzymeM_reductase_mcrG"]
-
-                if unique(ls, mcrabc) < 2:
-                    if len(remove2(ls, mcrabc)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in mcrabc:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "Fe_nitrogenase_alpha" in ls or "Fe_nitrogenase_beta" in ls or "Fe_nitrogenase_delta" in ls:
-                fenitrogenase = ["Fe_nitrogenase_alpha", "Fe_nitrogenase_beta", "Fe_nitrogenase_delta"]
-
-                if unique(ls, fenitrogenase) < 2:
-                    if len(remove2(ls, fenitrogenase)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in fenitrogenase:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "MoFe_nitrogenase_nifD" in ls or "MoFe_nitrogenase_nifK" in ls or "nitrogenase_nifH" in ls:
-                mofenitrogenase = ["MoFe_nitrogenase_nifD", "MoFe_nitrogenase_nifK", "nitrogenase_nifH"]
-
-                if unique(ls, mofenitrogenase) < 2:
-                    if len(remove2(ls, mofenitrogenase)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in mofenitrogenase:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "V_containing_nitrogenase_Alpha" in ls or "V_containing_nitrogenase_Beta" in ls or "V_containing_nitrogenase_Delta" in ls:
-                vnitrogenase = ["V_containing_nitrogenase_Alpha", "V_containing_nitrogenase_Beta",
-                                "V_containing_nitrogenase_Delta"]
-
-                if unique(ls, vnitrogenase) < 2:
-                    if len(remove2(ls, vnitrogenase)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in vnitrogenase:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "nitrite_oxidoreductase_nxrA" in ls or "nitrite_oxidoreductase_nxrB" in ls:
-                nxrab = ["nitrite_oxidoreductase_nxrA", "nitrite_oxidoreductase_nxrB"]
-
-                if unique(ls, nxrab) < 2:
-                    if len(remove2(ls, nxrab)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in nxrab:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "nitrate_reductase_napA" in ls or "nitrate_reductase_napB" in ls:
-                napab = ["nitrate_reductase_napA", "nitrate_reductase_napB"]
-
-                if unique(ls, napab) < 2:
-                    if len(remove2(ls, napab)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in napab:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "nitrate_reductase_narG" in ls or "nitrate_reductase_narH" in ls:
-                nargh = ["nitrate_reductase_narG", "nitrate_reductase_narH"]
-
-                if unique(ls, nargh) < 2:
-                    if len(remove2(ls, nargh)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in nargh:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "nitrite_reductase_nrfH" in ls or "nitrite_reductase_nrfA" in ls or "nitrite_reductase_nrfD" in ls:
-                nrfhad = ["nitrite_reductase_nrfH", "nitrite_reductase_nrfA", "nitrite_reductase_nrfD"]
-
-                if unique(ls, nrfhad) < 2:
-                    if len(remove2(ls, nrfhad)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in nrfhad:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "nitrite_reductase_nirB" in ls or "nitrite_reductase_nirD" in ls or "nitrite_reductase_nirK" in ls or "nitrite_reductase_nirS" in ls:
-                nirbdks = ["nitrite_reductase_nirB", "nitrite_reductase_nirD", "nitrite_reductase_nirK",
-                           "nitrite_reductase_nirS"]
-
-                if unique(ls, nirbdks) < 2:
-                    if len(remove2(ls, nirbdks)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in nirbdks:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "nitrite_reductase_nirB" in ls or "nitrite_reductase_nirD" in ls or "nitrite_reductase_nirK" in ls or "nitrite_reductase_nirS" in ls:
-                nirbdks = ["nitrite_reductase_nirB", "nitrite_reductase_nirD", "nitrite_reductase_nirK",
-                           "nitrite_reductase_nirS"]
-
-                if unique(ls, nirbdks) < 2:
-                    if len(remove2(ls, nirbdks)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in nirbdks:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "nitric_oxide_reductase_norB" in ls or "nitric_oxide_reductase_norC" in ls:
-                norbc = ["nitric_oxide_reductase_norB", "nitric_oxide_reductase_norC"]
-
-                if unique(ls, norbc) < 2:
-                    if len(remove2(ls, norbc)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in norbc:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-
-            elif "nitrous_oxide_reductase_nosD" in ls or "nitrous_oxide_reductase_nosZ" in ls:
-                nosdz = ["nitrous_oxide_reductase_nosD", "nitrous_oxide_reductase_nosZ"]
-
-                if unique(ls, nosdz) < 2:
-                    if len(remove2(ls, nosdz)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in nosdz:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-            ############################################################################################################
-            elif "CytCoxidase_aa3_coxA" in ls or "CytCoxidase_aa3_coxB" in ls:
-                coxab = ["CytCoxidase_aa3_coxA", "CytCoxidase_aa3_coxB"]
-                if unique(ls, coxab) < 2:
-                    if len(remove2(ls, coxab)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in coxab:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "CytCoxidase_cbb3_ccoN" in ls or "CytCoxidase_cbb3_ccoO" in ls or "CytCoxidase_cbb3_ccoP" in ls:
-                cconop = ["CytCoxidase_cbb3_ccoN", "CytCoxidase_cbb3_ccoO", "CytCoxidase_cbb3_ccoP"]
-
-                if unique(ls, cconop) < 2:
-                    if len(remove2(ls, cconop)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in cconop:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "Cyt_bo3_ubiquinol_oxidase_CyoA" in ls or "Cyt_bo3_ubiquinol_oxidase_CyoD" in ls or "Cyt_bo3_ubiquinol_oxidase_CyoE" in ls:
-                cyoade = ["Cyt_bo3_ubiquinol_oxidase_CyoA", "Cyt_bo3_ubiquinol_oxidase_CyoD",
-                          "Cyt_bo3_ubiquinol_oxidase_CyoE"]
-
-                if unique(ls, cyoade) < 2:
-                    if len(remove2(ls, cyoade)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in cyoade:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "Cyt_bd_oxidase_CydA" in ls or "Cyt_bd_oxidase_CydB" in ls:
-                cydab = ["Cyt_bd_oxidase_CydA", "Cyt_bd_oxidase_CydB"]
-
-                if unique(ls, cydab) < 2:
-                    if len(remove2(ls, cydab)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in cydab:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "Cyt_aa3_quinol_oxidase_QoxA" in ls or "Cyt_aa3_quinol_oxidase_QoxB" in ls:
-                qoxab = ["Cyt_aa3_quinol_oxidase_QoxA", "Cyt_aa3_quinol_oxidase_QoxB"]
-
-                if unique(ls, qoxab) < 2:
-                    if len(remove2(ls, qoxab)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in qoxab:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            ############################################################################################################
-            elif "methylamine_dehydrogenase_mauA" in ls or "methylamine_dehydrogenase_mauB" in ls:
-                mauab = ["methylamine_dehydrogenase_mauA", "methylamine_dehydrogenase_mauB"]
-
-                if unique(ls, mauab) < 2:
-                    if len(remove2(ls, mauab)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in mauab:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-            ############################################################################################################
-            elif "formate_dehydrogenase_alpha" in ls or "formate_dehydrogenase_beta" in ls or "formate_dehydrogenase_gamma" in ls:
-                formatedehyd = ["formate_dehydrogenase_alpha", "formate_dehydrogenase_beta",
-                                "formate_dehydrogenase_gamma"]
-
-                if unique(ls, formatedehyd) < 2:
-                    if len(remove2(ls, formatedehyd)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in formatedehyd:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-            ############################################################################################################
-            elif "carbon_monoxide_dehydrogenase_coxS" in ls or "carbon_monoxide_dehydrogenase_coxM" in ls or "carbon_monoxide_dehydrogenase_coxL" in ls:
-                coxsml = ["carbon_monoxide_dehydrogenase_coxS", "carbon_monoxide_dehydrogenase_coxM",
-                          "carbon_monoxide_dehydrogenase_coxL"]
-
-                if unique(ls, coxsml) < 2:
-                    if len(remove2(ls, coxsml)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in coxsml:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-
-            ############################################################################################################
-            elif "wood_ljungdahl_codhD" in ls or "wood_ljungdahl_codhC" in ls or "wood_ljungdahl_codh_catalytic" in ls:
-                codhdccat = ["wood_ljungdahl_codhD", "wood_ljungdahl_codhC", "wood_ljungdahl_codh_catalytic"]
-
-                if unique(ls, codhdccat) < 2:
-                    if len(remove2(ls, codhdccat)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in codhdccat:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-
-            ############################################################################################################
-            elif "acetate_citrate_lyase_rTCA_aclA" in ls or "acetate_citrate_lyase_rTCA_aclB" in ls:
-                aclab = ["acetate_citrate_lyase_rTCA_aclA", "acetate_citrate_lyase_rTCA_aclB"]
-
-                if unique(ls, aclab) < 2:
-                    if len(remove2(ls, aclab)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in aclab:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-            ############################################################################################################
-            elif "urease_ureA" in ls or "urease_ureB" in ls or "urease_ureC" in ls:
-                ureabc = ["urease_ureA", "urease_ureB", "urease_ureC"]
-
-                if unique(ls, ureabc) < 2:
-                    if len(remove2(ls, ureabc)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in ureabc:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-            ############################################################################################################
-            elif "arsenite_oxidase_small" in ls or "arsenite_oxidase_large" in ls:
-                arsenite = ["arsenite_oxidase_small", "arsenite_oxidase_large"]
-
-                if unique(ls, arsenite) < 2:
-                    if len(remove2(ls, arsenite)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in arsenite:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-            ############################################################################################################
-            elif "DMSO_reductase_typeII_pcrA" in ls or "DMSO_reductase_typeII_pcrB" in ls:
-                pcrab = ["DMSO_reductase_typeII_pcrA", "DMSO_reductase_typeII_pcrB"]
-
-                if unique(ls, pcrab) < 2:
-                    if len(remove2(ls, pcrab)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in pcrab:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-            ############################################################################################################
-            elif "selenate_reductase_ygfM" in ls or "selenate_reductase_MoBindingSubunit" in ls or "selenate_reductase_ygfK" in ls:
-                ygfmk = ["urease_ureA", "urease_ureB", "urease_ureC"]
-
-                if unique(ls, ygfmk) < 2:
-                    if len(remove2(ls, ygfmk)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in ygfmk:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-            ############################################################################################################
-            elif "nitrile_hydratase_nthA" in ls or "nitrile_hydratase_nthB" in ls:
-                nthab = ["nitrile_hydratase_nthA", "nitrile_hydratase_nthB"]
-
-                if unique(ls, nthab) < 2:
-                    if len(remove2(ls, nthab)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in nthab:
-                                out.write(
-                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
-
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
-                                7] + "," + j[8] + "," + j[9] + "\n")
-
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-
-            ############################################################################################################
-            elif "adenylyl_sulfate_kinase_cysC_apsK" in ls or "Sulfate_andenyltransferase_CysN" in ls:
-                cyscn = ["adenylyl_sulfate_kinase_cysC_apsK", "Sulfate_andenyltransferase_CysN"]
-
-                if unique(ls, cyscn) < 2:
-                    if len(remove2(ls, cyscn)) < 1:
-                        pass
-                    else:
-                        for j in clusterDict[i]["line"]:
-                            if j[2] not in cyscn:
+                            else:
                                 out.write(
                                     j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
                                         6] + "," +
@@ -1910,64 +1000,996 @@ def main():
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
 
-                else:
-                    for j in clusterDict[i]["line"]:
+                    if "MtrA" in ls and "MtrB_TIGR03509" in ls:
+                        for j in clusterDict[i]["line"]:
+                            if j[2] in ["MtrA", "MtrB_TIGR03509"]:
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + "iron-reduction" + "," + j[4] + "," + j[
+                                        5] + "," + j[
+                                        6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            else:
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," +
+                                    j[7] + "," + j[8] + "," + j[9] + "\n")
+
                         out.write(
-                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
-                            j[
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    elif "MtrB_TIGR03509.hmm" not in ls:
+                        pass
+                ############################################################################################################
+                elif "FoxA" in ls or "FoxB" in ls or "FoxC" in ls:
+                    foxabc = ["FoxA", "FoxB", "FoxC"]
+
+                    if unique(ls, foxabc) < 2:
+                        if len(remove2(ls, foxabc)) < 1:
+                            pass
+
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in foxabc:
+                                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+
+                        for j in clusterDict[i]["line"]:
+                            out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "FoxE" in ls or "FoxY" in ls or "FoxZ" in ls:
+                    foxeyz = ["FoxE", "FoxY", "FoxZ"]
+
+                    if "FoxE" not in ls:
+
+                        if len(remove2(ls, foxeyz)) < 1:
+                            pass
+
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in foxeyz:
+                                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "Cyc1" in ls:
+                    if ("Cyc2_repCluster3" not in ls and "Cyc2_repCluster2" not in ls and "Cyc2_repCluster1" not in ls and
+                                "MtoA" not in ls and "MtrB_TIGR03509" not in ls and "MtrA" not in ls and "MtrC_TIGR03507" not in ls):
+                        pass
+                ############################################################################################################
+                elif "CymA" in ls:
+                    if ("MtrB_TIGR03509" not in ls and "MtrA" not in ls and "MtoA" not in ls and "MtrC_TIGR03507" not in ls):
+                        pass
+                    else:
+                        if "MtrC_TIGR03507" in ls:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + "iron-reduction" + "," + j[4] + "," + j[5] + "\n")
+                        else:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + "iron-oxidation" + "," + j[4] + "," + j[5] + "\n")
+
+                ############################################################################################################
+                elif "thiosulfate_oxidation_soxB" in ls or "thiosulfate_oxidation_soxY" in ls or "thiosulfate_oxidation_soxC" in ls \
+                        or "soxA" in ls or "soxX" in ls or "soxZ" in ls:
+                    soxabcxyz = ["thiosulfate_oxidation_soxB", "thiosulfate_oxidation_soxY", "thiosulfate_oxidation_soxC",
+                                 "soxA", "soxX", "soxZ"]
+
+                    if unique(ls, soxabcxyz) < 3:
+                        if len(remove2(ls, soxabcxyz)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in soxabcxyz:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "anaerobic_sulfite_reductase_asrA" in ls or "anaerobic_sulfite_reductase_asrB" in ls or "anaerobic_sulfite_reductase_asrC" in ls:
+                    asrabc = ["anaerobic_sulfite_reductase_asrA", "anaerobic_sulfite_reductase_asrB",
+                              "anaerobic_sulfite_reductase_asrC"]
+
+                    if unique(ls, asrabc) < 2:
+                        if len(remove2(ls, asrabc)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in asrabc:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "particulate_methane_monooxygenase_pmoA" in ls or "partiuclate_methane_monooxygenase_pmoB" in ls or "partiuclate_methane_monooxygenase_pmoC" in ls:
+                    pmoabc = ["particulate_methane_monooxygenase_pmoA", "partiuclate_methane_monooxygenase_pmoB",
+                              "partiuclate_methane_monooxygenase_pmoC"]
+
+                    if unique(ls, pmoabc) < 2:
+                        if len(remove2(ls, pmoabc)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in pmoabc:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "soluble_methane_monooxygenase_mmoB" in ls or "soluble_methane_monooxygenase_mmoD" in ls:
+                    mmoBD = ["soluble_methane_monooxygenase_mmoB", "soluble_methane_monooxygenase_mmoD"]
+
+                    if unique(ls, mmoBD) < 2:
+                        if len(remove2(ls, mmoBD)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in mmoBD:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "methyl_coenzymeM_reductase_mcrA" in ls or "methyl_coenzymeM_reductase_mcrB" in ls or "methyl_coenzymeM_reductase_mcrG" in ls:
+                    mcrabc = ["methyl_coenzymeM_reductase_mcrA", "methyl_coenzymeM_reductase_mcrB",
+                              "methyl_coenzymeM_reductase_mcrG"]
+
+                    if unique(ls, mcrabc) < 2:
+                        if len(remove2(ls, mcrabc)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in mcrabc:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "Fe_nitrogenase_alpha" in ls or "Fe_nitrogenase_beta" in ls or "Fe_nitrogenase_delta" in ls:
+                    fenitrogenase = ["Fe_nitrogenase_alpha", "Fe_nitrogenase_beta", "Fe_nitrogenase_delta"]
+
+                    if unique(ls, fenitrogenase) < 2:
+                        if len(remove2(ls, fenitrogenase)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in fenitrogenase:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "MoFe_nitrogenase_nifD" in ls or "MoFe_nitrogenase_nifK" in ls or "nitrogenase_nifH" in ls:
+                    mofenitrogenase = ["MoFe_nitrogenase_nifD", "MoFe_nitrogenase_nifK", "nitrogenase_nifH"]
+
+                    if unique(ls, mofenitrogenase) < 2:
+                        if len(remove2(ls, mofenitrogenase)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in mofenitrogenase:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "V_containing_nitrogenase_Alpha" in ls or "V_containing_nitrogenase_Beta" in ls or "V_containing_nitrogenase_Delta" in ls:
+                    vnitrogenase = ["V_containing_nitrogenase_Alpha", "V_containing_nitrogenase_Beta",
+                                    "V_containing_nitrogenase_Delta"]
+
+                    if unique(ls, vnitrogenase) < 2:
+                        if len(remove2(ls, vnitrogenase)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in vnitrogenase:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "nitrite_oxidoreductase_nxrA" in ls or "nitrite_oxidoreductase_nxrB" in ls:
+                    nxrab = ["nitrite_oxidoreductase_nxrA", "nitrite_oxidoreductase_nxrB"]
+
+                    if unique(ls, nxrab) < 2:
+                        if len(remove2(ls, nxrab)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in nxrab:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "nitrate_reductase_napA" in ls or "nitrate_reductase_napB" in ls:
+                    napab = ["nitrate_reductase_napA", "nitrate_reductase_napB"]
+
+                    if unique(ls, napab) < 2:
+                        if len(remove2(ls, napab)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in napab:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "nitrate_reductase_narG" in ls or "nitrate_reductase_narH" in ls:
+                    nargh = ["nitrate_reductase_narG", "nitrate_reductase_narH"]
+
+                    if unique(ls, nargh) < 2:
+                        if len(remove2(ls, nargh)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in nargh:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "nitrite_reductase_nrfH" in ls or "nitrite_reductase_nrfA" in ls or "nitrite_reductase_nrfD" in ls:
+                    nrfhad = ["nitrite_reductase_nrfH", "nitrite_reductase_nrfA", "nitrite_reductase_nrfD"]
+
+                    if unique(ls, nrfhad) < 2:
+                        if len(remove2(ls, nrfhad)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in nrfhad:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "nitrite_reductase_nirB" in ls or "nitrite_reductase_nirD" in ls or "nitrite_reductase_nirK" in ls or "nitrite_reductase_nirS" in ls:
+                    nirbdks = ["nitrite_reductase_nirB", "nitrite_reductase_nirD", "nitrite_reductase_nirK",
+                               "nitrite_reductase_nirS"]
+
+                    if unique(ls, nirbdks) < 2:
+                        if len(remove2(ls, nirbdks)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in nirbdks:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "nitrite_reductase_nirB" in ls or "nitrite_reductase_nirD" in ls or "nitrite_reductase_nirK" in ls or "nitrite_reductase_nirS" in ls:
+                    nirbdks = ["nitrite_reductase_nirB", "nitrite_reductase_nirD", "nitrite_reductase_nirK",
+                               "nitrite_reductase_nirS"]
+
+                    if unique(ls, nirbdks) < 2:
+                        if len(remove2(ls, nirbdks)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in nirbdks:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "nitric_oxide_reductase_norB" in ls or "nitric_oxide_reductase_norC" in ls:
+                    norbc = ["nitric_oxide_reductase_norB", "nitric_oxide_reductase_norC"]
+
+                    if unique(ls, norbc) < 2:
+                        if len(remove2(ls, norbc)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in norbc:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+
+                elif "nitrous_oxide_reductase_nosD" in ls or "nitrous_oxide_reductase_nosZ" in ls:
+                    nosdz = ["nitrous_oxide_reductase_nosD", "nitrous_oxide_reductase_nosZ"]
+
+                    if unique(ls, nosdz) < 2:
+                        if len(remove2(ls, nosdz)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in nosdz:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                ############################################################################################################
+                elif "CytCoxidase_aa3_coxA" in ls or "CytCoxidase_aa3_coxB" in ls:
+                    coxab = ["CytCoxidase_aa3_coxA", "CytCoxidase_aa3_coxB"]
+                    if unique(ls, coxab) < 2:
+                        if len(remove2(ls, coxab)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in coxab:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "CytCoxidase_cbb3_ccoN" in ls or "CytCoxidase_cbb3_ccoO" in ls or "CytCoxidase_cbb3_ccoP" in ls:
+                    cconop = ["CytCoxidase_cbb3_ccoN", "CytCoxidase_cbb3_ccoO", "CytCoxidase_cbb3_ccoP"]
+
+                    if unique(ls, cconop) < 2:
+                        if len(remove2(ls, cconop)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in cconop:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "Cyt_bo3_ubiquinol_oxidase_CyoA" in ls or "Cyt_bo3_ubiquinol_oxidase_CyoD" in ls or "Cyt_bo3_ubiquinol_oxidase_CyoE" in ls:
+                    cyoade = ["Cyt_bo3_ubiquinol_oxidase_CyoA", "Cyt_bo3_ubiquinol_oxidase_CyoD",
+                              "Cyt_bo3_ubiquinol_oxidase_CyoE"]
+
+                    if unique(ls, cyoade) < 2:
+                        if len(remove2(ls, cyoade)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in cyoade:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "Cyt_bd_oxidase_CydA" in ls or "Cyt_bd_oxidase_CydB" in ls:
+                    cydab = ["Cyt_bd_oxidase_CydA", "Cyt_bd_oxidase_CydB"]
+
+                    if unique(ls, cydab) < 2:
+                        if len(remove2(ls, cydab)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in cydab:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "Cyt_aa3_quinol_oxidase_QoxA" in ls or "Cyt_aa3_quinol_oxidase_QoxB" in ls:
+                    qoxab = ["Cyt_aa3_quinol_oxidase_QoxA", "Cyt_aa3_quinol_oxidase_QoxB"]
+
+                    if unique(ls, qoxab) < 2:
+                        if len(remove2(ls, qoxab)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in qoxab:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                ############################################################################################################
+                elif "methylamine_dehydrogenase_mauA" in ls or "methylamine_dehydrogenase_mauB" in ls:
+                    mauab = ["methylamine_dehydrogenase_mauA", "methylamine_dehydrogenase_mauB"]
+
+                    if unique(ls, mauab) < 2:
+                        if len(remove2(ls, mauab)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in mauab:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                ############################################################################################################
+                elif "formate_dehydrogenase_alpha" in ls or "formate_dehydrogenase_beta" in ls or "formate_dehydrogenase_gamma" in ls:
+                    formatedehyd = ["formate_dehydrogenase_alpha", "formate_dehydrogenase_beta",
+                                    "formate_dehydrogenase_gamma"]
+
+                    if unique(ls, formatedehyd) < 2:
+                        if len(remove2(ls, formatedehyd)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in formatedehyd:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                ############################################################################################################
+                elif "carbon_monoxide_dehydrogenase_coxS" in ls or "carbon_monoxide_dehydrogenase_coxM" in ls or "carbon_monoxide_dehydrogenase_coxL" in ls:
+                    coxsml = ["carbon_monoxide_dehydrogenase_coxS", "carbon_monoxide_dehydrogenase_coxM",
+                              "carbon_monoxide_dehydrogenase_coxL"]
+
+                    if unique(ls, coxsml) < 2:
+                        if len(remove2(ls, coxsml)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in coxsml:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+
+                ############################################################################################################
+                elif "wood_ljungdahl_codhD" in ls or "wood_ljungdahl_codhC" in ls or "wood_ljungdahl_codh_catalytic" in ls:
+                    codhdccat = ["wood_ljungdahl_codhD", "wood_ljungdahl_codhC", "wood_ljungdahl_codh_catalytic"]
+
+                    if unique(ls, codhdccat) < 2:
+                        if len(remove2(ls, codhdccat)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in codhdccat:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+
+                ############################################################################################################
+                elif "acetate_citrate_lyase_rTCA_aclA" in ls or "acetate_citrate_lyase_rTCA_aclB" in ls:
+                    aclab = ["acetate_citrate_lyase_rTCA_aclA", "acetate_citrate_lyase_rTCA_aclB"]
+
+                    if unique(ls, aclab) < 2:
+                        if len(remove2(ls, aclab)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in aclab:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                ############################################################################################################
+                elif "urease_ureA" in ls or "urease_ureB" in ls or "urease_ureC" in ls:
+                    ureabc = ["urease_ureA", "urease_ureB", "urease_ureC"]
+
+                    if unique(ls, ureabc) < 2:
+                        if len(remove2(ls, ureabc)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in ureabc:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                ############################################################################################################
+                elif "arsenite_oxidase_small" in ls or "arsenite_oxidase_large" in ls:
+                    arsenite = ["arsenite_oxidase_small", "arsenite_oxidase_large"]
+
+                    if unique(ls, arsenite) < 2:
+                        if len(remove2(ls, arsenite)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in arsenite:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                ############################################################################################################
+                elif "DMSO_reductase_typeII_pcrA" in ls or "DMSO_reductase_typeII_pcrB" in ls:
+                    pcrab = ["DMSO_reductase_typeII_pcrA", "DMSO_reductase_typeII_pcrB"]
+
+                    if unique(ls, pcrab) < 2:
+                        if len(remove2(ls, pcrab)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in pcrab:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                ############################################################################################################
+                elif "selenate_reductase_ygfM" in ls or "selenate_reductase_MoBindingSubunit" in ls or "selenate_reductase_ygfK" in ls:
+                    ygfmk = ["urease_ureA", "urease_ureB", "urease_ureC"]
+
+                    if unique(ls, ygfmk) < 2:
+                        if len(remove2(ls, ygfmk)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in ygfmk:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                ############################################################################################################
+                elif "nitrile_hydratase_nthA" in ls or "nitrile_hydratase_nthB" in ls:
+                    nthab = ["nitrile_hydratase_nthA", "nitrile_hydratase_nthB"]
+
+                    if unique(ls, nthab) < 2:
+                        if len(remove2(ls, nthab)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in nthab:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," + j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                ############################################################################################################
+                elif "adenylyl_sulfate_kinase_cysC_apsK" in ls or "Sulfate_andenyltransferase_CysN" in ls:
+                    cyscn = ["adenylyl_sulfate_kinase_cysC_apsK", "Sulfate_andenyltransferase_CysN"]
+
+                    if unique(ls, cyscn) < 2:
+                        if len(remove2(ls, cyscn)) < 1:
+                            pass
+                        else:
+                            for j in clusterDict[i]["line"]:
+                                if j[2] not in cyscn:
+                                    out.write(
+                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                            6] + "," +
+                                        j[7] + "," + j[8] + "," + j[9] + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            out.write(
+                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," +
+                                j[
+                                    7] + "," + j[8] + "," + j[9] + "\n")
+
+                        out.write(
+                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+
+
+                ############################################################################################################
+                elif "dissimilatory_sulfite_reductase_DsrD" in ls or "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrA" in ls \
+                        or "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrB" in ls or "dsrK" in ls or "dsrM" in ls \
+                        or "dsrE" in ls or "dsrF" in ls or "dsrH" in ls or "dsrC" in ls:
+                    dsr = ["dissimilatory_sulfite_reductase_DsrD", "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrA",
+                           "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrB", "dsrK", "dsrM", "dsrE", "dsrF", "dsrH",
+                           "dsrC"]
+                    if unique(ls, ["dsrE", "dsrF", "dsrH"]) > 1:
+                        for j in clusterDict[i]["line"]:
+                            if j[2] not in dsr:
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," +
+                                    j[
+                                        7] + "," + j[8] + "," + j[9] + "\n")
+                            else:
+                                out.write(
+                                    "sulfur-oxidation" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[
+                                        5] + "," +
+                                    j[6] + "," + j[
+                                        7] + "," + j[8] + "," + j[9] + "\n")
+
+                    else:
+                        for j in clusterDict[i]["line"]:
+                            if j[2] not in dsr:
+                                out.write(
+                                    j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
+                                        6] + "," +
+                                    j[
+                                        7] + "," + j[8] + "," + j[9] + "\n")
+                            else:
+                                out.write(
+                                    "sulfite-reduction" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[
+                                        5] + "," +
+                                    j[6] + "," + j[
+                                        7] + "," + j[8] + "," + j[9] + "\n")
+
+                ############################################################################################################
+                else:
+                    linels = (clusterDict[i]["line"])
+                    for j in linels:
+                        out.write(
+                            j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
                                 7] + "," + j[8] + "," + j[9] + "\n")
 
                     out.write(
                         "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
 
-
-            ############################################################################################################
-            elif "dissimilatory_sulfite_reductase_DsrD" in ls or "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrA" in ls \
-                    or "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrB" in ls or "dsrK" in ls or "dsrM" in ls \
-                    or "dsrE" in ls or "dsrF" in ls or "dsrH" in ls or "dsrC" in ls:
-                dsr = ["dissimilatory_sulfite_reductase_DsrD", "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrA",
-                       "dissimilatory_sulfite_reductase-sulfur_oxidation_dsrB", "dsrK", "dsrM", "dsrE", "dsrF", "dsrH",
-                       "dsrC"]
-                if unique(ls, ["dsrE", "dsrF", "dsrH"]) > 1:
-                    for j in clusterDict[i]["line"]:
-                        if j[2] not in dsr:
-                            out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," +
-                                j[
-                                    7] + "," + j[8] + "," + j[9] + "\n")
-                        else:
-                            out.write(
-                                "sulfur-oxidation" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[
-                                    5] + "," +
-                                j[6] + "," + j[
-                                    7] + "," + j[8] + "," + j[9] + "\n")
-
-                else:
-                    for j in clusterDict[i]["line"]:
-                        if j[2] not in dsr:
-                            out.write(
-                                j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[
-                                    6] + "," +
-                                j[
-                                    7] + "," + j[8] + "," + j[9] + "\n")
-                        else:
-                            out.write(
-                                "sulfite-reduction" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[
-                                    5] + "," +
-                                j[6] + "," + j[
-                                    7] + "," + j[8] + "," + j[9] + "\n")
-
-            ############################################################################################################
-            else:
+        else:
+            for i in sorted(clusterDict.keys()):
                 linels = (clusterDict[i]["line"])
                 for j in linels:
-                    out.write(
-                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
+                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "," + j[6] + "," + j[
                             7] + "," + j[8] + "," + j[9] + "\n")
 
-                out.write(
-                    "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
 
         out.close()
 
@@ -1979,7 +2001,6 @@ def main():
         out = open("%s/lithogenie-summary-fixed.csv" % (args.out), "w")
         out.write(
             "cell" + "," + "ORF" + "," + "HMM" + "," + "reaction" + "," + "substrate" + "," + "evalue" + "," + "bitscore" + "," + "bitscore_cutoff" + "\n")
-
         clusterDict = defaultdict(list)
         memoryDict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 'EMPTY')))
         summary = open("%s/lithogenie-summary.csv" % (args.out))
@@ -2009,29 +2030,130 @@ def main():
                 except IndexError:
                     pass
 
-        FLEET = ["EetA", "EetB", "FmnA", "DmkA", "FmnB", "PplA", "Ndh2", "DmkB"]
-        for i in clusterDict.keys():
-            out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-            for j in clusterDict[i]:
-                gene = j.split("|")[0]
-                dataset = j.split("|")[1]
-                orf = j.split("|")[2]
-                cat = memoryDict[dataset][orf]["cat"]
-                if memoryDict[dataset][orf]["gene"] in FLEET:
-                    if checkFleet(clusterDict[i]) < 6:
-                        pass
-                    else:
-                        out.write(dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," + memoryDict[dataset][orf]["cat"] + "," +
-                                  memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," + memoryDict[dataset][orf]["bit"] + "," +
-                                  memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
+        if not args.all_results:
+            FLEET = ["EetA", "EetB", "FmnA", "DmkA", "FmnB", "PplA", "Ndh2", "DmkB"]
 
-                else:
-                    out.write(
-                        dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," + memoryDict[dataset][orf]["cat"] + "," +
+            for i in clusterDict.keys():
+                out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                for j in clusterDict[i]:
+                    gene = j.split("|")[0]
+                    dataset = j.split("|")[1]
+                    orf = j.split("|")[2]
+                    cat = memoryDict[dataset][orf]["cat"]
+
+                    if memoryDict[dataset][orf]["gene"] in FLEET:
+                        if checkFleet(clusterDict[i]) < 6:
+                            pass
+                        else:
+                            out.write(dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," + memoryDict[dataset][orf]["cat"] + "," +
+                                      memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," + memoryDict[dataset][orf]["bit"] + "," +
+                                      memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif memoryDict[dataset][orf]["gene"] == "t4ap":
+                        aromatics = ["F", "Y", "W", "H"]
+                        seq = memoryDict[dataset][orf]["seq"]
+                        aromaticAAs = 0
+                        aromaticFreeGap = 0
+                        gapThreshold = 0
+                        for aa in seq:
+                            if aa in aromatics:
+                                if aromaticFreeGap > 35:
+                                    gapThreshold += 1
+                                aromaticAAs += 1
+                                aromaticFreeGap = 0
+                            else:
+                                aromaticFreeGap += 1
+
+                        percAromatic = aromaticAAs / len(seq)
+                        if percAromatic > 0.097 and gapThreshold == 0 and \
+                                re.findall(r'[FYWH](......................)[FYWH](..)[FYWH](....)[FYWH](.................)[FYWH][FYWH](.....)[FYWH]', seq):
+                            out.write(
+                                dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," +
+                                memoryDict[dataset][orf]["cat"] + "," +
+                                memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif memoryDict[dataset][orf]["gene"] in ["GACE_1843", "GACE_1844", "GACE_1845", "GACE_1846", "GACE_1847"]:
+                        if checkGACE(clusterDict[i]) < 3:
+                            pass
+                        else:
+                            out.write(
+                                dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," +
+                                memoryDict[dataset][orf]["cat"] + "," +
+                                memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif memoryDict[dataset][orf]["gene"] in ["DFE_0465", "DFE_0464", "DFE_0463", "DFE_0462", "DFE_0461"]:
+                        if checkDFE1(clusterDict[i]) < 3:
+                            pass
+                        else:
+                            if args.ref != "NA":
+                                out.write(
+                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                    memoryDict[dataset][orf]["bit"] + "," +
+                                    memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
+                                        "clu"] + "," +
+                                    memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                    memoryDict[dataset][orf]["blastEval"] + "," +
+                                    memoryDict[dataset][orf]["seq"] + "\n")
+                            else:
+                                out.write(
+                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                    memoryDict[dataset][orf]["bit"] + "," +
+                                    memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
+                                        "clu"] + "," +
+                                    memoryDict[dataset][orf]["heme"] + "," +
+                                    memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif memoryDict[dataset][orf]["gene"] in ["DFE_0451", "DFE_0450", "DFE_0449", "DFE_0448"]:
+                        if checkDFE2(clusterDict[i]) < 3:
+                            pass
+                        else:
+                            if args.ref != "NA":
+                                out.write(
+                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                    memoryDict[dataset][orf]["bit"] + "," +
+                                    memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
+                                        "clu"] + "," +
+                                    memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
+                                    memoryDict[dataset][orf]["blastEval"] + "," +
+                                    memoryDict[dataset][orf]["seq"] + "\n")
+                            else:
+                                out.write(
+                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                    memoryDict[dataset][orf]["bit"] + "," +
+                                    memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
+                                        "clu"] + "," +
+                                    memoryDict[dataset][orf]["heme"] + "," +
+                                    memoryDict[dataset][orf]["seq"] + "\n")
+
+                    else:
+                        out.write(
+                            dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," + memoryDict[dataset][orf]["cat"] + "," +
+                            memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," +
+                            memoryDict[dataset][orf]["bit"] + "," +
+                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                            memoryDict[dataset][orf]["seq"] + "\n")
+        else:
+            for i in clusterDict.keys():
+                out.write(
+                    "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                for j in clusterDict[i]:
+                    gene = j.split("|")[0]
+                    dataset = j.split("|")[1]
+                    orf = j.split("|")[2]
+                    cat = memoryDict[dataset][orf]["cat"]
+                    out.write(dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," +
+                              memoryDict[dataset][orf]["cat"] + "," +
                         memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," +
                         memoryDict[dataset][orf]["bit"] + "," +
                         memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                         memoryDict[dataset][orf]["seq"] + "\n")
+
         out.close()
 
         os.system("mv %s/lithogenie-summary-fixed.csv %s/lithogenie-summary.csv" % (args.out, args.out))
@@ -2130,6 +2252,12 @@ def main():
             print("Finished!")
 
         else:
+            cats = []
+            catList = args.cat
+            catList = catList.split(",")
+            for CAT in catList:
+                cats.append(CAT)
+
             bits = open(HMMdir + "/hmm-meta.txt", "r")
             elements = []
             for i in bits:
@@ -2139,65 +2267,70 @@ def main():
                     elements.append(element)
             elements = sorted(elements)
 
-            if args.cat in elements:
-                elementDict = defaultdict(lambda: defaultdict(list))
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    if ls[0] != "hmm":
-                        if ls[3] == args.cat:
-                            elementDict[ls[3]][ls[2]].append(ls[0])
+            cats = []
+            catList = args.cat
+            catList = catList.split(",")
+            for CAT in catList:
+                if CAT in elements:
+                    cats.append(CAT)
+                else:
+                    print("Looks like an element (%s) that you have chosen is not one that is recognized by LithoGenie. Please "
+                      "try again by choosing another element, or checking your spelling." % CAT)
 
-                catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                for i in elementDict.keys():
-                    for j in elementDict[i]:
-                        for k in elementDict[i][j]:
-                            catDict[k] = j
+            elementDict = defaultdict(lambda: defaultdict(list))
+            bits = open(HMMdir + "/hmm-meta.txt", "r")
+            for i in bits:
+                ls = (i.rstrip().split("\t"))
+                if ls[0] != "hmm":
+                    if ls[3] in cats:
+                        elementDict[ls[3]][ls[2]].append(ls[0])
 
-                Dict = defaultdict(lambda: defaultdict(list))
-                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                for i in final:
-                    ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[0] != "cell":
-                        if not re.match(r'#', i):
-                            cell = ls[0]
-                            orf = ls[1]
-                            gene = ls[2].split(".hm")[0]
-                            process = ls[3]
-                            substrate = ls[4]
-                            contig = allButTheLast(orf, "_")
-                            Dict[cell][gene].append(float(depthDict[cell][contig]))
+            catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+            for i in elementDict.keys():
+                for j in elementDict[i]:
+                    for k in elementDict[i][j]:
+                        catDict[k] = j
 
-                cats = []
-                CatOrgDict = defaultdict(list)
-                for i in Dict.keys():
-                    for j in Dict[i]:
-                        if len(catDict[j]) > 0:
-                            if j not in cats:
-                                cats.append(j)
-                                CatOrgDict[catDict[j]].append(j)
+            Dict = defaultdict(lambda: defaultdict(list))
+            final = open("%s/lithogenie-summary.csv" % (args.out), "r")
+            for i in final:
+                ls = (i.rstrip().split(","))
+                if ls[0] != "" and ls[0] != "cell":
+                    if not re.match(r'#', i):
+                        cell = ls[0]
+                        orf = ls[1]
+                        gene = ls[2].split(".hm")[0]
+                        process = ls[3]
+                        substrate = ls[4]
+                        contig = allButTheLast(orf, "_")
+                        Dict[cell][gene].append(float(depthDict[cell][contig]))
 
-                outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.cat), "w")
-                outHeat.write("X" + ',')
-                for i in sorted(Dict.keys()):
-                    outHeat.write(i + ",")
-                outHeat.write("\n")
+            cats = []
+            CatOrgDict = defaultdict(list)
+            for i in Dict.keys():
+                for j in Dict[i]:
+                    if len(catDict[j]) > 0:
+                        if j not in cats:
+                            cats.append(j)
+                            CatOrgDict[catDict[j]].append(j)
 
-                for i in CatOrgDict.keys():
-                    for j in CatOrgDict[i]:
-                        outHeat.write(i + "--" + j + ",")
-                        for k in sorted(Dict.keys()):
-                            outHeat.write(str(SUM(Dict[k][j])) + ",")
-                        outHeat.write("\n")
+            outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.cat), "w")
+            outHeat.write("X" + ',')
+            for i in sorted(Dict.keys()):
+                outHeat.write(i + ",")
+            outHeat.write("\n")
 
-                outHeat.close()
-                print('......')
-                print(".......")
-                print("Finished!")
+            for i in CatOrgDict.keys():
+                for j in CatOrgDict[i]:
+                    outHeat.write(i + "--" + j + ",")
+                    for k in sorted(Dict.keys()):
+                        outHeat.write(str(SUM(Dict[k][j])) + ",")
+                    outHeat.write("\n")
 
-            else:
-                print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please "
-                      "try again by choosing another element, or checking your spelling.")
+            outHeat.close()
+            print('......')
+            print(".......")
+            print("Finished!")
 
     # COVERAGE-BASED ABUNDANCE USING ONLY ONE BAM FILE
     elif args.bam != "NA":
@@ -2261,6 +2394,7 @@ def main():
             print("Finished!")
 
         else:
+
             bits = open(HMMdir + "/hmm-meta.txt", "r")
             elements = []
             for i in bits:
@@ -2270,65 +2404,71 @@ def main():
                     elements.append(element)
             elements = sorted(elements)
 
-            if args.cat in elements:
-                elementDict = defaultdict(lambda: defaultdict(list))
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    if ls[0] != "hmm":
-                        if ls[3] == args.cat:
-                            elementDict[ls[3]][ls[2]].append(ls[0])
+            cats = []
+            catList = args.cat
+            catList = catList.split(",")
+            for CAT in catList:
+                if CAT in elements:
+                    cats.append(CAT)
+                else:
+                    print("Looks like an element (%s) that you have chosen is not one that is recognized by LithoGenie. Please "
+                      "try again by choosing another element, or checking your spelling." % CAT)
 
-                catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                for i in elementDict.keys():
-                    for j in elementDict[i]:
-                        for k in elementDict[i][j]:
-                            catDict[k] = j
+            elementDict = defaultdict(lambda: defaultdict(list))
+            bits = open(HMMdir + "/hmm-meta.txt", "r")
+            for i in bits:
+                ls = (i.rstrip().split("\t"))
+                if ls[0] != "hmm":
+                    if ls[3] in cats:
+                        elementDict[ls[3]][ls[2]].append(ls[0])
 
-                Dict = defaultdict(lambda: defaultdict(list))
-                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                for i in final:
-                    ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[0] != "cell":
-                        if not re.match(r'#', i):
-                            cell = ls[0]
-                            orf = ls[1]
-                            gene = ls[2].split(".hm")[0]
-                            process = ls[3]
-                            substrate = ls[4]
-                            contig = allButTheLast(orf, "_")
-                            Dict[cell][gene].append(float(depthDict[contig]))
+            catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+            for i in elementDict.keys():
+                for j in elementDict[i]:
+                    for k in elementDict[i][j]:
+                        catDict[k] = j
 
-                cats = []
-                CatOrgDict = defaultdict(list)
-                for i in Dict.keys():
-                    for j in Dict[i]:
-                        if len(catDict[j]) > 0:
-                            if j not in cats:
-                                cats.append(j)
-                                CatOrgDict[catDict[j]].append(j)
+            Dict = defaultdict(lambda: defaultdict(list))
+            final = open("%s/lithogenie-summary.csv" % (args.out), "r")
+            for i in final:
+                ls = (i.rstrip().split(","))
+                if ls[0] != "" and ls[0] != "cell":
+                    if not re.match(r'#', i):
+                        cell = ls[0]
+                        orf = ls[1]
+                        gene = ls[2].split(".hm")[0]
+                        process = ls[3]
+                        substrate = ls[4]
+                        contig = allButTheLast(orf, "_")
+                        Dict[cell][gene].append(float(depthDict[contig]))
 
-                outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.cat), "w")
-                outHeat.write("X" + ',')
-                for i in sorted(Dict.keys()):
-                    outHeat.write(i + ",")
-                outHeat.write("\n")
+            cats = []
+            CatOrgDict = defaultdict(list)
+            for i in Dict.keys():
+                for j in Dict[i]:
+                    if len(catDict[j]) > 0:
+                        if j not in cats:
+                            cats.append(j)
+                            CatOrgDict[catDict[j]].append(j)
 
-                for i in CatOrgDict.keys():
-                    for j in CatOrgDict[i]:
-                        outHeat.write(i + "--" + j + ",")
-                        for k in sorted(Dict.keys()):
-                            outHeat.write(str(SUM(Dict[k][j])) + ",")
-                        outHeat.write("\n")
+            outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.cat), "w")
+            outHeat.write("X" + ',')
+            for i in sorted(Dict.keys()):
+                outHeat.write(i + ",")
+            outHeat.write("\n")
 
-                outHeat.close()
-                print('......')
-                print(".......")
-                print("Finished!")
+            for i in CatOrgDict.keys():
+                for j in CatOrgDict[i]:
+                    outHeat.write(i + "--" + j + ",")
+                    for k in sorted(Dict.keys()):
+                        outHeat.write(str(SUM(Dict[k][j])) + ",")
+                    outHeat.write("\n")
 
-            else:
-                print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please "
-                      "try again by choosing another element, or checking your spelling.")
+            outHeat.close()
+            print('......')
+            print(".......")
+            print("Finished!")
+
 
     # GENE COUNTS-BASED ABUNDANCE
     else:
@@ -2388,6 +2528,12 @@ def main():
             print("Finished!")
 
         else:
+            cats = []
+            catList = args.cat
+            catList = catList.split(",")
+            for CAT in catList:
+                cats.append(CAT)
+
             bits = open(HMMdir + "/hmm-meta.txt", "r")
             elements = []
             for i in bits:
@@ -2397,78 +2543,84 @@ def main():
                     elements.append(element)
             elements = sorted(elements)
 
-            if args.cat in elements:
-                elementDict = defaultdict(lambda: defaultdict(list))
-                bits = open(HMMdir + "/hmm-meta.txt", "r")
-                for i in bits:
-                    ls = (i.rstrip().split("\t"))
-                    if ls[0] != "hmm":
-                        if ls[3] == args.cat:
-                            elementDict[ls[3]][ls[2]].append(ls[0])
+            cats = []
+            catList = args.cat
+            catList = catList.split(",")
+            for CAT in catList:
+                if CAT in elements:
+                    cats.append(CAT)
+                else:
+                    print("Looks like an element (%s) that you have chosen is not one that is recognized by LithoGenie. Please "
+                      "try again by choosing another element, or checking your spelling." % CAT)
 
-                catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                for i in elementDict.keys():
-                    for j in elementDict[i]:
-                        for k in elementDict[i][j]:
-                            catDict[k] = j
+            elementDict = defaultdict(lambda: defaultdict(list))
+            bits = open(HMMdir + "/hmm-meta.txt", "r")
+            for i in bits:
+                ls = (i.rstrip().split("\t"))
+                if ls[0] != "hmm":
+                    if ls[3] in cats:
+                        elementDict[ls[3]][ls[2]].append(ls[0])
 
-                Dict = defaultdict(lambda: defaultdict(list))
-                final = open("%s/lithogenie-summary.csv" % (args.out), "r")
-                for i in final:
-                    ls = (i.rstrip().split(","))
-                    if ls[0] != "" and ls[0] != "cell":
-                        if not re.match(r'#', i):
-                            cell = ls[0]
-                            orf = ls[1]
-                            gene = ls[2].split(".hm")[0]
-                            process = ls[3]
-                            substrate = ls[4]
-                            Dict[cell][gene].append(orf)
+            catDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+            for i in elementDict.keys():
+                for j in elementDict[i]:
+                    for k in elementDict[i][j]:
+                        catDict[k] = j
 
-                cats = []
-                CatOrgDict = defaultdict(list)
-                for i in Dict.keys():
-                    for j in Dict[i]:
-                        if len(catDict[j]) > 0:
-                            if j not in cats:
-                                cats.append(j)
-                                CatOrgDict[catDict[j]].append(j)
+            Dict = defaultdict(lambda: defaultdict(list))
+            final = open("%s/lithogenie-summary.csv" % (args.out), "r")
+            for i in final:
+                ls = (i.rstrip().split(","))
+                if ls[0] != "" and ls[0] != "cell":
+                    if not re.match(r'#', i):
+                        cell = ls[0]
+                        orf = ls[1]
+                        gene = ls[2].split(".hm")[0]
+                        process = ls[3]
+                        substrate = ls[4]
+                        Dict[cell][gene].append(orf)
 
-                normDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-                for i in binDirLS:
-                    if lastItem(i.split(".")) == args.bin_ext:
-                        if args.orfs:
-                            file = open("%s/%s" % (args.bin_dir, i), "r")
-                            file = fasta(file)
-                        else:
-                            file = open("%s/ORF_calls/%s-proteins.faa" % (outDirectory, i), "r")
-                            file = fasta(file)
-                        normDict[i] = len(file.keys())
+            cats = []
+            CatOrgDict = defaultdict(list)
+            for i in Dict.keys():
+                for j in Dict[i]:
+                    if len(catDict[j]) > 0:
+                        if j not in cats:
+                            cats.append(j)
+                            CatOrgDict[catDict[j]].append(j)
 
-                outHeat = open("%s/lithogenie.%s.heatmap.csv" % (args.out, args.cat), "w")
-                outHeat.write("X" + ',')
-                for i in sorted(Dict.keys()):
-                    outHeat.write(i + ",")
-                outHeat.write("\n")
+            normDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+            for i in binDirLS:
+                if lastItem(i.split(".")) == args.bin_ext:
+                    if args.orfs:
+                        file = open("%s/%s" % (args.bin_dir, i), "r")
+                        file = fasta(file)
+                    else:
+                        file = open("%s/ORF_calls/%s-proteins.faa" % (outDirectory, i), "r")
+                        file = fasta(file)
+                    normDict[i] = len(file.keys())
 
-                for i in CatOrgDict.keys():
-                    for j in CatOrgDict[i]:
-                        outHeat.write(i + "--" + j + ",")
-                        for k in sorted(Dict.keys()):
-                            if not re.match(r'#', j):
-                                if args.norm:
-                                    outHeat.write(str((len(Dict[k][j]) / int(normDict[k])) * float(100)) + ",")
-                                else:
-                                    outHeat.write(str((len(Dict[k][j]))) + ",")
-                        outHeat.write("\n")
+            outHeat = open("%s/lithogenie.%s.heatmap.csv" % (args.out, args.cat), "w")
+            outHeat.write("X" + ',')
+            for i in sorted(Dict.keys()):
+                outHeat.write(i + ",")
+            outHeat.write("\n")
 
-                outHeat.close()
-                print('......')
-                print(".......")
-                print("Finished!")
-            else:
-                print("Looks like the element you have chosen is not one that is recognized by LithoGenie. Please "
-                      "try again by choosing another element, or checking your spelling.")
+            for i in CatOrgDict.keys():
+                for j in CatOrgDict[i]:
+                    outHeat.write(i + "--" + j + ",")
+                    for k in sorted(Dict.keys()):
+                        if not re.match(r'#', j):
+                            if args.norm:
+                                outHeat.write(str((len(Dict[k][j]) / int(normDict[k])) * float(100)) + ",")
+                            else:
+                                outHeat.write(str((len(Dict[k][j]))) + ",")
+                    outHeat.write("\n")
+
+            outHeat.close()
+            print('......')
+            print(".......")
+            print("Finished!")
 
     # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
     if args.makeplots == "y":
