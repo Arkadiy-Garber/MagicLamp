@@ -8,7 +8,11 @@ conda config --add channels bioconda 2> /dev/null
 conda config --add channels conda-forge 2> /dev/null
 conda config --add channels au-eoed 2> /dev/null
 
-conda create -n magiccave hmmer diamond prodigal blast --yes
+conda create -n fegenie -c r r-ggplot2 r-stringi r-reshape r-reshape2 r-tidyverse r-argparse r-ggdendro r-pvclust python=3.7 hmmer diamond prodigal blast metabat2 --yes
+
+Rscript -e 'install.packages("grid", repos = "http://cran.us.r-project.org")'
+Rscript -e 'install.packages("broom", repos = "http://cran.us.r-project.org”)'
+Rscript -e 'install.packages("ggpubr", repos = "http://cran.us.r-project.org”)'
 
 ## activating environment
 source activate magiccave
