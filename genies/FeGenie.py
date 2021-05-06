@@ -5,6 +5,7 @@ import os
 import textwrap
 import argparse
 import sys
+import time
 
 
 # TODO: ADD CYTOCHROME 579 HMM
