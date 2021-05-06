@@ -483,6 +483,9 @@ def main():
 
     parser.add_argument('--skip', type=str, help="skip the main algorithm and just redo the heatmap with different parameters", const=True,
                         nargs="?")
+    
+    parser.add_argument('--all_results', type=str,
+                        help="report all results, regardless of clustering patterns and operon structure", const=True, nargs="?")
 
     parser.add_argument('--gbk', type=str, help="include this flag if your bins are in Genbank format", const=True,
                         nargs="?")
