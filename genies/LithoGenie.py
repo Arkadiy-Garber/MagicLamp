@@ -69,6 +69,16 @@ def main():
                     count += 1
         return count
 
+    def checkSR(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if hmm in ["adenylyl_sulfate_kinase_sat_sopT", "adenylyl_sulfate_reductase_aprA"]:
+                    count += 1
+        return count
 
     def checkGACE(ls):
         count = 0
@@ -2095,6 +2105,18 @@ def main():
                         percAromatic = aromaticAAs / len(seq)
                         if percAromatic > 0.097 and gapThreshold == 0 and \
                                 re.findall(r'[FYWH](......................)[FYWH](..)[FYWH](....)[FYWH](.................)[FYWH][FYWH](.....)[FYWH]', seq):
+                            out.write(
+                                dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," +
+                                memoryDict[dataset][orf]["cat"] + "," +
+                                memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif memoryDict[dataset][orf]["gene"] in ["adenylyl_sulfate_reductase_aprA.hmm", "adenylyl_sulfate_kinase_sat_sopT.hmm"]:
+                        if checkSR(clusterDict[i]) < 2:
+                            pass
+                        else:
                             out.write(
                                 dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," +
                                 memoryDict[dataset][orf]["cat"] + "," +
