@@ -1,0 +1,14 @@
+#                                                               --- full sequence ---- --- best 1 domain ---- --- domain number estimation ----
+# target name        accession  query name           accession    E-value  score  bias   E-value  score  bias   exp reg clu  ov env dom rep inc description of target
+#------------------- ---------- -------------------- ---------- --------- ------ ----- --------- ------ -----   --- --- --- --- --- --- --- --- ---------------------
+sp|P29082|SOR_ACIAM  -          SOR                  PF07682.13  1.5e-152  492.8   0.8  1.7e-152  492.6   0.8   1.0   1   0   0   1   1   1   1 Sulfur oxygenase/reductase OS=Acidianus ambivalens OX=2283 GN=sor PE=1 SV=3
+#
+# Program:         hmmsearch
+# Version:         3.2.1 (June 2018)
+# Pipeline mode:   SEARCH
+# Query file:      SOR.hmm
+# Target file:     sor.faa
+# Option settings: hmmsearch --tblout sor.sor.tblout SOR.hmm sor.faa 
+# Current dir:     /Users/arkadiygarber/MagicLamp/hmms/litho
+# Date:            Mon May 24 13:53:50 2021
+# [ok]

@@ -6,6 +6,7 @@ dissimilatory_sulfite_reductase-sulfur_oxidation_dsrA	223	sulfur-oxidation	sulfu
 dissimilatory_sulfite_reductase-sulfur_oxidation_dsrB	205	sulfur-oxidation	sulfur
 sulfur_oxygenase_reductase_sor	300	sulfur-oxidation	sulfur
 sulfur_dioxygenase_sdo	120	sulfur-oxidation	sulfur
+SOR	300	sulfur-oxidation	sulfur
 thiosulfate_oxidation_soxB	375	thiosulfate-oxidation	sulfur
 thiosulfate_oxidation_soxY	125	thiosulfate-oxidation	sulfur
 thiosulfate_oxidation_soxC	330	thiosulfate-oxidation	sulfur
