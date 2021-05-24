@@ -2103,7 +2103,7 @@ def main():
                                 memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                 memoryDict[dataset][orf]["seq"] + "\n")
 
-                    elif memoryDict[dataset][orf]["gene"] in ["sulfur_oxygenase_reductase_sor", "sulfur_dioxygenase_sdo"]:
+                    elif memoryDict[dataset][orf]["gene"] in ["sulfur_oxygenase_reductase_sor.hmm", "sulfur_dioxygenase_sdo.hmm"]:
                         if checkSOD(clusterDict[i]) < 2:
                             pass
                         else:
@@ -2115,7 +2115,7 @@ def main():
                                 memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                 memoryDict[dataset][orf]["seq"] + "\n")
 
-                    elif memoryDict[dataset][orf]["gene"] in ["GACE_1843", "GACE_1844", "GACE_1845", "GACE_1846", "GACE_1847"]:
+                    elif memoryDict[dataset][orf]["gene"] in ["GACE_1843.hmm", "GACE_1844.hmm", "GACE_1845.hmm", "GACE_1846.hmm", "GACE_1847.hmm"]:
                         if checkGACE(clusterDict[i]) < 3:
                             pass
                         else:
@@ -2127,7 +2127,7 @@ def main():
                                 memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                 memoryDict[dataset][orf]["seq"] + "\n")
 
-                    elif memoryDict[dataset][orf]["gene"] in ["DFE_0465", "DFE_0464", "DFE_0463", "DFE_0462", "DFE_0461"]:
+                    elif memoryDict[dataset][orf]["gene"] in ["DFE_0465.hmm", "DFE_0464.hmm", "DFE_0463.hmm", "DFE_0462.hmm", "DFE_0461.hmm"]:
                         if checkDFE1(clusterDict[i]) < 3:
                             pass
                         else:
@@ -2149,7 +2149,7 @@ def main():
                                     memoryDict[dataset][orf]["heme"] + "," +
                                     memoryDict[dataset][orf]["seq"] + "\n")
 
-                    elif memoryDict[dataset][orf]["gene"] in ["DFE_0451", "DFE_0450", "DFE_0449", "DFE_0448"]:
+                    elif memoryDict[dataset][orf]["gene"] in ["DFE_0451.hmm", "DFE_0450.hmm", "DFE_0449.hmm", "DFE_0448.hmm"]:
                         if checkDFE2(clusterDict[i]) < 3:
                             pass
                         else:
