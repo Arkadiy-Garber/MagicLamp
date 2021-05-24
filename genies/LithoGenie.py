@@ -58,6 +58,18 @@ def main():
                     count += 1
         return count
 
+    def checkSOD(ls):
+        count = 0
+        uniqueLS = []
+        for i in ls:
+            hmm = i.split("|")[0]
+            if hmm not in uniqueLS:
+                uniqueLS.append(hmm)
+                if hmm in ["sulfur_dioxygenase_sdo", "sulfur_oxygenase_reductase_sor"]:
+                    count += 1
+        return count
+
+
     def checkGACE(ls):
         count = 0
         uniqueLS = []
@@ -483,9 +495,6 @@ def main():
 
     parser.add_argument('--skip', type=str, help="skip the main algorithm and just redo the heatmap with different parameters", const=True,
                         nargs="?")
-    
-    parser.add_argument('--all_results', type=str,
-                        help="report all results, regardless of clustering patterns and operon structure", const=True, nargs="?")
 
     parser.add_argument('--gbk', type=str, help="include this flag if your bins are in Genbank format", const=True,
                         nargs="?")
@@ -770,12 +779,15 @@ def main():
 
         meta = open(bits, "r")
         metaDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        geneToCatDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
         print("\nreading in HMM bitscore cut-offs...")
         for i in meta:
             ls = i.rstrip().split("\t")
             metaDict[ls[0]]["bit"] = ls[1]
             metaDict[ls[0]]["process"] = ls[2]
             metaDict[ls[0]]["element"] = ls[3]
+            geneToCatDict[ls[0]] = ls[2]
+
         print("...")
 
         # ******************* BEGINNING MAIN ALGORITHM **********************************))))
@@ -2070,6 +2082,18 @@ def main():
                         percAromatic = aromaticAAs / len(seq)
                         if percAromatic > 0.097 and gapThreshold == 0 and \
                                 re.findall(r'[FYWH](......................)[FYWH](..)[FYWH](....)[FYWH](.................)[FYWH][FYWH](.....)[FYWH]', seq):
+                            out.write(
+                                dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," +
+                                memoryDict[dataset][orf]["cat"] + "," +
+                                memoryDict[dataset][orf]["element"] + "," + memoryDict[dataset][orf]["e"] + "," +
+                                memoryDict[dataset][orf]["bit"] + "," +
+                                memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                memoryDict[dataset][orf]["seq"] + "\n")
+
+                    elif memoryDict[dataset][orf]["gene"] in ["sulfur_oxygenase_reductase_sor", "sulfur_dioxygenase_sdo"]:
+                        if checkSOD(clusterDict[i]) < 2:
+                            pass
+                        else:
                             out.write(
                                 dataset + "," + orf + "," + memoryDict[dataset][orf]["gene"] + "," +
                                 memoryDict[dataset][orf]["cat"] + "," +
