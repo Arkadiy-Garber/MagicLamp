@@ -523,6 +523,14 @@ def main():
                              "If you see error or warning messages associated with Rscript, you can still expect to "
                              "see the main output (CSV files) from LithoGenie.", const=True, nargs="?")
 
+    parser.add_argument('--all_results', type=str,
+                        help="report all results, regardless of clustering patterns and operon structure", const=True, nargs="?")
+
+    parser.add_argument('--nohup', type=str,
+                        help="if you are running this in a nohup session, use this flag. "
+                             "If you have a directory with the same name as the set output directory, files in that directory may get overwritten", const=True, nargs="?")
+
+
     # CHECKING FOR CONDA INSTALL
     os.system("echo ${litho_hmms} > HMMlib.txt")
     os.system("echo ${rscripts} > rscripts.txt")
@@ -592,7 +600,12 @@ def main():
         os.listdir(args.out)
         print("Looks like you already have a directory with the name: " + args.out)
 
-        answer = input("Would you like LithoGenie to proceed and potentially overwrite files in this directory? (y/n): ")
+        if not args.nohup:
+
+            answer = input("Would you like LithoGenie to proceed and potentially overwrite files in this directory? (y/n): ")
+        else:
+            answer = "y"
+
         if answer == "y":
             print("Ok, proceeding with analysis!")
             try:
