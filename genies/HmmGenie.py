@@ -338,6 +338,18 @@ def main():
         ls = filter(ls, [""])
         return ls
 
+
+    def compare(queryList, targetList):
+        counter = 0
+        for i in targetList:
+            if i in queryList:
+                counter += 1
+        if counter == len(targetList):
+            return True
+        else:
+            return False
+
+
     parser = argparse.ArgumentParser(
         prog="MagicLamp.py",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -348,7 +360,7 @@ def main():
         University of Southern California, Earth Sciences
         Please send comments and inquiries to arkadiyg@usc.edu
 
-         .'(   )\   )\   )\   )\     )\.-.    )\.---.   )\  )\  .'(   )\.---.  
+      )\  .'(   )\   )\   )\   )\     )\.-.    )\.---.   )\  )\  .'(   )\.---.  
      ,') \  ) (  ',/ /  (  ',/ /   ,' ,-,_)  (   ,-._( (  \, /  \  ) (   ,-._( 
     (  '-' (   )    (    )    (   (  .   __   \  '-,    ) \ (   ) (   \  '-,   
      ) .-.  ) (  \(\ \  (  \(\ \   ) '._\ _)   ) ,-`   ( ( \ \  \  )   ) ,-`   
@@ -419,7 +431,7 @@ def main():
 
     parser.add_argument('-hmm_ext', type=str, help="filename extension for the HMM files (e.g. hmm, txt)", default="NA")
 
-    parser.add_argument('-bit', type=str, help="optional file containing bit score cutoff for each HMM. "
+    parser.add_argument('-rules', type=str, help="optional file containing bit score cutoff for each HMM. "
                                                "Should be a tab-delimeted file with two columns. "
                                                "The first column must consist of the HMM names, while the second column "
                                                "must consist of the trusted bit score cutoff for each HMM. "
@@ -708,12 +720,36 @@ def main():
                 BinDict[cell][orf] = file[j]
 
     # ******************** READ BITSCORE CUT-OFFS INTO HASH MEMORY ****************************** #
-    if args.bit != "NA":
-        meta = open(args.bit, "r")
+    if args.rules != "NA":
+        meta = open(args.rules, "r")
         metaDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        operonDict = defaultdict(list)
+        operonMetaDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        operonMainDict = defaultdict(list)
+        eDict = defaultdict(lambda: 'EMPTY')
         for i in meta:
-            ls = i.rstrip().split("\t")
-            metaDict[ls[0]] = ls[1]
+            ls = i.rstrip().split(",")
+            if ls[1] != "output gene name":
+                hmm = ls[0]
+                gene = ls[1]
+                operon = ls[2]
+                importance = ls[3]
+                minHits = int(ls[4])
+                bitcut = float(ls[5])
+                evalue = float(ls[6])
+                minlength = int(ls[7])
+                maxlength = int(ls[8])
+                metaDict[hmm]["gene"] = gene
+                metaDict[hmm]["operon"] = operon
+                metaDict[hmm]["minHits"] = minHits
+                metaDict[hmm]["bitcut"] = bitcut
+                metaDict[hmm]["evalue"] = evalue
+                metaDict[hmm]["minlength"] = minlength
+                metaDict[hmm]["maxlength"] = maxlength
+                operonDict[operon].append(hmm)
+                operonMetaDict[operon] = minHits
+                if importance == "1":
+                    operonMainDict[operon].append(hmm)
 
     # ******************* BEGINNING MAIN ALGORITHM **********************************))))
     print("starting main pipeline...")
@@ -742,19 +778,15 @@ def main():
 
                     if args.orfs:
                         os.system(
-                            "hmmsearch --cpu %d --tblout %s/%s-HMM/%s.tblout -o %s/%s-HMM/%s.txt %s/%s %s/%s"
-                            % (int(args.t), outDirectory, i, hmm, outDirectory, i, hmm, args.hmm_dir, hmm, binDir, i)
-                        )
+                            "hmmsearch -E %s --cpu %d --tblout %s/%s-HMM/%s.tblout -o %s/%s-HMM/%s.txt %s/%s %s/%s"
+                            % (metaDict[hmm]["evalue"], int(args.t), outDirectory, i, hmm, outDirectory, i, hmm, args.hmm_dir, hmm, binDir, i))
                     else:
                         os.system(
-                            "hmmsearch --cpu %d --tblout %s/%s-HMM/%s.tblout -o %s/%s-HMM/%s.txt %s/%s %s/ORF_calls/%s-proteins.faa"
-                            % (int(args.t), outDirectory, i, hmm, outDirectory, i, hmm, args.hmm_dir, hmm, outDirectory, i)
-                        )
+                            "hmmsearch -E %s --cpu %d --tblout %s/%s-HMM/%s.tblout -o %s/%s-HMM/%s.txt %s/%s %s/ORF_calls/%s-proteins.faa"
+                            % (metaDict[hmm]["evalue"], int(args.t), outDirectory, i, hmm, outDirectory, i, hmm, args.hmm_dir, hmm, outDirectory, i))
 
                     # REMOVING THE STANDARD OUTPUT FILE
-                    os.system(
-                        "rm " + outDirectory + "/" + i + "-HMM/" + hmm + ".txt"
-                    )
+                    os.system("rm " + outDirectory + "/" + i + "-HMM/" + hmm + ".txt")
 
                     # READING IN THE HMMSEARCH RESULTS (TBLOUT) OUT FILE
                     hmmout = open(outDirectory + "/" + i + "-HMM/" + hmm + ".tblout", "r")
@@ -765,29 +797,17 @@ def main():
                             ls = delim(line)
                             evalue = float(ls[4])
                             bit = float(ls[5])
+                            bitcut = float(metaDict[hmm]["bitcut"])
                             orf = ls[0]
-
-                            if args.bit != "NA":
-                                bitcut = float(metaDict[hmm])
-                                if args.eval != "NA":
-                                    evalCutoff = float(args.eval)
-                                else:
-                                    evalCutoff = 1000000
-                            else:
-                                bitcut = 0
-                                evalCutoff = float(args.eval)
-
                             seq = BinDict[cell][orf]
-
-                            if evalue < float(evalCutoff) and bit > bitcut:  # FILTERING OUT BACKGROUND NOISE
+                            if bit > bitcut and len(seq) > metaDict[hmm]["minlength"] and len(seq) < metaDict[hmm]["maxlength"]:
                                 # LOADING HMM HIT INTO DICTIONARY, BUT ONLY IF THE ORF DID NOT HAVE ANY OTHER HMM HITS
-
                                 if orf not in HMMdict[i]:
                                     HMMdict[i][orf]["hmm"] = hmm
                                     HMMdict[i][orf]["evalue"] = evalue
                                     HMMdict[i][orf]["bit"] = bit
                                     HMMdict[i][orf]["seq"] = seq
-                                    HMMdict[i][orf]["bitcut"] = bitcut
+                                    HMMdict[i][orf]["bitcut"] = metaDict[hmm]["bitcut"]
                                 else:
                                     # COMPARING HITS FROM DIFFERENT HMM FILES TO THE SAME ORF
                                     if bit > HMMdict[i][orf]["bit"]:
@@ -795,9 +815,8 @@ def main():
                                         HMMdict[i][orf]["evalue"] = evalue
                                         HMMdict[i][orf]["bit"] = bit
                                         HMMdict[i][orf]["seq"] = seq
-                                        HMMdict[i][orf]["bitcut"] = bitcut
-
-            print("")
+                                        HMMdict[i][orf]["bitcut"] = metaDict[hmm]["bitcut"]
+        print("")
 
     out = open("%s/summary.csv" % (outDirectory), "w")
     out.write("cell" + "," + "ORF" + "," + "HMM" + "," + "evalue" + "," + "bitscore" + "," + "bitscore_cutoff" + "," + "seq" + "\n")
@@ -872,25 +891,77 @@ def main():
                 if len(RemoveDuplicates(k)) >= int(args.clu):
                     for l in RemoveDuplicates(k):
                         orf = j + "_" + str(l)
-                        # print(i + "," + orf + "," + SummaryDict[i][orf]["hmm"] + "," + SummaryDict[i][orf][
-                        #     "e"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(
-                        #     SummaryDict[i][orf]["bitcut"]) + "," + str(counter) + "," + str(
-                        #     SummaryDict[i][orf]["seq"]) + "\n")
-
                         out.write(i + "," + orf + "," + SummaryDict[i][orf]["hmm"] + "," + SummaryDict[i][orf]["e"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(SummaryDict[i][orf]["bitcut"]) + "," + str(counter) + "," + str(SummaryDict[i][orf]["seq"]) + "\n")
-                    out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                    out.write("###############################################\n")
                     counter += 1
     out.close()
 
     os.system("rm %s/summary.csv" % (args.out))
-    os.system("mv %s/summary-2.csv %s/genie-summary.csv" % (args.out, args.out))
 
     os.system("mkdir -p %s/HMM_results" % outDirectory)
     # os.system("rm -f %s/ORF_calls/*-prodigal.out" % outDirectory)
     os.system("rm -rf %s/HMM_results/*-HMM" % outDirectory)
     os.system("mv -f %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
+    # ****************************** CUSTOM-RULE-BASED FILTERING ************************************************
+    clusterDict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    summary = open("%s/summary-2.csv" % args.out)
+    out = open("%s/summary-3.csv" % args.out, "w")
+    for i in summary:
+        ls = i.rstrip().split(",")
 
-# ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
+        if not re.match(r'#', i.rstrip()):
+            hmmFile = ls[2]
+            clusterNum = ls[6]
+            clusterDict[ls[0]][clusterNum]["ls"].append(ls)
+            clusterDict[ls[0]][clusterNum]["hmms"].append(hmmFile)
+            if hmmFile not in clusterDict[ls[0]][clusterNum]["unqHmms"]:
+                clusterDict[ls[0]][clusterNum]["unqHmms"].append(hmmFile)
+
+    masterDict = defaultdict(lambda: defaultdict(list))
+    for i in clusterDict.keys():
+        # print(i)
+        for k in clusterDict[i]:
+            # print(k)
+            clusterNum = k
+            ls = clusterDict[i][k]["ls"]
+            hmms = (clusterDict[i][k]["hmms"])
+            # print(hmms)
+            unqHmms = (clusterDict[i][k]["unqHmms"])
+            # print(unqHmms)
+            operons = []
+            for j in ls:
+                operon = metaDict[j[2]]["operon"]
+                if operon not in operons:
+                    operons.append(operon)
+            passDict = defaultdict(list)
+            for j in operons:
+                operon = j
+                minHits = operonMetaDict[operon]
+                if len(unqHmms) >= int(minHits) and compare(unqHmms, operonMainDict[operon]):
+                    passDict[operon].append(ls[0][6])
+                    # print(operon)
+            for j in ls:
+                # print(j)
+                operon = metaDict[j[2]]["operon"]
+                if operon in passDict:
+                    if j[6] in passDict[operon]:
+                        masterDict[j[0]][clusterNum].append(j)
+            # print("\n")
+
+    for i in masterDict.keys():
+        for j in masterDict[i]:
+            for k in masterDict[i][j]:
+                out.write(",".join(k) + "\n")
+            #     print(k)
+            # print("")
+            out.write("#########################################\n")
+        out.write("#********************************************************************\n")
+        out.write("#********************************************************************\n")
+        out.write("#********************************************************************\n")
+    out.close()
+    os.system("mv %s/summary-3.csv %s/genie-summary.csv" % (args.out, args.out))
+
+    # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
     cats = []
     for hmm in HMMdirLS:
         if lastItem(hmm.split(".")) == args.hmm_ext:
@@ -1005,6 +1076,7 @@ def main():
         print('......')
         print(".......")
         print("Finished!")
+
 
     # GENE COUNTS-BASED ABUNDANCE
     else:
