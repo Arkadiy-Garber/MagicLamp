@@ -1,0 +1,1 @@
+﻿HMM (name of .hmm file),output gene name,neighborhood_or_operon (any unique identifier for gene cluster),importance (0 or 1),min_hits (minimum hits to report cluster),bitscore_cutoff (default = 0),e_value (default = 1E-10),min_length (default = 50),max_length (default = 10000)
