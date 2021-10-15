@@ -954,7 +954,8 @@ def main():
         out.write("#********************************************************************\n")
         out.write("#********************************************************************\n")
     out.close()
-    os.system("mv %s/summary-3.csv %s/genie-summary.csv" % (args.out, args.out))
+    os.system("mv %s/summary-3.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
+    os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
 
     # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
     cats = []
