@@ -282,9 +282,11 @@ def main():
                 if len(seq) > 0:
                     Dict[header] = seq
                     header = i[1:]
+                    header = header.split(" ")[0]
                     seq = ''
                 else:
                     header = i[1:]
+                    header = header.split(" ")[0]
                     seq = ''
             else:
                 seq += i
@@ -719,6 +721,9 @@ def main():
             file = fasta(file)
             for j in file.keys():
                 orf = j.split(" # ")[0]
+                print(cell)
+                print(orf)
+                print("")
                 BinDict[cell][orf] = file[j]
 
     # ******************** READ BITSCORE CUT-OFFS INTO HASH MEMORY ****************************** #
@@ -934,10 +939,10 @@ def main():
             if ls[7] != "seq":
                 seq = ls[7]
                 if ls[2] in ["Proteorhodopsin.hmm", "Xantharhodopsin.hmm", "Bac_rhodopsin.hmm", "7tm_1.hmm", "GpcrRhopsn4.hmm", "Heliorhodopsin_Pfam.hmm", "Htr2.hmm"]:
-
+                    print(ls)
                     if (re.findall(r'D(...)T(...)Q(..)E', seq)):
 
-                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        if re.findall(r'D(...)K', seq[len(seq) - 60:len(seq)]):
                             motif = "DTE-Q"
                             lysine = "+"
                         else:
@@ -945,7 +950,7 @@ def main():
                             lysine = "-"
 
                     elif (re.findall(r'D(...)T(...)M(..)E', seq)):
-                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        if re.findall(r'D(...)K', seq[len(seq) - 60:len(seq)]):
                             motif = "DTE-M"
                             lysine = "+"
 
@@ -954,7 +959,7 @@ def main():
                             lysine = "-"
 
                     elif (re.findall(r'D(...)T(...)L(..)E', seq)):
-                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        if re.findall(r'D(...)K', seq[len(seq) - 60:len(seq)]):
                             motif = "DTE-L"
                             lysine = "+"
 
@@ -963,7 +968,7 @@ def main():
                             lysine = "+"
 
                     elif (re.findall(r'D(...)T(...)Q(..)Q', seq)):
-                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        if re.findall(r'D(...)K', seq[len(seq) - 60:len(seq)]):
                             motif = "DTQ-Q"
                             lysine = "+"
 
@@ -971,8 +976,17 @@ def main():
                             motif = "DTQ-Q"
                             lysine = "-"
 
+                    elif (re.findall(r'D(...)T(...)M(..)K', seq)):
+                        if re.findall(r'D(...)K', seq[len(seq) - 60:len(seq)]):
+                            motif = "DTK-M"
+                            lysine = "+"
+
+                        else:
+                            motif = "DTK-M"
+                            lysine = "-"
+
                     else:
-                        if re.findall(r'K', seq[len(seq) - 60:len(seq)]):
+                        if re.findall(r'D(...)K', seq[len(seq) - 60:len(seq)]):
                             motif = "not_found"
                             lysine = "+"
 
