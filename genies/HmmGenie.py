@@ -906,6 +906,7 @@ def main():
     clusterDict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     summary = open("%s/summary-2.csv" % args.out)
     out = open("%s/summary-3.csv" % args.out, "w")
+    out.write("genome/metagenome,gene_call,hmm_file,gene,e_value,bit_score,bit_score_cutoff,cluster_id,aa_seq\n")
     for i in summary:
         ls = i.rstrip().split(",")
 
@@ -925,9 +926,7 @@ def main():
             clusterNum = k
             ls = clusterDict[i][k]["ls"]
             hmms = (clusterDict[i][k]["hmms"])
-            # print(hmms)
             unqHmms = (clusterDict[i][k]["unqHmms"])
-            # print(unqHmms)
             operons = []
             for j in ls:
                 operon = metaDict[j[2]]["operon"]
@@ -939,21 +938,17 @@ def main():
                 minHits = operonMetaDict[operon]
                 if len(unqHmms) >= int(minHits) and compare(unqHmms, operonMainDict[operon]):
                     passDict[operon].append(ls[0][6])
-                    # print(operon)
             for j in ls:
-                # print(j)
                 operon = metaDict[j[2]]["operon"]
                 if operon in passDict:
                     if j[6] in passDict[operon]:
                         masterDict[j[0]][clusterNum].append(j)
-            # print("\n")
 
     for i in masterDict.keys():
         for j in masterDict[i]:
             for k in masterDict[i][j]:
-                out.write(",".join(k) + "\n")
-            #     print(k)
-            # print("")
+                # out.write(",".join(k) + "\n")
+                out.write(k[0] + "," + k[1] + "," + k[2] + "," + str(metaDict[k[2]]["gene"]) + "," + k[3] + "," + k[4] + "," + k[5] + "," + k[6] + "," + k[7] + "\n")
             out.write("#########################################\n")
         out.write("#********************************************************************\n")
         out.write("#********************************************************************\n")
