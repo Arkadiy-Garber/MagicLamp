@@ -458,6 +458,8 @@ def main():
                         help="include this flag if the provided contigs are from metagenomic/metatranscriptomic assemblies",
                         const=True, nargs="?")
 
+    parser.add_argument('-translation_table', type=str, help="specify a translation table for Prodigal to use (default: 11)", default="11")
+
     parser.add_argument('--norm', type=str,
                         help="include this flag if you would like the gene counts for each iron gene category to be normalized to "
                              "the number of predicted ORFs in each genome or metagenome. Without "
@@ -618,12 +620,12 @@ def main():
 
                         print("Finding ORFs for " + cell)
                         if args.meta:
-                            os.system("prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -p meta -q" % (
-                                binDir, i, outDirectory, i, outDirectory, i))
+                            os.system("prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -p meta -q -g %s" % (
+                                binDir, i, outDirectory, i, outDirectory, i, args.translation_table))
                         else:
                             os.system(
-                                "prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -q" % (
-                                    binDir, i, outDirectory, i, outDirectory, i))
+                                "prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -q -g %s" % (
+                                    binDir, i, outDirectory, i, outDirectory, i, args.translation_table))
             else:
                 os.system('gtt-genbank-to-AA-seqs -i %s/%s -o %s/%s.faa' % (binDir, i, outDirectory, i))
 
