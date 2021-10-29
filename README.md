@@ -16,7 +16,13 @@ Garber, AI (2020) MagicLamp: toolkit for annotation of 'omics datasets using cur
     bash setup.sh
     source activate magiclamp
 (if "source activate magiclamp" does not work, you can use "conda activate magiclamp")
-    
+
+
+#### installation if you don't have Conda
+
+Put MagicLamp.py script $PATH into your bash profile
+
+    export PATH=$PATH:$(pwd)
 
 #### Required Dependencies
 * Python (version 3.6 or higher)
@@ -28,12 +34,6 @@ Garber, AI (2020) MagicLamp: toolkit for annotation of 'omics datasets using cur
 * Diamond (version 0.9.22.123) -- if you performing cross-validation against a reference database
 * R (version 3.5.1) -- if generating plots
 * Rscript -- if generating plots
-
-#### installation if you don't have Conda
-
-Put MagicLamp.py script $PATH into your bash profile
-
-    export PATH=$PATH:$(pwd)
                                       
 
 ### Usage
