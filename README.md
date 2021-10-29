@@ -12,12 +12,10 @@ Garber, AI (2020) MagicLamp: toolkit for annotation of 'omics datasets using cur
 ### installation
 #### quick install (if you have Conda installed)
     git clone https://github.com/Arkadiy-Garber/MagicLamp.git
+    cd MagicLamp
     bash setup.sh
     source activate magiclamp
-
-or
-
-    conda activate magiclamp
+(if "source activate magiclamp" does not work, you can use "conda activate magiclamp")
     
 
 #### Required Dependencies
