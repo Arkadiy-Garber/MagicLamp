@@ -18,137 +18,6 @@ def main():
             count += float(i)
         return count
 
-    def Strip(ls):
-        outList = []
-        for i in ls:
-            gene = i.split("|")[0]
-            outList.append(gene)
-        return outList
-
-    def unique(ls, ls2):
-        unqlist = []
-        for i in ls:
-            if i not in unqlist and i in ls2:
-                unqlist.append(i)
-        return len(unqlist)
-
-    def Unique(ls):
-        unqList = []
-        for i in ls:
-            if i not in unqList:
-                unqList.append(i)
-        return unqList
-
-    def Unique2(ls):
-        unqList = []
-        for i in ls:
-            hmm = i.split("|")[0]
-            if hmm not in unqList:
-                unqList.append(hmm)
-        return unqList
-
-    def checkFe(ls):
-        count = 0
-        uniqueLS = []
-        for i in ls:
-            hmm = i.split("|")[0]
-            if hmm not in uniqueLS:
-                uniqueLS.append(hmm)
-                if geneToCatDict[hmm] in ["iron_reduction", "iron_oxidation"]:
-                    count += 1
-        return count
-
-    def checkDFE1(ls):
-        count = 0
-        uniqueLS = []
-        for i in ls:
-            hmm = i.split("|")[0]
-            if hmm not in uniqueLS:
-                uniqueLS.append(hmm)
-                if hmm in ["DFE_0461", "DFE_0462", "DFE_0463", "DFE_0464", "DFE_0465"]:
-                    count += 1
-        return count
-
-    def checkDFE2(ls):
-        count = 0
-        uniqueLS = []
-        for i in ls:
-            hmm = i.split("|")[0]
-            if hmm not in uniqueLS:
-                uniqueLS.append(hmm)
-                if hmm in ["DFE_0448", "DFE_0449", "DFE_0450", "DFE_0451"]:
-                    count += 1
-        return count
-
-    def check1(ls):
-        count = 0
-        uniqueLS = []
-        for i in ls:
-            hmm = i.split("|")[0]
-            if hmm not in uniqueLS:
-                uniqueLS.append(hmm)
-                if geneToCatDict[hmm] in ["iron_aquisition-siderophore_transport", "iron_aquisition-heme_transport"]:
-                    count += 1
-        return count
-
-    def check1_2(ls):
-        count = 0
-        uniqueLS = []
-        for i in ls:
-            hmm = i.split("|")[0]
-            if hmm not in uniqueLS:
-                uniqueLS.append(hmm)
-                if geneToCatDict[hmm] in ["iron_aquisition-siderophore_synthesis"]:
-                    count += 1
-        return count
-
-    def check2(ls):
-        count = 0
-        uniqueLS = []
-        for i in ls:
-            hmm = i.split("|")[0]
-            if hmm not in uniqueLS:
-                uniqueLS.append(hmm)
-                if geneToCatDict[hmm] in ["iron_aquisition-iron_transport", "iron_aquisition-heme_oxygenase"]:
-                    count += 1
-        return count
-
-    def check3(ls):
-        count = 0
-        uniqueLS = []
-        for i in ls:
-            hmm = i.split("|")[0]
-            if hmm not in uniqueLS:
-                uniqueLS.append(hmm)
-                if geneToCatDict[hmm] in ["iron_aquisition-siderophore_synthesis"]:
-                    count += 1
-        return count
-
-    def checkReg(ls):
-        count = 0
-        for i in ls:
-            hmm = i.split("|")[0]
-            if re.findall(r'aquisition', geneToCatDict[hmm]):
-                count += 1
-        return count
-
-    def checkMam(ls):
-        count = 0
-        uniqueLS = []
-        for i in ls:
-            hmm = i.split("|")[0]
-            if hmm not in uniqueLS:
-                uniqueLS.append(hmm)
-                if geneToCatDict[hmm] == "magnetosome_formation":
-                    count += 1
-        return count
-
-    def derep(ls):
-        outLS = []
-        for i in ls:
-            if i not in outLS:
-                outLS.append(i)
-        return outLS
 
     def cluster(data, maxgap):
         '''Arrange data into groups where successive elements
@@ -194,11 +63,6 @@ def main():
             x += delim
         return x[0:len(x) - 1]
 
-    def secondToLastItem(ls):
-        x = ''
-        for i in ls[0:len(ls) - 1]:
-            x = i
-        return x
 
     def pull(item, one, two):
         ls = []
@@ -429,22 +293,29 @@ def main():
 
     parser.add_argument('-hmm_dir', type=str, help="directory of HMMs that you want HmmGenie to profile against your dataset", default="NA")
 
-    parser.add_argument('-hmm_ext', type=str, help="filename extension for the HMM files (e.g. hmm, txt)", default="NA")
+    parser.add_argument('-hmm_ext', type=str, help="filename extension for the HMM files (e.g. hmm, txt, default = hmm)", default="hmm")
 
-    parser.add_argument('-rules', type=str, help="optional file containing bit score cutoff for each HMM. "
-                                               "Should be a tab-delimeted file with two columns. "
-                                               "The first column must consist of the HMM names, while the second column "
-                                               "must consist of the trusted bit score cutoff for each HMM. "
-                                               "If this file is not provided, HmmGenie will use an e-value cutoff of 1E-10. "
-                                               "If you would like to set a different e-value cutoff, please provide this value using the \'eval\' flag.", default="NA")
+    parser.add_argument('-rules', type=str, help="optional file containing rules for HMM detection/reporting. The template"
+                                                 "for this file is provided in the main MagicLamp directory (called rules-template.csv). "
+                                                 "If you provide this file, HmmGenie will ignore any arguments provided to -eval and -clu flags", default="NA")
 
-    parser.add_argument('-eval', type=str, help="e-value cutoff for hmmsearch. Default = 1E-10. "
-                                                "If you do not provide a file with bit score cutoffs, the default is 1E-10. "
-                                                "If the optional bit score cutoffs are provided, then the default e-value is 1000000 "
-                                                "(i.e. only the bit score cutoffs are used for filtering out potential false positives)", default=float(1E-10))
+    parser.add_argument('-eval', type=str, help="e-value cutoff for hmmsearch. Default = 1E-10.", default=float(1E-10))
 
-    parser.add_argument('-clu', type=str, help="minimum size of a gene cluster/operon to be considered for reporting (default = 1)",
+    parser.add_argument('-clu', type=str, help="minimum size of a gene cluster/operon to be considered for reporting (default = 1).",
                         default=int(1))
+
+    parser.add_argument('--tree', type=str,
+                        help="Provide this flag if you want HmmGenie to make a phylogenetic tree. "
+                             "In order to take advantage of this part of the pipeline, please make sure that for each HMM file,"
+                             "you have a corresponding alignment file. Must be the same name with only the extension different. "
+                             "This different extension should be provided via the -aln_ext argument",
+                        const=True, nargs="?")
+
+    parser.add_argument('-aln_ext', type=str, help="filename extension for the alignment files. "
+                                                   "Use this flag only if you set --tree flag (e.g. fasta, fa, default = fa)."
+                                                   "These files must be in the same directory as the HMM files (same file"
+                                                   "name as the HMM files, but with a different extension, given by this argument)",
+                        default="fa")
 
     parser.add_argument('--gbk', type=str, help="include this flag if your bins are in Genbank format", const=True,
                         nargs="?")
@@ -467,13 +338,24 @@ def main():
                              "CSV output with raw gene counts. With normalization, HmmGenie will create a "
                              "heatmap-compatible with \'normalized gene abundances\'", const=True, nargs="?")
 
-    parser.add_argument('--makeplots', type=str,
-                        help="include this flag if you would like HmmGenie to make some figures from your data?. "
-                             "To take advantage of this part of the pipeline, you will need to have Rscipt installed. It is a way for R to be called directly from the command line. "
-                             "Please be sure to install all the required R packages as instrcuted in the HmmGenie Wiki: "
-                             "https://github.com/Arkadiy-Garber/HmmGenie/wiki/Installation. "
-                             "If you see error or warning messages associated with Rscript, you can still expect to "
-                             "see the main output (CSV files) from HmmGenie.", const=True, nargs="?")
+    parser.add_argument('--dot', type=str,
+                        help="invoke this flag if you would like HmmGenie to make a dot plot based on the data", const=True, nargs="?")
+
+    parser.add_argument('--dendro', type=str,
+                        help="invoke this flag if you would like HmmGenie to make a heatmap-dendrogram plot based on the data",
+                        const=True, nargs="?")
+
+    parser.add_argument('--word', type=str,
+                        help="invoke this flag if you would like HmmGenie to make a word cloud based on the data",
+                        const=True, nargs="?")
+
+    # parser.add_argument('--makeplots', type=str,
+    #                     help="include this flag if you would like HmmGenie to make some figures from your data?. "
+    #                          "To take advantage of this part of the pipeline, you will need to have Rscipt installed. It is a way for R to be called directly from the command line. "
+    #                          "Please be sure to install all the required R packages as instrcuted in the HmmGenie Wiki: "
+    #                          "https://github.com/Arkadiy-Garber/HmmGenie/wiki/Installation. "
+    #                          "If you see error or warning messages associated with Rscript, you can still expect to "
+    #                          "see the main output (CSV files) from HmmGenie.", const=True, nargs="?")
 
     # CHECKING FOR CONDA INSTALL
     os.system("echo ${rscripts} > rscripts.txt")
@@ -754,7 +636,7 @@ def main():
                     operonMainDict[operon].append(hmm)
 
     # ******************* BEGINNING MAIN ALGORITHM **********************************))))
-    print("starting main pipeline...")
+    print("\nStarting main pipeline...")
     HMMdirLS = os.listdir(args.hmm_dir)
     HMMdict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: "EMPTY")))
     for i in binDirLS:  # ITERATION THROUGH EACH BIN IN A GIVEN DIRECTORY OF BINS
@@ -871,7 +753,7 @@ def main():
                             SummaryDict[cell][orf]["seq"] = seq
 
     # ****************************** CLUSTERING OF ORFS BASED ON GENOMIC PROXIMITY *************************************
-    print("Identifying genomic proximities and putative operons")
+    print("\nIdentifying genomic proximities and putative operons")
     CoordDict = defaultdict(lambda: defaultdict(list))
     for i in SummaryDict.keys():
         if i != "cell":
@@ -885,7 +767,7 @@ def main():
     print("")
     out = open(outDirectory + "/summary-2.csv", "w")
     for i in CoordDict.keys():
-        print(".")
+        # print(".")
         for j in CoordDict[i]:
             LS = (CoordDict[i][j])
             clusters = (cluster(LS, args.d))
@@ -904,6 +786,7 @@ def main():
     # os.system("rm -f %s/ORF_calls/*-prodigal.out" % outDirectory)
     os.system("rm -rf %s/HMM_results/*-HMM" % outDirectory)
     os.system("mv -f %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
+
     # ****************************** CUSTOM-RULE-BASED FILTERING ************************************************
     clusterDict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     summary = open("%s/summary-2.csv" % args.out)
@@ -959,14 +842,152 @@ def main():
     os.system("mv %s/summary-3.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
     os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
 
+    # *********************************** CREATING A PHYLOGENETIC TREE ******************************************
+    print("\nWorking on the phylogenetic tree:")
+    if args.tree:
+        # checking for presence of correct files
+        alnDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        for i in sorted(HMMdirLS):
+
+            if lastItem(i.split(".")) == args.hmm_ext:
+                base = allButTheLast(i, ".")
+                alnDict[base]["hmm"] = i
+
+            if lastItem(i.split(".")) == args.aln_ext:
+                base = allButTheLast(i, ".")
+                alnDict[base]["fa"] = i
+
+        alnDict2 = defaultdict(list)
+        for i in alnDict.keys():
+            if len(alnDict[i]) == 2:
+                print(i + " has an associated HMM and alignment file")
+                alnDict2[i] = alnDict[i]
+            else:
+                print(i + " does not have an associated HMM and alignment file and will be included as a phylo tree")
+
+        if len(alnDict2.keys()) == 0:
+            print("HmmGenie did not detect any alignment files. Aborting tree construction.")
+
+        else:
+            phyloDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+            summary = open("%s/genie-summary-rulesFiltered.csv" % args.out)
+            for i in summary:
+                if not re.match(r'#', i):
+                    ls = i.rstrip().split(",")
+                    if ls[1] != "gene_call":
+                        base = allButTheLast(ls[2], ".")
+                        if base in alnDict2.keys():
+                            phyloDict[base][ls[3] + "-" + ls[0] + "-" + ls[1]] = ls[8]
+
+            for i in HMMdirLS:
+                if lastItem(i.split(".")) == args.aln_ext:
+                    base = allButTheLast(i, ".")
+                    if base in alnDict2.keys():
+                        alnFile = open("%s/%s.%s" % (args.hmm_dir, base, args.aln_ext))
+                        alnFile = fasta(alnFile)
+                        for j in alnFile.keys():
+                            phyloDict[base][j] = alnFile[j]
+
+            for i in phyloDict.keys():
+                out = open("%s/%s.faa" % (args.out, i), "w")
+                for j in phyloDict[i]:
+                    out.write(">" + j + "\n")
+                    out.write(phyloDict[i][j] + "\n")
+                out.close()
+                print("\nAligning %s HMM hits to seed sequences..." % i)
+                os.system("muscle -in %s/%s.faa -out %s/%s.fa > /dev/null 2>&1" % (args.out, i, args.out, i))
+                print("Building phylogenetic tree for %s" % i)
+                os.system("fasttree %s/%s.fa > %s/%s.tre > /dev/null 2>&1" % (args.out, i, args.out, i))
+
+            os.system("mkdir -p %s/trees" % args.out)
+            os.system("mv %s/*fa %s/trees/" % (args.out, args.out))
+            os.system("mv %s/*tre %s/trees/" % (args.out, args.out))
+
+    if args.word:
+
+        Rdir = "purgatory"
+        os.system("echo ${rscripts} > r.txt")
+        Rfile = open("r.txt")
+        for i in Rfile:
+            Rdir = (i.rstrip())
+        os.system("rm r.txt")
+
+        try:
+            test = open(Rdir + "/wordcloud.R")
+            word = 1
+
+        except FileNotFoundError:
+            os.system("which MagicLamp.py > r.txt")
+            Rfile = open("r.txt")
+            for i in Rfile:
+                Rdir = (i.rstrip())
+            Rdir = allButTheLast(Rdir, "/")
+            os.system("rm r.txt")
+            try:
+                test = open(Rdir + "/wordcloud.R")
+                word = 1
+            except FileNotFoundError:
+                print("You have directed HmmGenie to make a word-cloud. However, HmmGenie cannot seem to find the required"
+                      "R script. This script can be found in the main MagicLamp directory, titled wordcloud.R. ")
+                answer = input(
+                    "If you would like HmmGenie to generate the word-clouds, you will need to provide the full path to this script. "
+                    "Would you like to provide the full path? (y/n): ")
+                if answer == "y":
+                    path = input("Please provide the full path to wordcloud.R: ")
+                    try:
+                        test = open(path)
+                        word = 1
+                        Rdir = allButTheLast(path, "/")
+                    except FileNotFoundError:
+                        print("Hmm, HmmGenie still cannot seem to locate the R script.")
+                        answer = input("Please check your path and try again? (y/n): ")
+                        if answer == "y":
+                            path = input("Please provide the full path to wordcloud.R: ")
+                            try:
+                                test = open(path)
+                                word = 1
+                                Rdir = allButTheLast(path, "/")
+                            except FileNotFoundError:
+                                print("Hmm, HmmGenie still cannot seem to locate the R script. Moving on without the word-cloud"
+                                      "for now. If you feel this is in error, please start on Issue on MagicLamp's GitHub repository.")
+                                word = 0
+                        else:
+                            print("Very well. Moving on without word-clouds")
+                            word = 0
+
+                else:
+                    print("Very well. Moving on without word-clouds")
+                    word = 0
+
+        if word == 1:
+            print("Working on the word clouds")
+            wordDict = defaultdict(list)
+            summary = open("%s/genie-summary-rulesFiltered.csv" % args.out)
+            for i in summary:
+                if not re.match(r'#', i):
+                    ls = i.rstrip().split(",")
+                    if ls[1] != "gene_call":
+                        wordDict[ls[0]].append(ls[3])
+
+            for i in wordDict.keys():
+                out = open("%s/%s.words.csv" % (args.out, allButTheLast(i, ".")), "w")
+                for j in wordDict[i]:
+                    out.write(j + "\n")
+                out.close()
+
+                os.system("Rscript --vanilla %s/wordcloud.R %s/%s.words.csv %s/%s.words.tiff > /dev/null 2>&1" % (
+                Rdir, args.out, allButTheLast(i, "."), args.out, allButTheLast(i, ".")))
+
+            # print("Cleaning up")
+            os.system("mkdir -p %s/wordClouds" % args.out)
+            os.system("mv %s/*words* %s/wordClouds/" % (args.out, args.out))
+
     # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
     cats = []
     for hmm in HMMdirLS:
         if lastItem(hmm.split(".")) == args.hmm_ext:
             cats.append(hmm)
-
-    print("....")
-    print(".....")
+    print("Working on the heatmap-format CSV")
     # COVERAGE-BASED ABUNDANCE
     if args.bams != "NA":
         depthDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
@@ -999,7 +1020,7 @@ def main():
         os.system("mv %s/*depth %s/contigDepths/" % (args.out, args.out))
 
         Dict = defaultdict(lambda: defaultdict(list))
-        final = open("%s/hmmgenie-summary.csv" % (args.out), "r")
+        final = open("%s/genie-summary-rulesFiltered.csv" % (args.out), "r")
         for i in final:
             ls = (i.rstrip().split(","))
             if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
@@ -1046,7 +1067,7 @@ def main():
                     depthDict[LS[0]] = LS[2]
 
         Dict = defaultdict(lambda: defaultdict(list))
-        final = open("%s/hmmgenie-summary.csv" % (args.out), "r")
+        final = open("%s/genie-summary-rulesFiltered.csv" % (args.out), "r")
         for i in final:
             ls = (i.rstrip().split(","))
             if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
@@ -1079,7 +1100,7 @@ def main():
     # GENE COUNTS-BASED ABUNDANCE
     else:
         Dict = defaultdict(lambda: defaultdict(list))
-        final = open("%s/genie-summary.csv" % (args.out), "r")
+        final = open("%s/genie-summary-rulesFiltered.csv" % (args.out), "r")
         for i in final:
             if not re.match(r'#', i):
                 ls = (i.rstrip().split(","))
@@ -1122,37 +1143,43 @@ def main():
         print("Finished!")
 
 
-    # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
-    if args.makeplots:
-        print("Running Rscript to generate plots. Do not be alarmed if you see Warning or Error messages from Rscript. "
-              "This will not affect any of the output data that was already created. If you see plots generated, great! "
-              "If not, you can plot the data as you wish on your own, or start an issue on HmmGenie's GitHub repository\n")
+    # # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
+    # if args.makeplots:
+    #     print("Running Rscript to generate plots. Do not be alarmed if you see Warning or Error messages from Rscript. "
+    #           "This will not affect any of the output data that was already created. If you see plots generated, great! "
+    #           "If not, you can plot the data as you wish on your own, or start an issue on HmmGenie's GitHub repository\n")
+    #
+    #     if args.norm:
+    #         os.system("Rscript --vanilla %s/DotPlot.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+    #         os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+    #     else:
+    #         os.system("Rscript --vanilla %s/DotPlot-nonorm.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+    #         os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+    #
+    #     print("\n\n\n")
+    #     print("...")
 
+    # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
+    # if args.makeplots:
+    #     print("Running Rscript to generate plots. Do not be alarmed if you see Warning or Error messages from Rscript. "
+    #           "This will not affect any of the output data that was already created. If you don't see plots generated, "
+    #           "please start an issue on HmmGenie's GitHub repository, and paste the error/warning message that you got.\n")
+
+    if args.bam == "NA" and args.bams == "NA":
         if args.norm:
-            os.system("Rscript --vanilla %s/DotPlot.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-            os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-        else:
-            os.system("Rscript --vanilla %s/DotPlot-nonorm.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-            os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-
-        print("\n\n\n")
-        print("...")
-
-    # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
-    if args.makeplots:
-        print("Running Rscript to generate plots. Do not be alarmed if you see Warning or Error messages from Rscript. "
-              "This will not affect any of the output data that was already created. If you see plots generated, great! "
-              "If not, you can plot the data as you wish on your own, or start an issue on HmmGenie's GitHub repository\n")
-
-        if args.bam == "NA" and args.bams == "NA":
-            if args.norm:
+            if args.dot:
                 os.system("Rscript --vanilla %s/DotPlot.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-                os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-            else:
-                os.system("Rscript --vanilla %s/DotPlot-nonorm.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+            if args.dendro:
                 os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
         else:
+            if args.dot:
+                os.system("Rscript --vanilla %s/DotPlot-nonorm.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+            if args.dendro:
+                os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+    else:
+        if args.dot:
             os.system("Rscript --vanilla %s/DotPlot.R %s/genie.readDepth.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+        if args.dendro:
             os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.readDepth.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
 
     print("")
