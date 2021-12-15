@@ -1,8 +1,8 @@
 ## MagicLamp
-### A software package for annotation of genomic datasets using discreet HMM sets.
+#### A software package for annotation of genomic datasets using discreet HMM sets.
 
 
-#### Citing MagicLamp
+### Citing MagicLamp
 There is no official publication for MagicLamp. If it was useful for your work, please cite as follows:
 
 Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLamp: toolkit for annotation of 'omics datasets using curated HMM sets. 2021: MagicLamp, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
@@ -12,8 +12,8 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
 We encourage users to submit their custom-built HMM sets for specific pathways or processes. Please email the following material to agarber4@asu.edu: 1) zipped folder containing the HMM files, 2) filled-out rules-template.csv file. Optionally, users can also provide 1) genome(s) known to encode the genetic pathway(s), and 2) genome(s) known not to encode the genetic pathway.
 
 
-### Installation
-#### quick install (if you have Conda installed)
+## Installation
+### quick install (if you have Conda installed)
     git clone https://github.com/Arkadiy-Garber/MagicLamp.git
     cd MagicLamp
     bash setup.sh
@@ -21,19 +21,20 @@ We encourage users to submit their custom-built HMM sets for specific pathways o
 (if "source activate magiclamp" does not work, you can use "conda activate magiclamp")
 
 
-#### installation if you don't have Conda
+### installation if you don't have Conda
 
 Put MagicLamp.py script $PATH into your bash profile
 
     export PATH=$PATH:$(pwd)
 
-#### Required Dependencies
+### Dependencies (only if you did not use the setup.sh script to configure a Conda environment)
+#### Required
 * Python (version 3.6 or higher)
 * BLAST (version 2.7.1+)
 * Prodigal (version 2.6.3)
 * HMMER (version 3.2.1)
 
-#### Optional Dependencies
+#### Optional
 * Diamond (version 0.9.22.123) -- if you performing cross-validation against a reference database
 * R (version 3.5.1) -- if generating plots
 * Rscript -- if generating plots
