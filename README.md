@@ -5,8 +5,11 @@
 #### Citing MagicLamp
 There is no official publication for MagicLamp. If it was useful for your work, please cite as follows:
 
-Garber, AI (2020) MagicLamp: toolkit for annotation of 'omics datasets using curated HMM sets. 2020: MagicLamp, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
+Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLamp: toolkit for annotation of 'omics datasets using curated HMM sets. 2021: MagicLamp, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
 
+
+### Submitting custom HMM sets
+We encourage users to submit their custom-built HMM sets for specific pathways or processes. Please email the following material to agarber4@asu.edu: 1) zipped folder containing the HMM files, 2) filled-out rules-template.csv file. Optionally, users can also provide 1) genome(s) known to encode the genetic pathway(s), and 2) genome(s) known not to encode the genetic pathway.
 
 
 ### installation
