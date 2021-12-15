@@ -27,7 +27,7 @@ Put MagicLamp.py script $PATH into your bash profile
 
     export PATH=$PATH:$(pwd)
 
-### Dependencies (only if you did not use the setup.sh script to configure a Conda environment)
+## Dependencies (only if you did not use the setup.sh script to configure a Conda environment)
 #### Required
 * Python (version 3.6 or higher)
 * BLAST (version 2.7.1+)
