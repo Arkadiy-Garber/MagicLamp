@@ -12,7 +12,7 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
 We encourage users to submit their custom-built HMM sets for specific pathways or processes. Please email the following material to agarber4@asu.edu: 1) zipped folder containing the HMM files, 2) filled-out rules-template.csv file. Optionally, users can also provide 1) genome(s) known to encode the genetic pathway(s), and 2) genome(s) known not to encode the genetic pathway.
 
 
-### installation
+### Installation
 #### quick install (if you have Conda installed)
     git clone https://github.com/Arkadiy-Garber/MagicLamp.git
     cd MagicLamp
