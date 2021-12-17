@@ -9,7 +9,11 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
 
 
 ### Submitting custom HMM sets
-We encourage users to submit their custom-built HMM sets for specific pathways or processes. Please email the following material to agarber4@asu.edu: 1) zipped folder containing the HMM files, 2) filled-out rules-template.csv file. Optionally, users can also provide 1) genome(s) known to encode the genetic pathway(s), and 2) genome(s) known not to encode the genetic pathway.
+An improtant feature of MagicLamp is the ability of users to use their own HMM sets with HmmGenie:
+
+    MagicLamp.py HmmGenie -bin_dir bins/ -bin_ext fna -hmm_dir HMMs/ -hmm_ext hmm -rules rules-template.csv
+
+We encourage users to submit their custom-built or compiled HMM sets for specific pathways or processes. Please email the following material to agarber4@asu.edu: 1) zipped folder containing the HMM files, 2) filled-out rules-template.csv file. Optionally, users can also provide 1) genome(s) known to encode the genetic pathway(s), and 2) genome(s) known not to encode the genetic pathway.
 
 
 ## Installation
