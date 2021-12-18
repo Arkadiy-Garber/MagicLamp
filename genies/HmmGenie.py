@@ -634,6 +634,18 @@ def main():
                 operonMetaDict[operon] = minHits
                 if importance == "1":
                     operonMainDict[operon].append(hmm)
+    else:
+        metaDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        for i in args.hmm_dir:
+            if lastItem(i.split(".")) == remove(args.hmm_ext, ["."]):
+                hmm = i
+                metaDict[hmm]["gene"] = allButTheLast(hmm, ".")
+                metaDict[hmm]["operon"] = "unnamed_operon"
+                metaDict[hmm]["minHits"] = 1
+                metaDict[hmm]["bitcut"] = 0
+                metaDict[hmm]["evalue"] = args.eval
+                metaDict[hmm]["minlength"] = 0
+                metaDict[hmm]["maxlength"] = 1000000
 
     # ******************* BEGINNING MAIN ALGORITHM **********************************))))
     print("\nStarting main pipeline...")
@@ -694,7 +706,7 @@ def main():
                                     HMMdict[i][orf]["bitcut"] = metaDict[hmm]["bitcut"]
                                 else:
                                     # COMPARING HITS FROM DIFFERENT HMM FILES TO THE SAME ORF
-                                    if bit > HMMdict[i][orf]["bit"]:
+                                    if evalue > HMMdict[i][orf]["evalue"]:
                                         HMMdict[i][orf]["hmm"] = hmm
                                         HMMdict[i][orf]["evalue"] = evalue
                                         HMMdict[i][orf]["bit"] = bit
@@ -788,59 +800,63 @@ def main():
     os.system("mv -f %s/*-HMM %s/HMM_results/" % (outDirectory, outDirectory))
 
     # ****************************** CUSTOM-RULE-BASED FILTERING ************************************************
-    clusterDict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-    summary = open("%s/summary-2.csv" % args.out)
-    out = open("%s/summary-3.csv" % args.out, "w")
-    out.write("genome/metagenome,gene_call,hmm_file,gene,e_value,bit_score,bit_score_cutoff,cluster_id,aa_seq\n")
-    for i in summary:
-        ls = i.rstrip().split(",")
+    if args.rules != "NA":
+        clusterDict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+        summary = open("%s/summary-2.csv" % args.out)
+        out = open("%s/summary-3.csv" % args.out, "w")
+        out.write("genome/metagenome,gene_call,hmm_file,gene,e_value,bit_score,bit_score_cutoff,cluster_id,aa_seq\n")
+        for i in summary:
+            ls = i.rstrip().split(",")
 
-        if not re.match(r'#', i.rstrip()):
-            hmmFile = ls[2]
-            clusterNum = ls[6]
-            clusterDict[ls[0]][clusterNum]["ls"].append(ls)
-            clusterDict[ls[0]][clusterNum]["hmms"].append(hmmFile)
-            if hmmFile not in clusterDict[ls[0]][clusterNum]["unqHmms"]:
-                clusterDict[ls[0]][clusterNum]["unqHmms"].append(hmmFile)
+            if not re.match(r'#', i.rstrip()):
+                hmmFile = ls[2]
+                clusterNum = ls[6]
+                clusterDict[ls[0]][clusterNum]["ls"].append(ls)
+                clusterDict[ls[0]][clusterNum]["hmms"].append(hmmFile)
+                if hmmFile not in clusterDict[ls[0]][clusterNum]["unqHmms"]:
+                    clusterDict[ls[0]][clusterNum]["unqHmms"].append(hmmFile)
 
-    masterDict = defaultdict(lambda: defaultdict(list))
-    for i in clusterDict.keys():
-        # print(i)
-        for k in clusterDict[i]:
-            # print(k)
-            clusterNum = k
-            ls = clusterDict[i][k]["ls"]
-            hmms = (clusterDict[i][k]["hmms"])
-            unqHmms = (clusterDict[i][k]["unqHmms"])
-            operons = []
-            for j in ls:
-                operon = metaDict[j[2]]["operon"]
-                if operon not in operons:
-                    operons.append(operon)
-            passDict = defaultdict(list)
-            for j in operons:
-                operon = j
-                minHits = operonMetaDict[operon]
-                if len(unqHmms) >= int(minHits) and compare(unqHmms, operonMainDict[operon]):
-                    passDict[operon].append(ls[0][6])
-            for j in ls:
-                operon = metaDict[j[2]]["operon"]
-                if operon in passDict:
-                    if j[6] in passDict[operon]:
-                        masterDict[j[0]][clusterNum].append(j)
+        masterDict = defaultdict(lambda: defaultdict(list))
+        for i in clusterDict.keys():
+            # print(i)
+            for k in clusterDict[i]:
+                # print(k)
+                clusterNum = k
+                ls = clusterDict[i][k]["ls"]
+                hmms = (clusterDict[i][k]["hmms"])
+                unqHmms = (clusterDict[i][k]["unqHmms"])
+                operons = []
+                for j in ls:
+                    operon = metaDict[j[2]]["operon"]
+                    if operon not in operons:
+                        operons.append(operon)
+                passDict = defaultdict(list)
+                for j in operons:
+                    operon = j
+                    minHits = operonMetaDict[operon]
+                    if len(unqHmms) >= int(minHits) and compare(unqHmms, operonMainDict[operon]):
+                        passDict[operon].append(ls[0][6])
+                for j in ls:
+                    operon = metaDict[j[2]]["operon"]
+                    if operon in passDict:
+                        if j[6] in passDict[operon]:
+                            masterDict[j[0]][clusterNum].append(j)
 
-    for i in masterDict.keys():
-        for j in masterDict[i]:
-            for k in masterDict[i][j]:
-                # out.write(",".join(k) + "\n")
-                out.write(k[0] + "," + k[1] + "," + k[2] + "," + str(metaDict[k[2]]["gene"]) + "," + k[3] + "," + k[4] + "," + k[5] + "," + k[6] + "," + k[7] + "\n")
-            out.write("#########################################\n")
-        out.write("#********************************************************************\n")
-        out.write("#********************************************************************\n")
-        out.write("#********************************************************************\n")
-    out.close()
-    os.system("mv %s/summary-3.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
-    os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
+        for i in masterDict.keys():
+            for j in masterDict[i]:
+                for k in masterDict[i][j]:
+                    # out.write(",".join(k) + "\n")
+                    out.write(k[0] + "," + k[1] + "," + k[2] + "," + str(metaDict[k[2]]["gene"]) + "," + k[3] + "," + k[4] + "," + k[5] + "," + k[6] + "," + k[7] + "\n")
+                out.write("#########################################\n")
+            out.write("#********************************************************************\n")
+            out.write("#********************************************************************\n")
+            out.write("#********************************************************************\n")
+        out.close()
+        os.system("mv %s/summary-3.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
+        os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
+
+    else:
+        os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
 
     # *********************************** CREATING A PHYLOGENETIC TREE ******************************************
     print("\nWorking on the phylogenetic tree:")
