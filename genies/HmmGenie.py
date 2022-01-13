@@ -666,6 +666,10 @@ def main():
 
             for hmm in HMMdirLS:  # ITERATING THROUGH ALL THE HMM FILES IN THE HMM DIRECTORY
                 if lastItem(hmm.split(".")) == args.hmm_ext:
+                    if hmm not in metaDict.keys():
+                        print("did not detect %s in the rules.csv file. Using the defaults for evalue and bit score cutoffs" % (hmm))
+                        metaDict[hmm]["evalue"] = evalue
+                        metaDict[hmm]["bitcut"] = bitcut
 
                     count += 1
                     perc = (count / numHMMs) * 100
@@ -1120,7 +1124,7 @@ def main():
         for i in final:
             if not re.match(r'#', i):
                 ls = (i.rstrip().split(","))
-                if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
+                if ls[3] != "gene":
                     cell = ls[0]
                     orf = ls[1]
                     gene = ls[2]
