@@ -387,8 +387,9 @@ def main():
                   "you have Conda installed. Otherwise, please run the setupe-noconda.sh script and put MagicLamp.py \n"
                   "into your $PATH")
             raise SystemExit
+        os.system("rm mainDir.txt")
 
-    os.system("rm rscripts.txt mainDir.txt")
+    os.system("rm rscripts.txt")
 
     args = parser.parse_known_args()[0]
 
@@ -1115,7 +1116,6 @@ def main():
         print('......')
         print(".......")
         print("Finished!")
-
 
     # GENE COUNTS-BASED ABUNDANCE
     else:
