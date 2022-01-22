@@ -7,6 +7,8 @@ There is no official publication for MagicLamp. If it was useful for your work, 
 
 Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLamp: toolkit for annotation of 'omics datasets using curated HMM sets. 2021: MagicLamp, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
 
+There are two tutorials available for this software, available in this repository's wiki: https://github.com/Arkadiy-Garber/MagicLamp/wiki#welcome-to-the-magiclamp-wiki
+
 ## Installation
 ### Quick install (if you have Conda installed)
     git clone https://github.com/Arkadiy-Garber/MagicLamp.git
