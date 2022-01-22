@@ -349,6 +349,10 @@ def main():
                         help="invoke this flag if you would like HmmGenie to make a word cloud based on the data",
                         const=True, nargs="?")
 
+    parser.add_argument('--phobius', type=str,
+                        help="invoke this flag if you would like HmmGenie to use Phobius for signal peptide and transmembrane prediction",
+                        const=True, nargs="?")
+
     # parser.add_argument('--makeplots', type=str,
     #                     help="include this flag if you would like HmmGenie to make some figures from your data?. "
     #                          "To take advantage of this part of the pipeline, you will need to have Rscipt installed. It is a way for R to be called directly from the command line. "
