@@ -84,6 +84,9 @@ We encourage users to submit their custom-built or compiled HMM sets for specifi
 #### if you already ran LithoGenie once, but want to re-do the heatmap file with a different category, use the --skip flag
     MagicLamp.py LithoGenie -bin_dir genomes/ -bin_ext fna -out lithogenie_output --cat iron --skip
 
+#### if you already ran LithoGenie once, but want to re-do the heatmap file with a different category, use the --skip flag
+    MagicLamp.py LithoGenie -bin_dir genomes/ -bin_ext fna -out lithogenie_output --cat iron --skip
+
 #### full list of LithoGenie categories (default action of the program is to create a broad-category heatmap)
 * iron
 * sulfur
@@ -101,4 +104,6 @@ We encourage users to submit their custom-built or compiled HMM sets for specifi
 * selenium
 
 *(many of the HMMs used by LithoGenie were developed and compiled by Karthik Anantharaman: https://github.com/kanantharaman/metabolic-hmms)*
+
+
 
