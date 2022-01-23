@@ -84,7 +84,7 @@ We encourage users to submit their custom-built or compiled HMM sets for specifi
 #### if you already ran LithoGenie once, but want to re-do the heatmap file with a different category, use the --skip flag
     MagicLamp.py LithoGenie -bin_dir genomes/ -bin_ext fna -out lithogenie_output --cat iron --skip
 
-#### if you already ran LithoGenie once, but want to re-do the heatmap file with a different category, use the --skip flag
+#### you can also include prediction of signal peptides and transmembrane domains with [Phobius](https://phobius.sbc.su.se/), using the --phobius flag
     MagicLamp.py LithoGenie -bin_dir genomes/ -bin_ext fna -out lithogenie_output --cat iron --skip
 
 #### full list of LithoGenie categories (default action of the program is to create a broad-category heatmap)
@@ -103,7 +103,7 @@ We encourage users to submit their custom-built or compiled HMM sets for specifi
 * urea
 * selenium
 
-*(many of the HMMs used by LithoGenie were developed and compiled by Karthik Anantharaman: https://github.com/kanantharaman/metabolic-hmms)*
+*many of the HMMs used by LithoGenie were developed and compiled by Karthik Anantharaman: https://github.com/kanantharaman/metabolic-hmms*
 
-
+*Phobius is not available through Anaconda, so the executables are included in this repository. Standalone copy of Phobius was obtained from the following website: https://phobius.sbc.su.se/data.html, and users should cite the following article: Käll, L., Krogh, A., & Sonnhammer, E. L. L. (2004). A combined transmembrane topology and signal peptide prediction method. Journal of Molecular Biology, 338(5), 1027–1036.*
 
