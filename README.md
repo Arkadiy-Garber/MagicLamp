@@ -105,5 +105,7 @@ We encourage users to submit their custom-built or compiled HMM sets for specifi
 
 *many of the HMMs used by LithoGenie were developed and compiled by Karthik Anantharaman: https://github.com/kanantharaman/metabolic-hmms*
 
-*Phobius is not available through Anaconda, so the executables are included in this repository. Standalone copy of Phobius was obtained from the following website: https://phobius.sbc.su.se/data.html, and users should cite the following article: Käll, L., Krogh, A., & Sonnhammer, E. L. L. (2004). A combined transmembrane topology and signal peptide prediction method. Journal of Molecular Biology, 338(5), 1027–1036.*
+*Phobius is not available through Anaconda, so the executables are included in this repository. Standalone copy of Phobius was obtained from the following website: https://phobius.sbc.su.se/data.html, and users should cite the following article:
+
+Käll, L., Krogh, A., & Sonnhammer, E. L. L. (2004). A combined transmembrane topology and signal peptide prediction method. Journal of Molecular Biology, 338(5), 1027–1036.*
 
