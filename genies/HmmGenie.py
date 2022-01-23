@@ -301,6 +301,8 @@ def main():
 
     parser.add_argument('-eval', type=str, help="e-value cutoff for hmmsearch. Default = 1E-10.", default=float(1E-10))
 
+    parser.add_argument('-bit', type=str, help="bit score cutoff for hmmsearch. Default = 20.", default=float(20))
+
     parser.add_argument('-clu', type=str, help="minimum size of a gene cluster/operon to be considered for reporting (default = 1).",
                         default=int(1))
 
@@ -465,6 +467,7 @@ def main():
     # *************** CALL ORFS FROM BINS AND READ THE ORFS INTO HASH MEMORY ************************ #
     BinDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
     for i in binDirLS:
+        print(i)
         if lastItem(i.split(".")) == args.bin_ext:
             cell = i
             if not args.gbk:
@@ -641,16 +644,16 @@ def main():
                     operonMainDict[operon].append(hmm)
     else:
         metaDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
-        for i in args.hmm_dir:
+        for i in os.listdir(args.hmm_dir):
             if lastItem(i.split(".")) == remove(args.hmm_ext, ["."]):
                 hmm = i
                 metaDict[hmm]["gene"] = allButTheLast(hmm, ".")
                 metaDict[hmm]["operon"] = "unnamed_operon"
                 metaDict[hmm]["minHits"] = 1
-                metaDict[hmm]["bitcut"] = 0
-                metaDict[hmm]["evalue"] = args.eval
-                metaDict[hmm]["minlength"] = 0
-                metaDict[hmm]["maxlength"] = 1000000
+                metaDict[hmm]["bitcut"] = float(args.bit)
+                metaDict[hmm]["evalue"] = float(args.eval)
+                metaDict[hmm]["minlength"] = 50
+                metaDict[hmm]["maxlength"] = 10000
 
     # ******************* BEGINNING MAIN ALGORITHM **********************************))))
     print("\nStarting main pipeline...")
@@ -670,11 +673,11 @@ def main():
                     numHMMs += 1
 
             for hmm in HMMdirLS:  # ITERATING THROUGH ALL THE HMM FILES IN THE HMM DIRECTORY
-                if lastItem(hmm.split(".")) == args.hmm_ext:
+                if lastItem(hmm.split(".")) == remove(args.hmm_ext, ["."]):
                     if hmm not in metaDict.keys():
                         print("did not detect %s in the rules.csv file. Using the defaults for evalue and bit score cutoffs" % (hmm))
-                        metaDict[hmm]["evalue"] = evalue
-                        metaDict[hmm]["bitcut"] = bitcut
+                        metaDict[hmm]["evalue"] = args.eval
+                        metaDict[hmm]["bitcut"] = args.bit
 
                     count += 1
                     perc = (count / numHMMs) * 100
@@ -705,7 +708,15 @@ def main():
                             bitcut = float(metaDict[hmm]["bitcut"])
                             orf = ls[0]
                             seq = BinDict[cell][orf]
-                            if bit > bitcut and len(seq) > metaDict[hmm]["minlength"] and len(seq) < metaDict[hmm]["maxlength"]:
+                            # print("")
+                            # print(len(seq))
+                            # print(metaDict[hmm]["minlength"])
+                            # print(metaDict[hmm]["maxlength"])
+                            # print("+")
+                            # print(bit)
+                            # print(bitcut)
+
+                            if bit > bitcut and len(seq) >= metaDict[hmm]["minlength"] and len(seq) <= metaDict[hmm]["maxlength"]:
                                 # LOADING HMM HIT INTO DICTIONARY, BUT ONLY IF THE ORF DID NOT HAVE ANY OTHER HMM HITS
                                 if orf not in HMMdict[i]:
                                     HMMdict[i][orf]["hmm"] = hmm
@@ -866,10 +877,12 @@ def main():
 
     else:
         os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
+        os.system("cp %s/genie-summary-allResults.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
+
 
     # *********************************** CREATING A PHYLOGENETIC TREE ******************************************
-    print("\nWorking on the phylogenetic tree:")
     if args.tree:
+        print("\nWorking on the phylogenetic tree:")
         # checking for presence of correct files
         alnDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
         for i in sorted(HMMdirLS):
@@ -1007,12 +1020,46 @@ def main():
             os.system("mkdir -p %s/wordClouds" % args.out)
             os.system("mv %s/*words* %s/wordClouds/" % (args.out, args.out))
 
+    if args.phobius:
+        out = open("%s/genie-seqs.faa" % args.out, "w")
+        summary = open("%s/genie-summary-rulesFiltered.csv" % args.out)
+        for i in summary:
+            if not re.match(r'#', i):
+                ls = i.rstrip().split(",")
+                if ls[1] != "gene_call":
+                    out.write(">" + ls[0] + "-" + ls[1] + "\n")
+                    out.write(remove(ls[8], ["*"]) + "\n")
+
+        os.system("phobius.pl -short %s/genie-seqs.faa > %s/genie-seqs.phobius" % (args.out, args.out))
+        phobiusDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+        phobius = open("%s/genie-seqs.phobius" % args.out)
+        for i in phobius:
+            ls = delim(i.rstrip())
+            phobiusDict[ls[0]]["tm"] = ls[1]
+            phobiusDict[ls[0]]["sp"] = ls[2]
+
+        summary = open("%s/genie-summary-rulesFiltered.csv" % args.out)
+        out = open("%s/genie-summary-rulesFiltered-2.csv" % args.out, "w")
+        for i in summary:
+            if not re.match(r'#', i):
+                ls = i.rstrip().split(",")
+                if ls[1] != "gene_call":
+                    out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + ls[5] + "," + ls[6] + "," + ls[7] + "," + str(phobiusDict[ls[0] + "-" + ls[1]]["tm"]) + "," + str(phobiusDict[ls[0] + "-" + ls[1]]["sp"]) + "," + ls[8] + "\n")
+                else:
+                    out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + ls[5] + "," + ls[6] + "," + ls[7] + "," + str("TM_domains") + "," + str("singal_peptide") + "," + ls[8] + "\n")
+            else:
+                out.write(i.rstrip() + "\n")
+        out.close()
+
+        os.system("mv %s/genie-summary-rulesFiltered-2.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
+
     # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
     cats = []
     for hmm in HMMdirLS:
         if lastItem(hmm.split(".")) == args.hmm_ext:
             cats.append(hmm)
     print("Working on the heatmap-format CSV")
+
     # COVERAGE-BASED ABUNDANCE
     if args.bams != "NA":
         depthDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
@@ -1057,20 +1104,19 @@ def main():
                     Dict[cell][gene].append(float(depthDict[cell][contig]))
 
         outHeat = open("%s/hmmgenie.readDepth.heatmap.csv" % (args.out), "w")
-        outHeat.write("X" + ',')
+        outHeat.write("X")
         for i in sorted(Dict.keys()):
-            outHeat.write(i + ",")
+            outHeat.write("," + i)
         outHeat.write("\n")
 
         for i in cats:
-            outHeat.write(i + ",")
+            outHeat.write(i)
             for j in sorted(Dict.keys()):
                 if not re.match(r'#', j):
-                    outHeat.write(str(SUM(Dict[j][i])) + ",")
+                    outHeat.write("," + str(SUM(Dict[j][i])))
             outHeat.write("\n")
 
         outHeat.close()
-
 
     # COVERAGE-BASED ABUNDANCE USING ONLY ONE BAM FILE
     elif args.bam != "NA":
@@ -1104,16 +1150,16 @@ def main():
                     Dict[cell][gene].append(float(depthDict[contig]))
 
         outHeat = open("%s/hmmgenie.readDepth.heatmap.csv" % (args.out), "w")
-        outHeat.write("X" + ',')
+        outHeat.write("X")
         for i in sorted(Dict.keys()):
-            outHeat.write(i + ",")
+            outHeat.write("," + i)
         outHeat.write("\n")
 
         for i in cats:
-            outHeat.write(i + ",")
+            outHeat.write(i)
             for j in sorted(Dict.keys()):
                 if not re.match(r'#', j):
-                    outHeat.write(str(SUM(Dict[j][i])) + ",")
+                    outHeat.write("," + str(SUM(Dict[j][i])))
             outHeat.write("\n")
 
         outHeat.close()
@@ -1128,6 +1174,7 @@ def main():
         for i in final:
             if not re.match(r'#', i):
                 ls = (i.rstrip().split(","))
+                print(ls)
                 if ls[3] != "gene":
                     cell = ls[0]
                     orf = ls[1]
@@ -1146,21 +1193,24 @@ def main():
                 normDict[i] = len(file.keys())
 
         outHeat = open("%s/genie.heatmap.csv" % (outDirectory), "w")
-        outHeat.write("X" + ',')
+        outHeat.write("X")
         for i in sorted(Dict.keys()):
-            outHeat.write(i + ",")
+            outHeat.write("," + i)
         outHeat.write("\n")
 
         for i in cats:
-            outHeat.write(i + ",")
+            outHeat.write(i)
             for j in sorted(Dict.keys()):
                 if not re.match(r'#', j):
                     if args.norm:
-                        outHeat.write(str((len(Dict[j][i]) / int(normDict[j])) * float(100)) + ",")
+                        outHeat.write("," + str((len(Dict[j][i]) / int(normDict[j])) * float(100)))
                     else:
-                        outHeat.write(str((len(Dict[j][i]))) + ",")
+                        outHeat.write("," + str((len(Dict[j][i]))))
             outHeat.write("\n")
         outHeat.close()
+
+        if args.rules == "NA":
+            os.system("rm %s/genie-summary-rulesFiltered.csv" % args.out)
 
         print('......')
         print(".......")
@@ -1168,26 +1218,6 @@ def main():
 
 
     # # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
-    # if args.makeplots:
-    #     print("Running Rscript to generate plots. Do not be alarmed if you see Warning or Error messages from Rscript. "
-    #           "This will not affect any of the output data that was already created. If you see plots generated, great! "
-    #           "If not, you can plot the data as you wish on your own, or start an issue on HmmGenie's GitHub repository\n")
-    #
-    #     if args.norm:
-    #         os.system("Rscript --vanilla %s/DotPlot.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-    #         os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-    #     else:
-    #         os.system("Rscript --vanilla %s/DotPlot-nonorm.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-    #         os.system("Rscript --vanilla %s/dendro-heatmap.R %s/genie.heatmap.csv %s/" % (rscriptDir, outDirectory, outDirectory))
-    #
-    #     print("\n\n\n")
-    #     print("...")
-
-    # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
-    # if args.makeplots:
-    #     print("Running Rscript to generate plots. Do not be alarmed if you see Warning or Error messages from Rscript. "
-    #           "This will not affect any of the output data that was already created. If you don't see plots generated, "
-    #           "please start an issue on HmmGenie's GitHub repository, and paste the error/warning message that you got.\n")
 
     if args.bam == "NA" and args.bams == "NA":
         if args.norm:
