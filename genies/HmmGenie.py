@@ -1030,6 +1030,8 @@ def main():
                     out.write(">" + ls[0] + "-" + ls[1] + "\n")
                     out.write(remove(ls[8], ["*"]) + "\n")
 
+        out.close()
+        
         os.system("phobius.pl -short %s/genie-seqs.faa > %s/genie-seqs.phobius" % (args.out, args.out))
         phobiusDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
         phobius = open("%s/genie-seqs.phobius" % args.out)
