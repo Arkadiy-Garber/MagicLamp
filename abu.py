@@ -338,7 +338,7 @@ parser = argparse.ArgumentParser(
     description=textwrap.dedent('''
     ************************************************************************
 
-    Developed by Arkadiy Garber; agarber4@asu.edu
+    Developed by Nancy Merino Arkadiy Garber; agarber4@asu.edu
     ************************************************************************
     '''))
 
