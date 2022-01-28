@@ -403,7 +403,7 @@ os.system("rm -f rscripts.txt")
 ###################################################################
 
 
-os.system("hmmsearch -o %s/%s.tblout --noali --cpu %s %s %s" % (args.out, args.hmm, args.t, args.hmm, args.ref))
+os.system("hmmsearch -o %s/%s.tblout --noali --cpu %s %s %s" % (args.out, args.hmm, args.cpu, args.hmm, args.ref))
 
 tblout = open("%s/%s.tblout" % (args.out, args.hmm))
 out = open("%s/%s.mod.tblout" % (args.out, args.hmm), "w")
