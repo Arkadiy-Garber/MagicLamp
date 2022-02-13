@@ -467,7 +467,6 @@ def main():
     # *************** CALL ORFS FROM BINS AND READ THE ORFS INTO HASH MEMORY ************************ #
     BinDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
     for i in binDirLS:
-        print(i)
         if lastItem(i.split(".")) == args.bin_ext:
             cell = i
             if not args.gbk:
@@ -620,7 +619,11 @@ def main():
         operonMainDict = defaultdict(list)
         eDict = defaultdict(lambda: 'EMPTY')
         for i in meta:
-            ls = i.rstrip().split(",")
+            if re.findall(r',', i.rstrip()):
+                delimiter = ","
+            else:
+                delimiter = "\t"
+            ls = i.rstrip().split(delimiter)
             if ls[1] != "output gene name":
                 hmm = ls[0]
                 gene = ls[1]
@@ -709,6 +712,7 @@ def main():
                             orf = ls[0]
                             seq = BinDict[cell][orf]
                             # print("")
+                            # print(hmm)
                             # print(len(seq))
                             # print(metaDict[hmm]["minlength"])
                             # print(metaDict[hmm]["maxlength"])
@@ -726,13 +730,13 @@ def main():
                                     HMMdict[i][orf]["bitcut"] = metaDict[hmm]["bitcut"]
                                 else:
                                     # COMPARING HITS FROM DIFFERENT HMM FILES TO THE SAME ORF
-                                    if evalue > HMMdict[i][orf]["evalue"]:
+                                    if bit > HMMdict[i][orf]["bit"]:
                                         HMMdict[i][orf]["hmm"] = hmm
                                         HMMdict[i][orf]["evalue"] = evalue
                                         HMMdict[i][orf]["bit"] = bit
                                         HMMdict[i][orf]["seq"] = seq
                                         HMMdict[i][orf]["bitcut"] = metaDict[hmm]["bitcut"]
-        print("")
+        # print("")
 
     out = open("%s/summary.csv" % (outDirectory), "w")
     out.write("cell" + "," + "ORF" + "," + "HMM" + "," + "evalue" + "," + "bitscore" + "," + "bitscore_cutoff" + "," + "seq" + "\n")
@@ -743,6 +747,7 @@ def main():
                       "," + str(HMMdict[key][j]["bitcut"]) + "," + str(HMMdict[key][j]["seq"]) + "\n")
 
     out.close()
+    # os.system("cp %s/summary.csv %s/summary-save.csv" % (outDirectory, outDirectory))
     # ****************************************** DEREPLICATION *********************************************************
     summary = open(outDirectory + "/summary.csv", "r")
     SummaryDict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 'EMPTY')))
@@ -872,11 +877,13 @@ def main():
             out.write("#********************************************************************\n")
             out.write("#********************************************************************\n")
         out.close()
+        print("mv %s/summary-3.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
         os.system("mv %s/summary-3.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
         os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
 
     else:
         os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
+        print("cp %s/genie-summary-allResults.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
         os.system("cp %s/genie-summary-allResults.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
 
 
@@ -901,7 +908,7 @@ def main():
                 print(i + " has an associated HMM and alignment file")
                 alnDict2[i] = alnDict[i]
             else:
-                print(i + " does not have an associated HMM and alignment file and will be included as a phylo tree")
+                print(i + " does not have an associated HMM and alignment file and will not be included as a phylo tree")
 
         if len(alnDict2.keys()) == 0:
             print("HmmGenie did not detect any alignment files. Aborting tree construction.")
@@ -934,8 +941,10 @@ def main():
                 out.close()
                 print("\nAligning %s HMM hits to seed sequences..." % i)
                 os.system("muscle -in %s/%s.faa -out %s/%s.fa > /dev/null 2>&1" % (args.out, i, args.out, i))
+                os.system("masker.py -i %s/%s.fa -o %s/%s.masked.fa -m 0.3 > /dev/null 2>&1" % (args.out, i, args.out, i))
+                os.system("sleep 2")
                 print("Building phylogenetic tree for %s" % i)
-                os.system("fasttree %s/%s.fa > %s/%s.tre > /dev/null 2>&1" % (args.out, i, args.out, i))
+                os.system("fasttree -quiet -out %s/%s.tre %s/%s.masked.fa" % (args.out, i, args.out, i))
 
             os.system("mkdir -p %s/trees" % args.out)
             os.system("mv %s/*fa %s/trees/" % (args.out, args.out))
@@ -1031,7 +1040,7 @@ def main():
                     out.write(remove(ls[8], ["*"]) + "\n")
 
         out.close()
-        
+
         os.system("phobius.pl -short %s/genie-seqs.faa > %s/genie-seqs.phobius" % (args.out, args.out))
         phobiusDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
         phobius = open("%s/genie-seqs.phobius" % args.out)
@@ -1053,6 +1062,7 @@ def main():
                 out.write(i.rstrip() + "\n")
         out.close()
 
+        print("mv %s/genie-summary-rulesFiltered-2.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
         os.system("mv %s/genie-summary-rulesFiltered-2.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
 
     # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
@@ -1176,7 +1186,6 @@ def main():
         for i in final:
             if not re.match(r'#', i):
                 ls = (i.rstrip().split(","))
-                print(ls)
                 if ls[3] != "gene":
                     cell = ls[0]
                     orf = ls[1]
@@ -1212,12 +1221,12 @@ def main():
         outHeat.close()
 
         if args.rules == "NA":
+            print("removing")
             os.system("rm %s/genie-summary-rulesFiltered.csv" % args.out)
 
         print('......')
         print(".......")
         print("Finished!")
-
 
     # # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
 
