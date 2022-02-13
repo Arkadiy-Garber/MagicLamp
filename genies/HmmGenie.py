@@ -738,7 +738,7 @@ def main():
                                         HMMdict[i][orf]["bit"] = bit
                                         HMMdict[i][orf]["seq"] = seq
                                         HMMdict[i][orf]["bitcut"] = metaDict[hmm]["bitcut"]
-        # print("")
+            print("")
 
     out = open("%s/summary.csv" % (outDirectory), "w")
     out.write("cell" + "," + "ORF" + "," + "HMM" + "," + "evalue" + "," + "bitscore" + "," + "bitscore_cutoff" + "," + "seq" + "\n")
