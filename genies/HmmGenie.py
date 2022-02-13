@@ -634,6 +634,7 @@ def main():
                 evalue = float(ls[6])
                 minlength = int(ls[7])
                 maxlength = int(ls[8])
+                annotation = replace(ls[9], [","], ";")
                 metaDict[hmm]["gene"] = gene
                 metaDict[hmm]["operon"] = operon
                 metaDict[hmm]["minHits"] = minHits
@@ -641,6 +642,7 @@ def main():
                 metaDict[hmm]["evalue"] = evalue
                 metaDict[hmm]["minlength"] = minlength
                 metaDict[hmm]["maxlength"] = maxlength
+                metaDict[hmm]["annotation"] = annotation
                 operonDict[operon].append(hmm)
                 operonMetaDict[operon] = minHits
                 if importance == "1":
@@ -803,6 +805,8 @@ def main():
     print("Clustering ORFs...")
     print("")
     out = open(outDirectory + "/summary-2.csv", "w")
+    out.write(
+        "genome/metagenome,gene_call,hmm_file,gene,e_value,bit_score,bit_score_cutoff,operon,annotation,hemes,cluster_id,aa_seq\n")
     for i in CoordDict.keys():
         # print(".")
         for j in CoordDict[i]:
@@ -812,7 +816,15 @@ def main():
                 if len(RemoveDuplicates(k)) >= int(args.clu):
                     for l in RemoveDuplicates(k):
                         orf = j + "_" + str(l)
-                        out.write(i + "," + orf + "," + SummaryDict[i][orf]["hmm"] + "," + SummaryDict[i][orf]["e"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(SummaryDict[i][orf]["bitcut"]) + "," + str(counter) + "," + str(SummaryDict[i][orf]["seq"]) + "\n")
+                        hmm = SummaryDict[i][orf]["hmm"]
+                        seq = SummaryDict[i][orf]["seq"]
+                        operon = metaDict[hmm]["operon"]
+                        annotation = metaDict[hmm]["annotation"]
+                        gene = metaDict[hmm]["gene"]
+                        numhemes = len(re.findall(r'C(..)CH', seq)) + len(re.findall(r'C(...)CH', seq)) \
+                                   + len(re.findall(r'C(....)CH', seq)) + len(re.findall(r'C(..............)CH', seq)) \
+                                   + len(re.findall(r'C(...............)CH', seq))
+                        out.write(i + "," + orf + "," + hmm + "," + gene + "," + SummaryDict[i][orf]["e"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(SummaryDict[i][orf]["bitcut"]) + "," + operon + "," + annotation + "," + str(numhemes) + "," + str(counter) + "," + str(seq) + "\n")
                     out.write("###############################################\n")
                     counter += 1
     out.close()
@@ -829,13 +841,13 @@ def main():
         clusterDict = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
         summary = open("%s/summary-2.csv" % args.out)
         out = open("%s/summary-3.csv" % args.out, "w")
-        out.write("genome/metagenome,gene_call,hmm_file,gene,e_value,bit_score,bit_score_cutoff,cluster_id,aa_seq\n")
+        out.write("genome/metagenome,gene_call,hmm_file,gene,e_value,bit_score,bit_score_cutoff,operon,annotation,hemes,cluster_id,aa_seq\n")
         for i in summary:
             ls = i.rstrip().split(",")
 
             if not re.match(r'#', i.rstrip()):
                 hmmFile = ls[2]
-                clusterNum = ls[6]
+                clusterNum = ls[10]
                 clusterDict[ls[0]][clusterNum]["ls"].append(ls)
                 clusterDict[ls[0]][clusterNum]["hmms"].append(hmmFile)
                 if hmmFile not in clusterDict[ls[0]][clusterNum]["unqHmms"]:
@@ -852,38 +864,39 @@ def main():
                 unqHmms = (clusterDict[i][k]["unqHmms"])
                 operons = []
                 for j in ls:
-                    operon = metaDict[j[2]]["operon"]
-                    if operon not in operons:
-                        operons.append(operon)
+                    if j[1] != "gene_call":
+                        operon = metaDict[j[2]]["operon"]
+                        if operon not in operons:
+                            operons.append(operon)
                 passDict = defaultdict(list)
                 for j in operons:
-                    operon = j
-                    minHits = operonMetaDict[operon]
-                    if len(unqHmms) >= int(minHits) and compare(unqHmms, operonMainDict[operon]):
-                        passDict[operon].append(ls[0][6])
+                    minHits = operonMetaDict[j]
+                    if len(unqHmms) >= int(minHits) and compare(unqHmms, operonMainDict[j]):
+                        passDict[operon].append(ls[0][10])
                 for j in ls:
                     operon = metaDict[j[2]]["operon"]
                     if operon in passDict:
-                        if j[6] in passDict[operon]:
+                        if j[10] in passDict[operon]:
                             masterDict[j[0]][clusterNum].append(j)
 
         for i in masterDict.keys():
             for j in masterDict[i]:
                 for k in masterDict[i][j]:
-                    # out.write(",".join(k) + "\n")
-                    out.write(k[0] + "," + k[1] + "," + k[2] + "," + str(metaDict[k[2]]["gene"]) + "," + k[3] + "," + k[4] + "," + k[5] + "," + k[6] + "," + k[7] + "\n")
+                    seq = k[11]
+                    numhemes = len(re.findall(r'C(..)CH', seq)) + len(re.findall(r'C(...)CH', seq)) \
+                               + len(re.findall(r'C(....)CH', seq)) + len(re.findall(r'C(..............)CH', seq)) \
+                               + len(re.findall(r'C(...............)CH', seq))
+                    out.write(k[0] + "," + k[1] + "," + k[2] + "," + str(metaDict[k[2]]["gene"]) + "," + k[4] + "," + k[5] + "," + k[6] + "," + str(metaDict[k[2]]["operon"]) + "," + str(metaDict[k[2]]["annotation"]) + "," + str(numhemes) + "," + k[10] + "," + seq + "\n")
                 out.write("#########################################\n")
             out.write("#********************************************************************\n")
             out.write("#********************************************************************\n")
             out.write("#********************************************************************\n")
         out.close()
-        print("mv %s/summary-3.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
         os.system("mv %s/summary-3.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
         os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
 
     else:
         os.system("mv %s/summary-2.csv %s/genie-summary-allResults.csv" % (args.out, args.out))
-        print("cp %s/genie-summary-allResults.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
         os.system("cp %s/genie-summary-allResults.csv %s/genie-summary-rulesFiltered.csv" % (args.out, args.out))
 
 
