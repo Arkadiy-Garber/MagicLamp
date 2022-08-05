@@ -948,7 +948,7 @@ def main():
         final = open("%s/wspgenie-summary.csv" % (args.out), "r")
         for i in final:
             ls = (i.rstrip().split(","))
-            if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
+            if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[1] != "file":
                 if not re.match(r'#', i):
                     cell = ls[1]
                     orf = ls[2]
@@ -998,7 +998,7 @@ def main():
         final = open("%s/wspgenie-summary.csv" % (args.out), "r")
         for i in final:
             ls = (i.rstrip().split(","))
-            if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
+            if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[1] != "file":
                 if not re.match(r'#', i):
                     cell = ls[1]
                     orf = ls[2]
@@ -1033,7 +1033,7 @@ def main():
         for i in final:
             if not re.match(r'#', i):
                 ls = (i.rstrip().split(","))
-                if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[0] != "file":
+                if ls[0] != "bin" and ls[1] != "assembly" and ls[1] != "genome" and ls[1] != "file":
                     cell = ls[1]
                     orf = ls[2]
                     gene = ls[3]
