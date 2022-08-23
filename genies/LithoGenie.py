@@ -2435,7 +2435,10 @@ def main():
                         process = ls[3]
                         substrate = ls[4]
                         contig = allButTheLast(orf, "_")
-                        Dict[cell][process].append(float(depthDict[contig]))
+                        try:
+                            Dict[cell][process].append(float(depthDict[contig]))
+                        except TypeError:
+                            print(contig + " not found in the depth file")
 
             outHeat = open("%s/lithogenie.%s.readDepth.heatmap.csv" % (args.out, args.cat), "w")
             outHeat.write("X" + ',')
