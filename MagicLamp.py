@@ -16,7 +16,7 @@ __version__ = "1"
 __maintainer__ = "Arkadiy Garber"
 __email__ = "rkdgarber@gmail.com"
 
-errorMessage = "Options: MagicLamp.py [ FeGenie | LithoGenie | RosGenie.py | MagnetoGenie.py | WspGenie | Lucifer | GasGenie | MnGenie | CircGenie | PolGenie | HmmGenie | help ]\n"
+errorMessage = "Options: MagicLamp.py [ FeGenie | LithoGenie | RosGenie | MagnetoGenie | WspGenie | Lucifer | GasGenie | MnGenie | CircGenie | PolGenie | HmmGenie | help ]\n"
 
 try:
     argv[1]
