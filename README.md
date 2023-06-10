@@ -45,7 +45,17 @@ An improtant feature of MagicLamp is the ability of users to use their own HMM s
 In the above example, the HMMs/ directory contains the user-compiled or created HMMs, where each HMM file ends with a .hmm filename extension. The rules-template.csv file is provided in the main MagicLamp repository (should be in the same folder as this readme). Users are to fill out this file, providing information on each HMM that they wish to use with this program.
 
 ### Submitting custom HMM sets
-We encourage users to submit their compiled HMM sets for specific pathways or processes. Please submit a pull request or email the folder containing the HMMs to agarber4@asu.edu.                               
+We encourage users to submit their compiled HMM sets for specific pathways or processes. Please submit a pull request or email the folder containing the HMMs to agarber4@asu.edu. 
+
+### Using a custom HMM set with YfGenie
+
+
+
+### Using an existing HMM set/genie that's already in MagicLamp
+
+
+
+
 
 ### Usage
 *(for a list of all available genies)*
