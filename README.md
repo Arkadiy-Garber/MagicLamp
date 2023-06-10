@@ -12,8 +12,8 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
     git clone https://github.com/Arkadiy-Garber/MagicLamp.git
     cd MagicLamp
     bash setup.sh
-    source activate magiclamp
-(if "source activate magiclamp" does not work, you can use "conda activate magiclamp")
+    conda activate magiclamp
+(if "conda activate magiclamp" does not work, you can use "source activate magiclamp")
 
 
 ### Installation if you don't have Conda
@@ -45,8 +45,7 @@ An improtant feature of MagicLamp is the ability of users to use their own HMM s
 In the above example, the HMMs/ directory contains the user-compiled or created HMMs, where each HMM file ends with a .hmm filename extension. The rules-template.csv file is provided in the main MagicLamp repository (should be in the same folder as this readme). Users are to fill out this file, providing information on each HMM that they wish to use with this program.
 
 ### Submitting custom HMM sets
-We encourage users to submit their custom-built or compiled HMM sets for specific pathways or processes. Please email the following material to agarber4@asu.edu: 1) zipped folder containing the HMM files, 2) filled-out rules-template.csv file. Optionally, users can also provide 1) genome(s) known to encode the genetic pathway(s), and 2) genome(s) known not to encode the genetic pathway.
-                               
+We encourage users to submit their compiled HMM sets for specific pathways or processes. Please submit a pull request or email the folder containing the HMMs to agarber4@asu.edu.                               
 
 ### Usage
 *(for a list of all available genies)*
