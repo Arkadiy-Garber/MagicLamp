@@ -12,25 +12,25 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
     cd MagicLamp
     bash setup.sh
     conda activate magiclamp
-(if "conda activate magiclamp" does not work, you can use "source activate magiclamp")
 
+### Using your own HMM set with YfGenie
+    YfGenie.py --hmm -d HMMs_dir -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
-### Using a custom HMM set with YfGenie
-    YfGenie.py --hmm -d /bin/HMMs_dir -a GCF_023585845.1 -o GCF_023585845.1 -t 16
+- In the above command _GCF_023585845.1_ represents the RefSeq assembly accession.
+- HMMs_dir is the folder containing HMM files.
+- You can also provide a meta-data file via the -m argument with gene and pathway names for each provided HMM (formatted after the _hmm_summary.csv_ file in this repo).
 
-in the above command GCF_023585845.1 represents the RefSeq assembly accession
-/bin/HMMs_dir is the path to the HMM directory, which should be formated in the same way as the sample HMM directory that's present in this repository
+### Relying on pre-existing annotations
+    YfGenie.py --gff -y genes.tsv -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
-(We encourage users to submit their compiled HMM sets for specific pathways or processes. Please submit a pull request or email the folder containing the HMMs to agarber4@asu.edu) 
+- In the above command _GCF_023585845.1_ represents the RefSeq assembly accession.
+- genes.tsv is a single-column file listing gene names of interest (example file of the same names can be found in this repo).
 
+### Simply extracting amino acid usgae frequencies and GC content from the provided genome assembly
+    YfGenie.py --gc -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
-
-
-
-### Using an existing HMM set/genie that's already in MagicLamp
-
-
-
+### The works (YfGenie can be run in multiple modes at once)
+    YfGenie.py --hmm --gff --gc -d HMMs_dir -y genes.tsv -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
 
 ### Usage
