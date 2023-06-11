@@ -18,19 +18,21 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
 ### Using your own HMM set with YfGenie
     YfGenie.py --hmm -d HMMs_dir -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
-- In the above command _GCF_023585845.1_ represents the RefSeq assembly accession.
-- HMMs_dir is the folder containing raw HMM files. See the subfolders inside the hmms directory to see what these look like.
-- You can also provide a meta-data file via the -m argument with gene and pathway names for each provided HMM (formatted after the _hmm_summary.csv_ file in this repo).
+_- In the above command _GCF_023585845.1_ represents the RefSeq assembly accession._
+
+_- HMMs_dir is the folder containing raw HMM files. See the subfolders inside the hmms directory to see what these look like._
+
+_- You can also provide a meta-data file via the -m argument with gene and pathway names for each provided HMM (formatted after the _hmm_summary.csv_ file in this repo)._
 
 ### Relying on annotation within GFF file (recommended if the gene/pathway is well-annotated)
     YfGenie.py --gff -y genes.tsv -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
-- genes.tsv is a single-column file listing gene names of interest (example file of the same names can be found in this repo).
+_- genes.tsv is a single-column file listing gene names of interest (example file of the same names can be found in this repo)._
 
 ### Simply extracting amino acid usage frequencies and GC content from the provided genome assembly
     YfGenie.py --gc -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
-- this will generate a single-line TSV file that lists usage frequences for each amino acid residue.
+_- this will generate a single-line TSV file that lists usage frequences for each amino acid residue._
 
 ### The works (YfGenie can be run in multiple modes at once)
     YfGenie.py --hmm --gff --gc -d HMMs_dir -y genes.tsv -a GCF_023585845.1 -o GCF_023585845.1 -t 16
