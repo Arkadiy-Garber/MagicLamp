@@ -13,6 +13,8 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
     bash setup.sh
     conda activate magiclamp
 
+## Usage
+
 ### Using your own HMM set with YfGenie
     YfGenie.py --hmm -d HMMs_dir -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
@@ -32,5 +34,10 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
 
 ### The works (YfGenie can be run in multiple modes at once)
     YfGenie.py --hmm --gff --gc -d HMMs_dir -y genes.tsv -a GCF_023585845.1 -o GCF_023585845.1 -t 16
+
+### You can also provide locally annotated files via the -c CONTIGS, -g GFF, and -p PROTs arguments
+    YfGenie.py --hmm --gff --gc -d HMMs_dir -y genes.tsv -c genome.fa -g genome.gff -p genome.faa -o genome_out -t 16
+
+
 
 
