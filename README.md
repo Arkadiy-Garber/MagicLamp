@@ -17,7 +17,7 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
     YfGenie.py --hmm -d HMMs_dir -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
 - In the above command _GCF_023585845.1_ represents the RefSeq assembly accession.
-- HMMs_dir is the folder containing HMM files.
+- HMMs_dir is the folder containing raw HMM files. See the subfolders inside the hmms directory to see what these look like.
 - You can also provide a meta-data file via the -m argument with gene and pathway names for each provided HMM (formatted after the _hmm_summary.csv_ file in this repo).
 
 ### Relying on pre-existing annotations rom the GFF file (recommended only if the gene/pathway is well-annotated)
