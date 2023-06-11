@@ -34,7 +34,5 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
     YfGenie.py --hmm --gff --gc -d HMMs_dir -y genes.tsv -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
 
-*Phobius is not available through Anaconda, so the executables (phobius.pl, phobius.options, phobius.model, decodeanhmm, and decodeanhmm.64bit) are included in this repository. Standalone copy of Phobius was obtained from the following website: https://phobius.sbc.su.se/data.html, and users should cite the following article:*
-
-Käll, L., Krogh, A., & Sonnhammer, E. L. L. (2004). A combined transmembrane topology and signal peptide prediction method. Journal of Molecular Biology, 338(5), 1027–1036.
+<sup>*Phobius is not available through Anaconda, so the executables (phobius.pl, phobius.options, phobius.model, decodeanhmm, and decodeanhmm.64bit) are included in this repository. Standalone copy of Phobius was obtained from the following website: https://phobius.sbc.su.se/data.html, and users should cite appropriately.*</sup>
 
