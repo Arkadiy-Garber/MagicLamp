@@ -22,12 +22,12 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
 - HMMs_dir is the folder containing raw HMM files. See the subfolders inside the hmms directory to see what these look like.
 - You can also provide a meta-data file via the -m argument with gene and pathway names for each provided HMM (formatted after the _hmm_summary.csv_ file in this repo).
 
-### Relying on pre-existing annotations rom the GFF file (recommended only if the gene/pathway is well-annotated)
+### Relying on annotation within GFF file (recommended if the gene/pathway is well-annotated)
     YfGenie.py --gff -y genes.tsv -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
 - genes.tsv is a single-column file listing gene names of interest (example file of the same names can be found in this repo).
 
-### Simply extracting amino acid usgae frequencies and GC content from the provided genome assembly
+### Simply extracting amino acid usage frequencies and GC content from the provided genome assembly
     YfGenie.py --gc -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
 - this will generate a single-line TSV file that lists usage frequences for each amino acid residue.
