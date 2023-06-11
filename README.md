@@ -48,4 +48,4 @@ _- this will generate a single-line TSV file that lists usage frequences for eac
         YfGenie.py -a $i -o $i -t 16 --hmm -d HMMs_dir --gc
     done < genomes.txt 
 
-_- the above command is a "while loop", where genomes.txt is a single-column text file that contains a list of RefSeq or GenBank assemblies_
+_- the above command is a "while loop", where genomes.txt is a single-column text file that contains a list of RefSeq or GenBank assemblies (see example file in this repo)_
