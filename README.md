@@ -42,6 +42,10 @@ _- this will generate a single-line TSV file that lists usage frequences for eac
 ### You can also provide locally annotated files via the -c CONTIGS, -g GFF, and -p PROTs arguments
     YfGenie.py --hmm --gff --gc -d HMMs_dir -y genes.tsv -c genome.fa -g genome.gff -p genome.faa -o genome_out -t 16
 
+### Example command providing multiple assemblies at a time:
 
+    while read i; do
+        YfGenie.py -a $i -o $i -t 16 --hmm -d HMMs_dir --gc
+    done < genomes.txt 
 
-
+_- the above command is a "while loop", where genomes.txt is a single-column text file that contains a list of RefSeq or GenBank assemblies_
