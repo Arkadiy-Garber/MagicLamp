@@ -16,11 +16,12 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
 
 
 ### Using a custom HMM set with YfGenie
-    YfGenie.py -a GCF_023585845.1 -o GCF_023585845.1 -t 16 --gc
-(in the above command GCF_023585845.1 represents the assembly accession, which is associated with a specific)
+    YfGenie.py --hmm -d /bin/HMMs_dir -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
-### Submitting custom HMM sets
-We encourage users to submit their compiled HMM sets for specific pathways or processes. Please submit a pull request or email the folder containing the HMMs to agarber4@asu.edu. 
+in the above command GCF_023585845.1 represents the RefSeq assembly accession
+/bin/HMMs_dir is the path to the HMM directory, which should be formated in the same way as the sample HMM directory that's present in this repository
+
+(We encourage users to submit their compiled HMM sets for specific pathways or processes. Please submit a pull request or email the folder containing the HMMs to agarber4@asu.edu) 
 
 
 
