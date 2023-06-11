@@ -28,6 +28,8 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
 ### Simply extracting amino acid usgae frequencies and GC content from the provided genome assembly
     YfGenie.py --gc -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
+- this will generate a single-line TSV file that lists usage frequences for each amino acid residue.
+
 ### The works (YfGenie can be run in multiple modes at once)
     YfGenie.py --hmm --gff --gc -d HMMs_dir -y genes.tsv -a GCF_023585845.1 -o GCF_023585845.1 -t 16
 
