@@ -5,10 +5,9 @@
 ## Citing MagicLamp
 There is no official publication for MagicLamp. If it was useful for your work, please cite as follows:
 
-Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLamp: toolkit for annotation of 'omics datasets using curated HMM sets. 2021: MagicLamp, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
+Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLamp: toolkit for annotation of genomic data using discreet and curated HMM sets. 2023: MagicLamp, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
 
-## Installation
-### Quick install (if you have Conda installed)
+## Installation (Conda is required for this software)
     git clone https://github.com/Arkadiy-Garber/MagicLamp.git
     cd MagicLamp
     bash setup.sh
@@ -16,38 +15,14 @@ Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLa
 (if "conda activate magiclamp" does not work, you can use "source activate magiclamp")
 
 
-### Installation if you don't have Conda
-
-Put MagicLamp.py script $PATH into your bash profile
-
-    export PATH=$PATH:$(pwd)
-
-#### Dependencies (only if you did not use the setup.sh script to configure a Conda environment)
-##### Required
-* Python (version 3.6 or higher)
-* BLAST (version 2.7.1+)
-* Prodigal (version 2.6.3)
-* HMMER (version 3.2.1)
-
-##### Optional
-* Diamond (version 0.9.22.123) -- if you performing cross-validation against a reference database
-* R (version 3.5.1) -- if generating plots
-* Rscript -- if generating plots
-
-## Tutorials
-There are two tutorials available for this software, available in this repository's wiki: https://github.com/Arkadiy-Garber/MagicLamp/wiki#welcome-to-the-magiclamp-wiki
-
-### Using HmmGenie
-An improtant feature of MagicLamp is the ability of users to use their own HMM sets with HmmGenie, like so:
-
-    MagicLamp.py HmmGenie -bin_dir bins/ -bin_ext fna -hmm_dir HMMs/ -hmm_ext hmm -rules rules-template.csv
-
-In the above example, the HMMs/ directory contains the user-compiled or created HMMs, where each HMM file ends with a .hmm filename extension. The rules-template.csv file is provided in the main MagicLamp repository (should be in the same folder as this readme). Users are to fill out this file, providing information on each HMM that they wish to use with this program.
+### Using a custom HMM set with YfGenie
+    YfGenie.py -a GCF_023585845.1 -o GCF_023585845.1 -t 16 --gc
+(in the above command GCF_023585845.1 represents the assembly accession, which is associated with a specific)
 
 ### Submitting custom HMM sets
 We encourage users to submit their compiled HMM sets for specific pathways or processes. Please submit a pull request or email the folder containing the HMMs to agarber4@asu.edu. 
 
-### Using a custom HMM set with YfGenie
+
 
 
 
