@@ -7,7 +7,7 @@ There is no official publication for MagicLamp. If it was useful for your work, 
 
 Garber, AI., Ramirez, GA., Merino, N., Pavia MJ., McAllister, SM. (2020) MagicLamp: toolkit for annotation of genomic data using discreet and curated HMM sets. 2023: MagicLamp, GitHub repository: https://github.com/Arkadiy-Garber/MagicLamp.
 
-Special thanks to Astrobiomike and his [bit](https://github.com/AstrobioMike/bit) software package for enabling easy access to NCBI's RefSeq and GenBank assemblies.
+Special thanks to AstrobioMike and his [bit](https://github.com/AstrobioMike/bit) software package for enabling easy access to NCBI's RefSeq and GenBank assemblies.
 
 ## Installation (Conda is required for this software)
     git clone https://github.com/Arkadiy-Garber/MagicLamp.git
