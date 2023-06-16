@@ -412,7 +412,7 @@ if args.gc:
           str(T) + "\t" + str(N) + "\t" + str(Q) + "\t" + str(C) + "\t" + str(P) + "\t" + str(R) + "\t" +
           str(H) + "\t" + str(K) + "\t" + str(D) + "\t" + str(E) + "\t" + header + "\n")
     out.close()
-time.sleep(3)
+time.sleep(1)
 
 if args.gff:
     print("Scanning GFF file for genes-of-interest")
@@ -437,7 +437,10 @@ if args.gff:
                     try:
                         gene = ls[8].split("gene=")[1].split(";")[0]
                     except IndexError:
-                        gene = "na"
+                        try:
+                            gene = ls[8].split("product=")[1].split(";")[0]
+                        except IndexError:
+                            gene = "na"
                     if gene in geneList:
                         geneDict[gene] = ls
 
@@ -489,7 +492,7 @@ if args.gff:
                   str(W) + "," + str(S) + "," + str(T) + "," + str(N) + "," +
                   str(Q) + "," + str(C) + "," + str(P) + "," + str(R) + "," +
                   str(H) + "," + str(K) + "," + str(D) + "," + str(E) + "\n")
-time.sleep(3)
+time.sleep(1)
 
 if args.clean:
     os.system("rm -rf hmmhits_%s" % output)
