@@ -12,7 +12,7 @@ Special thanks to AstrobioMike and his [bit](https://github.com/AstrobioMike/bit
 ## Installation (Conda is required for this software)
     git clone https://github.com/Arkadiy-Garber/MagicLamp.git
     cd MagicLamp
-    conda create -n magiclamp -c bioconda -c conda-forge -c defaults hmmer bit prodigal --yes
+    conda create -n magiclamp -c bioconda -c conda-forge -c defaults -c astrobiomike hmmer bit --yes
     conda activate magiclamp
 
 ## Usage
