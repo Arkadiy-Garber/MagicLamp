@@ -12,7 +12,7 @@ import statistics
 
 def reverseComplement(seq):
     out = []
-    for i in range(len(seq)-1, -1, -1):
+    for i in range(len(seq) - 1, -1, -1):
         nucleotide = seq[i]
         if nucleotide == "C":
             nucleotide = "G"
@@ -128,7 +128,8 @@ parser = argparse.ArgumentParser(
     '''))
 
 parser.add_argument('-a', type=str, help="GenBank or RefSeq assembly accession. "
-                                         "If unavailable, provide the input files via the -c, -g, and -p arguments", default="")
+                                         "If unavailable, provide the input files via the -c, -g, and -p arguments",
+                    default="")
 
 parser.add_argument('-c', type=str, help="contig sequences in FASTA format", default="")
 
@@ -139,11 +140,15 @@ parser.add_argument('-p', type=str, help="protein seqences in FASTA format", def
 parser.add_argument('-n', type=str, help="max distance between genes, in bp, to consider them part of the "
                                          "same gene neighborhood (default = 10000)", default=10000)
 
-parser.add_argument('-i', type=str, help="locus identifier in the attributes field of the GFF file (default=Name)", default="Name")
+parser.add_argument('-i', type=str, help="locus identifier in the attributes field of the GFF file (default=Name)",
+                    default="Name")
 
-parser.add_argument('-d', type=str, help="HMM database (path to HMM_dir). This argument is required if the --hmm flag is invoked", default="")
+parser.add_argument('-d', type=str,
+                    help="HMM database (path to HMM_dir). This argument is required if the --hmm flag is invoked",
+                    default="")
 
-parser.add_argument('-m', type=str, help="optional file containing preferred gene and pathway names for each HMM", default="")
+parser.add_argument('-m', type=str, help="optional file containing preferred gene and pathway names for each HMM",
+                    default="")
 
 parser.add_argument('-y', type=str, help="single-column file of gene names of interest", default="")
 
@@ -151,7 +156,8 @@ parser.add_argument('-o', type=str, help="output basename. Default is basename o
 
 parser.add_argument('-t', type=str, help="number parallel threads to use for hmmsearch (default = 1)", default=1)
 
-parser.add_argument('--clean', type=str, help="remove all intermediate files and keep only the .csv summary", const=True, nargs="?")
+parser.add_argument('--clean', type=str, help="remove all intermediate files and keep only the .csv summary",
+                    const=True, nargs="?")
 
 parser.add_argument('--hmm', type=str, help="run hmmsearch given a set of HMMs", const=True, nargs="?")
 
@@ -162,6 +168,9 @@ parser.add_argument('--gff', type=str, help="rely on gene names as listed in the
 parser.add_argument('--add_cds', type=str, help="don't ask", const=True, nargs="?")
 
 parser.add_argument('--skip_bit', type=str, help="data has already been downloaded from NCBI", const=True, nargs="?")
+
+parser.add_argument('--e', type=str, help="override baked-in bit score cutoffs with an evalue of 1E-20", const=True,
+                    nargs="?")
 
 if len(sys.argv) == 1:
     parser.print_help(sys.stderr)
@@ -246,10 +255,20 @@ if args.hmm:
                 ls = i.rstrip().split("\t")
                 if ls[2] == "CDS" and not re.findall(r'pseudo=true', ls[8]):
                     try:
+                        attr = args.i
+                        attr1 = attr.split(",")[0]
+                        attr2 = "ID"
+                        # if attr != "Name":
+                        #     attr2 = attr.split(",")[1]
+
                         if args.add_cds:
-                            ID = ls[8].split(args.i + "=cds-")[1].split(";")[0]
+                            ID = ls[8].split(attr1 + "=cds-")[1].split(";")[0]
+                            # if attr != "Name":
+                            #     ID2 = ls[8].split(attr2 + "=cds-")[1].split(";")[0]
                         else:
-                            ID = ls[8].split(args.i + "=")[1].split(";")[0]
+                            ID = ls[8].split(attr1 + "=")[1].split(";")[0]
+                            # if attr != "Name":
+                            #     ID2 = ls[8].split(attr2 + "=")[1].split(";")[0]
                     except IndexError:
                         print("Detected an issue with you GFF file formatting. See below line. Exiting for now.")
                         print(ls[8])
@@ -258,6 +277,10 @@ if args.hmm:
                         gffDict[ID]["contig"] = [(ls[0])]
                         gffDict[ID]["coords"] = [int(ls[3]), int(ls[4])]
                         gffDict[ID]["strand"] = [ls[6]]
+                        # if attr != "Name":
+                        #     gffDict[ID2]["contig"] = [(ls[0])]
+                        #     gffDict[ID2]["coords"] = [int(ls[3]), int(ls[4])]
+                        #     gffDict[ID2]["strand"] = [ls[6]]
 
     CPU = args.t
     prots = open(PROTS)
@@ -267,7 +290,10 @@ if args.hmm:
         if lastItem(i.split(".")) in ["HMM", "hmm"]:
             HMM = "%s/" % args.d + i
             TBLOUT = "hmmhits_%s/%s.tblout" % (output, i.split(".")[0])
-            os.system("hmmsearch --cut_tc --cpu %s --tblout %s %s %s > /dev/null 2>&1" % (CPU, TBLOUT, HMM, PROTS))
+            if args.e:
+                os.system("hmmsearch -E 1E-20 --cpu %s --tblout %s %s %s > /dev/null 2>&1" % (CPU, TBLOUT, HMM, PROTS))
+            else:
+                os.system("hmmsearch --cut_tc --cpu %s --tblout %s %s %s > /dev/null 2>&1" % (CPU, TBLOUT, HMM, PROTS))
 
     iDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
     cluDict = defaultdict(lambda: 'EMPTY')
@@ -302,7 +328,8 @@ if args.hmm:
                         coordDict[contig].append(end)
 
     out = open("%s_hmmout.csv" % output, "w")
-    out.write("contig,start,end,strand,HMM_accession,HMM_description,locus,gene_call,pathway,protein,gene_seq,gene_gc,A,G,V,I,L,M,F,Y,W,S,T,N,Q,C,P,R,H,K,D,E\n")
+    out.write(
+        "contig,start,end,strand,HMM_accession,HMM_description,locus,gene_call,pathway,protein,gene_seq,gene_gc,A,G,V,I,L,M,F,Y,W,S,T,N,Q,C,P,R,H,K,D,E\n")
     for i in coordDict.keys():
         clus = (cluster(coordDict[i], int(args.n)))
         for j in clus:
@@ -312,7 +339,7 @@ if args.hmm:
                 contig = i
                 start = gffDict[ID]["coords"][0]
                 end = gffDict[ID]["coords"][1]
-                seq = contigs[contig][start-1:end]
+                seq = contigs[contig][start - 1:end]
                 strand = gffDict[ID]["strand"][0]
                 prot = prots[ID]
 
@@ -350,7 +377,8 @@ if args.hmm:
                           str(W) + "," + str(S) + "," + str(T) + "," + str(N) + "," +
                           str(Q) + "," + str(C) + "," + str(P) + "," + str(R) + "," +
                           str(H) + "," + str(K) + "," + str(D) + "," + str(E) + "\n")
-            out.write("###############################################################################################\n")
+            out.write(
+                "###############################################################################################\n")
     out.close()
 
 ################################################################################################################
@@ -407,10 +435,12 @@ if args.gc:
 
     out = open("%s_gc.tsv" % output, "w")
     out.write("accession\tGC\tlength\tA\tG\tV\tI\tL\tM\tF\tY\tW\tS\tT\tN\tQ\tC\tP\tR\tH\tK\tD\tE\theader\n")
-    out.write(str(output) + "\t" + str(GCmean) + "\t" + str(totalLength) + "\t" + str(A) + "\t" + str(G) + "\t" + str(V) + "\t" +
-          str(I) + "\t" + str(L) + "\t" + str(M) + "\t" + str(F) + "\t" + str(Y) + "\t" + str(W) + "\t" + str(S) + "\t" +
-          str(T) + "\t" + str(N) + "\t" + str(Q) + "\t" + str(C) + "\t" + str(P) + "\t" + str(R) + "\t" +
-          str(H) + "\t" + str(K) + "\t" + str(D) + "\t" + str(E) + "\t" + header + "\n")
+    out.write(str(output) + "\t" + str(GCmean) + "\t" + str(totalLength) + "\t" + str(A) + "\t" + str(G) + "\t" + str(
+        V) + "\t" +
+              str(I) + "\t" + str(L) + "\t" + str(M) + "\t" + str(F) + "\t" + str(Y) + "\t" + str(W) + "\t" + str(
+        S) + "\t" +
+              str(T) + "\t" + str(N) + "\t" + str(Q) + "\t" + str(C) + "\t" + str(P) + "\t" + str(R) + "\t" +
+              str(H) + "\t" + str(K) + "\t" + str(D) + "\t" + str(E) + "\t" + header + "\n")
     out.close()
 time.sleep(1)
 
@@ -503,6 +533,3 @@ if args.clean:
         os.system("rm %s.faa" % args.a)
 
 print("DONE!")
-
-
-
