@@ -19,6 +19,17 @@ def main():
             count += float(i)
         return count
 
+    def firstNum(string):
+        outputNum = []
+        for i in string:
+            try:
+                int(i)
+                outputNum.append(i)
+            except ValueError:
+                break
+        Num = "".join(outputNum)
+        return Num
+
     def Strip(ls):
         outList = []
         for i in ls:
@@ -99,7 +110,7 @@ def main():
             hmm = i.split("|")[0]
             if hmm not in uniqueLS:
                 uniqueLS.append(hmm)
-                if geneToCatDict[hmm] in ["iron_aquisition-siderophore_transport", "iron_aquisition-heme_transport"]:
+                if geneToCatDict[hmm] in ["iron_aquisition-siderophore_transport_potential", "iron_aquisition-heme_transport", "iron_aquisition-siderophore_transport"]:
                     count += 1
         return count
 
@@ -140,7 +151,7 @@ def main():
         count = 0
         for i in ls:
             hmm = i.split("|")[0]
-            if re.findall(r'aquisition', geneToCatDict[hmm]):
+            if re.findall(r'regulation', geneToCatDict[hmm]):
                 count += 1
         return count
 
@@ -350,7 +361,6 @@ def main():
         ls = filter(ls, [""])
         return ls
 
-
     parser = argparse.ArgumentParser(
         prog="FeGenie.py",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -422,18 +432,30 @@ def main():
                                                 "a heatmap that summarizes the abundance of a certain gene that is based on "
                                                 "read coverage, rather than gene counts.", default="NA")
 
+    parser.add_argument('-which_bams', type=str, help="if you provided a tab-delimited file specifying multiple BAM files for "
+                                                "your metagenome assemblies or bins/genomes, FeGenie will, by default, "
+                                                "make the heatmap CSV and dotplot based on the average depth across all of BAM files. "
+                                                "However, with this argument, you can specify which bam in that file that you "
+                                                      "want FeGenie to use for the generation of a heatmap/dotplot. "
+                                                      "For example, if only coverage from the first BAM file is desired, "
+                                                      "then you can specify \'-which_bams 1\'. "
+                                                      "For the third BAM file in the provided tab-delimited file, \'-which_bams 3\ should be specified'", default="average")
+
     parser.add_argument('-bam', type=str, help="BAM file. This option is only required if you would like to create "
                                                 "a heatmap that summarizes the abundance of a certain gene that is based on "
                                                 "read coverage, rather than gene counts. If you have more than one BAM file"
                                                "corresponding to different genomes that you are providing, please use the \'-bams\' "
                                                "argument to provide a tab-delimited file that denotes which BAM file (or files) belongs "
                                                "with which genome", default="NA")
-    parser.add_argument('-delim', type=str, help="delimiter that separates contig names from ORF names (provide this flag if you are "
-                             "providing your own ORFs. Default delimiter for Prodigal-predicted ORFs is \'_\'", default="_")
+
+    # parser.add_argument('-delim', type=str, help="delimiter that separates contig names from ORF names (provide this flag if you are "
+    #                          "providing your own ORFs. Default delimiter for Prodigal-predicted ORFs is \'_\'", default="_")
 
     parser.add_argument('-contig_names', type=str, help="contig names in your provided FASTA files. Use this option"
                                                         "if you are providing gene calls in amino acid format (don't forget"
                                                         "to add the \'--orfs\' flag)", default="NA")
+
+    parser.add_argument('-cat', type=str, help="comma-separated list of iron gene categories you'd like FeGenie to look for (default = all categories)", default="NA")
 
     parser.add_argument('--gbk', type=str, help="include this flag if your bins are in Genbank format", const=True,
                         nargs="?")
@@ -480,41 +502,18 @@ def main():
     parser.add_argument('--nohup', type=str, help="include this flag if you are running FeGenie under \'nohup\', and would like to re-write a currently existing directory.", const=True,
                         nargs="?")
 
+
     # CHECKING FOR CONDA INSTALL
     os.system("echo ${iron_hmms} > HMMlib.txt")
     os.system("echo ${rscripts} > rscripts.txt")
+
     file = open("HMMlib.txt")
+    HMMdir = ""
     for i in file:
         HMMdir = i.rstrip()
-    bits = HMMdir + "/" + "HMM-bitcutoffs.txt"
 
-    file = open("rscripts.txt")
-    for i in file:
-        rscriptDir = i.rstrip()
-
-    try:
-        test = open(bits)
-
-    except FileNotFoundError:
-        os.system("which MagicLamp.py > mainDir.txt")
-
-        file = open("mainDir.txt")
-        for i in file:
-            location = i.rstrip()
-        location = allButTheLast(location, "/")
-
-        HMMdir = location + "/hmms/iron/"
-        bits = HMMdir + "/" + "HMM-bitcutoffs.txt"
-        rscriptDir = location + "/rscripts/"
-
-        try:
-            test = open(bits)
-        except FileNotFoundError:
-            print("MagicLamp script could not locate the required directories. Please run the setup.sh script if "
-                  "you have Conda installed. Otherwise, please run the setupe-noconda.sh script and put MagicLamp.py into your $PATH")
-            raise SystemExit
-
-    os.system("rm -f HMMlib.txt rscripts.txt mainDir.txt")
+    bits = "/home/ark/MAB/bin/MagicLamp/hmms/iron/HMM-bitcutoffs.txt"
+    rscriptDir = "/home/ark/MAB/bin/MagicLamp/rscripts/"
 
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
@@ -535,10 +534,6 @@ def main():
         print("Exiting")
         raise SystemExit
 
-    if args.bam != "NA" and args.bams != "NA":
-        print("Please provide only one of the following flags: \'-bam\' or \'-bams\'.")
-        raise SystemExit
-
     if args.bin_ext != "NA":
         print(".")
     else:
@@ -548,29 +543,10 @@ def main():
         print("Exiting")
         raise SystemExit
 
-    try:
-        os.listdir(args.out)
-        print("Looks like you already have a directory with the name: " + args.out)
 
-        if args.nohup:
-            answer = "y"
-        else:
-            answer = input("Would you like FeGenie to proceed and potentially overwrite files in this directory? (y/n): ")
-        if answer == "y":
-            print("Ok, proceeding with analysis!")
-            try:
-                os.listdir(args.out + "/ORF_calls")
-            except FileNotFoundError:
-                os.system("mkdir %s/ORF_calls" % args.out)
-
-        else:
-            print("Exiting")
-            raise SystemExit
-
-    except FileNotFoundError:
-        print(".")
-        os.system("mkdir %s" % args.out)
-        os.system("mkdir %s/ORF_calls" % args.out)
+    print(".")
+    os.system("mkdir -p %s" % args.out)
+    os.system("mkdir -p %s/ORF_calls" % args.out)
 
     if lastItem(args.out) == "/":
         outDirectory = "%s" % args.out[0:len(args.out)-1]
@@ -631,8 +607,7 @@ def main():
                         for line in binFile:
                             if re.match(r'>', line):
                                 if re.findall(r'\|]', line):
-                                    print(
-                                        "Looks like one of your fasta files has a header containing the character: \|")
+                                    print("Looks like one of your fasta files has a header containing the character: \|")
                                     print(
                                         "Unfortunately, this is a problem for FeGenie because it uses that character as delimiter to store important information.")
                                     print("Please rename your FASTA file headers")
@@ -641,9 +616,8 @@ def main():
                         prodigal = 1
                         print("Finding ORFs for " + cell)
                         if args.meta:
-                            os.system(
-                                "prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -p meta -q" % (
-                                    binDir, i, outDirectory, i, outDirectory, i))
+                            os.system("prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -p meta -q" % (
+                                binDir, i, outDirectory, i, outDirectory, i))
                         else:
                             os.system(
                                 "prodigal -i %s/%s -a %s/ORF_calls/%s-proteins.faa -o %s/ORF_calls/%s-prodigal.out -q" % (
@@ -755,14 +729,23 @@ def main():
         metaDict[ls[0]] = ls[1]
 
     # ******************* BEGINNING MAIN ALGORITHM **********************************))))
-
+    HMMdir = "/home/ark/MAB/bin/MagicLamp/hmms/iron"
     if not args.skip:
+        if args.cat == "NA":
+            catList = []
+            HMMdirLS = os.listdir(HMMdir)
+            for FeCategory in HMMdirLS:
+                if not re.match(r'\.', FeCategory) and FeCategory not in ["HMM-bitcutoffs.txt", "FeGenie-map.txt"]:
+                    catList.append(FeCategory)
+        else:
+            categories = args.cat
+            catList = categories.split(",")
+
         print("starting main pipeline...")
         HMMdirLS = os.listdir(HMMdir)
         for FeCategory in HMMdirLS:
-            if not re.match(r'\.', FeCategory) and FeCategory not in ["HMM-bitcutoffs.txt", "FeGenie-map.txt"]:
+            if not re.match(r'\.', FeCategory) and FeCategory not in ["HMM-bitcutoffs.txt", "FeGenie-map.txt"] and FeCategory in catList:
                 print("")
-                print(".")
                 print("Looking for following iron-related functional category: " + FeCategory)
                 hmmDir = "%s/%s/" % (HMMdir, FeCategory)
                 hmmDirLS2 = os.listdir("%s/%s" % (HMMdir, FeCategory))
@@ -787,14 +770,12 @@ def main():
                                 if args.orfs:
                                     os.system(
                                         "hmmsearch --cpu %d -T %d --tblout %s/%s-HMM/%s.tblout -o %s/%s-HMM/%s.txt %s/%s %s/%s"
-                                        % (int(args.t), float(bit), outDirectory, i, hmm, outDirectory, i, hmm, hmmDir,
-                                           hmm, binDir, i)
+                                        % (int(args.t), float(bit), outDirectory, i, hmm, outDirectory, i, hmm, hmmDir, hmm, binDir, i)
                                     )
                                 else:
                                     os.system(
                                         "hmmsearch --cpu %d -T %d --tblout %s/%s-HMM/%s.tblout -o %s/%s-HMM/%s.txt %s/%s %s/ORF_calls/%s-proteins.faa"
-                                        % (int(args.t), float(bit), outDirectory, i, hmm, outDirectory, i, hmm, hmmDir,
-                                           hmm, outDirectory, i)
+                                        % (int(args.t), float(bit), outDirectory, i, hmm, outDirectory, i, hmm, hmmDir, hmm, outDirectory, i)
                                     )
 
                                 # REMOVING THE STANDARD OUTPUT FILE
@@ -896,64 +877,125 @@ def main():
                                 SummaryDict[cell][orf]["hmmBit"] = hmmBit
                                 SummaryDict[cell][orf]["category"] = category
 
-        # ****************************** CLUSTERING OF ORFS BASED ON GENOMIC PROXIMITY *************************************
-        # if not args.orfs:
-        print("Identifying genomic proximities and putative operons")
-        CoordDict = defaultdict(lambda: defaultdict(list))
-        orfNameDict = defaultdict(lambda: defaultdict(list))
-        if args.contig_names != "NA":
+        # ************************** CLUSTERING OF ORFS BASED ON GENOMIC PROXIMITY *********************************
+        if not args.orfs:
+            print("Identifying genomic proximities and putative operons")
+            CoordDict = defaultdict(lambda: defaultdict(list))
+            orfNameDict = defaultdict(lambda: defaultdict(list))
             for i in SummaryDict.keys():
                 if i != "category":
                     for j in SummaryDict[i]:
-                        contigLS = contig.split(args.contig_names + args.delim)
-                        numOrf = firstNum(contigLS[1])
-                        contig = args.contig_names
+                        contig = allButTheLast(j, "_")
+                        numOrf = lastItem(j.split("_"))
                         CoordDict[i][contig].append(int(numOrf))
-                        orfNameDict[contig + args.delim + numOrf] = j
+
+            counter = 0
+            print("Clustering ORFs...")
+            print("")
+            out = open(outDirectory + "/FinalSummary-dereplicated-clustered.csv", "w")
+            for i in CoordDict.keys():
+                print(".")
+                for j in CoordDict[i]:
+                    LS = (CoordDict[i][j])
+                    clusters = (cluster(LS, args.d))
+                    unknown = [[759,762,763,764,765], [5079,5080,5081]]
+                    for k in clusters:
+                        if len(RemoveDuplicates(k)) == 1:
+
+                            orf = j + "_" + str(k[0])
+
+                            out.write(SummaryDict[i][orf]["category"] + "," + i + "," + orf + "," + SummaryDict[i][orf]["hmm"] +
+                                      "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(counter) + "\n")
+
+                            out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                            counter += 1
+
+                        else:
+                            for l in RemoveDuplicates(k):
+
+                                orf = j + "_" + str(l)
+
+                                out.write(SummaryDict[i][orf]["category"] + "," + i + "," + orf + "," + SummaryDict[i][orf][
+                                    "hmm"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(counter) + "\n")
+
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                            counter += 1
+            out.close()
+
         else:
-            for i in SummaryDict.keys():
-                if i != "category":
-                    for j in SummaryDict[i]:
-                        contig = allButTheLast(j, args.delim)
-                        numOrf = lastItem(j.split(args.delim))
-                        CoordDict[i][contig].append(int(numOrf))
 
-        counter = 0
-        print("Clustering ORFs...")
-        print("")
-        out = open(outDirectory + "/FinalSummary-dereplicated-clustered.csv", "w")
-        for i in CoordDict.keys():
-            print(".")
-            for j in CoordDict[i]:
-                LS = (CoordDict[i][j])
-                clusters = (cluster(LS, args.d))
-                for k in clusters:
-                    if len(RemoveDuplicates(k)) == 1:
+            if args.contig_names != "NA":
+                contigNameDict = defaultdict(lambda: defaultdict(lambda: 'EMPTY'))
+                contigNames = open(args.contig_names)
+                for orfname in contigNames:
+                    orfnameLS = orfname.rstrip().split("\t")
+                    contigNameDict[orfnameLS[0]]["contig"] = ls[1]
+                    contigNameDict[orfnameLS[0]]["position"] = ls[2]
 
-                        orf = j + args.delim + str(k[0])
+                CoordDict = defaultdict(lambda: defaultdict(list))
+                orfNameDict = defaultdict(lambda: defaultdict(list))
+                for i in SummaryDict.keys():
+                    if i != "category":
+                        for j in SummaryDict[i]:
+                            # contigLS = contig.split(args.contig_names + args.delim)
+                            numOrf = contigNameDict[j]["position"]
+                            contig = contigNameDict[j]["contig"]
+                            CoordDict[i][contig].append(int(numOrf))
+                            orfNameDict[contig + "_" + numOrf] = j
+                            CoordDict[i][contig].append(int(numOrf))
 
-                        if args.contig_names != "NA":
-                            orf = orfNameDict[orf]
+                counter = 0
+                print("Clustering ORFs...")
+                print("")
+                out = open(outDirectory + "/FinalSummary-dereplicated-clustered.csv", "w")
+                for i in CoordDict.keys():
+                    print(".")
+                    for j in CoordDict[i]:
+                        LS = (CoordDict[i][j])
+                        clusters = (cluster(LS, args.d))
+                        for k in clusters:
+                            if len(RemoveDuplicates(k)) == 1:
 
-                        out.write(
-                            SummaryDict[i][orf]["category"] + "," + i + "," + orf + "," + SummaryDict[i][orf]["hmm"] +
-                            "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(counter) + "\n")
+                                orf = orfNameDict[j + "_" + str(k[0])]
 
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-                        counter += 1
+                                out.write(
+                                    SummaryDict[i][orf]["category"] + "," + i + "," + orf + "," + SummaryDict[i][orf][
+                                        "hmm"] +
+                                    "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(counter) + "\n")
 
-                    else:
-                        for l in RemoveDuplicates(k):
-                            orf = j + args.delim + str(l)
+                                out.write(
+                                    "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                                counter += 1
 
+                            else:
+                                for l in RemoveDuplicates(k):
+                                    orf = orfNameDict[j + "_" + str(l)]
+
+                                    out.write(SummaryDict[i][orf]["category"] + "," + i + "," + orf + "," +
+                                              SummaryDict[i][orf][
+                                                  "hmm"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(
+                                        counter) + "\n")
+
+                                out.write(
+                                    "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                                counter += 1
+                out.close()
+
+            else:
+                counter = 0
+                out = open(outDirectory + "/FinalSummary-dereplicated-clustered.csv", "w")
+                for i in SummaryDict.keys():
+                    if i != "category":
+                        for j in SummaryDict[i]:
+                            orf = j
                             out.write(SummaryDict[i][orf]["category"] + "," + i + "," + orf + "," + SummaryDict[i][orf][
                                 "hmm"] + "," + str(SummaryDict[i][orf]["hmmBit"]) + "," + str(counter) + "\n")
+                            out.write(
+                                "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                            counter += 1
 
-                        out.write(
-                            "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
-                        counter += 1
-        out.close()
+
         time.sleep(5)
 
         # else:
@@ -969,7 +1011,6 @@ def main():
         #                     "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
         #
         #                 counter += 1
-
 
         # ************************** BLAST-BASED METHODS/LOOKING FOR UNMODELED MARKERS ********************************
         thermincola = "%s/iron_reduction/non-aligned/TherJR_SLCs.faa" % HMMdir
@@ -1122,17 +1163,15 @@ def main():
                     gene1 = "646797728 YP_003639887 TherJR_1122 cytochrome C family protein [Thermincola sp. JR: NC_014152]"
                     gene2 = "646799199 YP_003641333 TherJR_2595 hypothetical protein [Thermincola sp. JR: NC_014152]"
                     gene3 = "646796949 YP_003639120 TherJR_0333 hypothetical protein [Thermincola sp. JR: NC_014152]"
-                    if gene1 in operonDict[i]["headers"] and gene2 in operonDict[i]["headers"] and gene3 in \
-                            operonDict[i][
-                                "headers"]:
+                    if gene1 in operonDict[i]["headers"] and gene2 in operonDict[i]["headers"] and gene3 in operonDict[i][
+                        "headers"]:
                         genome = blastresult.split("-thermincola.blas")[0]
                         category = "iron_reduction"
                         for j in range(0, len(operonDict[i]["orfs"])):
                             orf = (operonDict[i]["orfs"][j])
                             header = (operonDict[i]["headers"][j])
                             evalue = blastDict[orf]["e"]
-                            out.write(category + "," + genome + "," + orf + "," + replace(header, [","],
-                                                                                          ";") + "," + "evalue: " + str(
+                            out.write(category + "," + genome + "," + orf + "," + replace(header, [","], ";") + "," + "evalue: " + str(
                                 evalue) + "," + str(counter) + "\n")
                         out.write(
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1160,7 +1199,7 @@ def main():
         time.sleep(5)
         # ****************************** FILTERING OUT LIKELY FALSE POSITIVES *************************************
 
-        if not args.all_results:
+        if not args.all_results and not args.orfs:
 
             print("Pre-processing of final outout file")
             # fleet = ["EetA.hmm", "EetB.hmm", "Ndh2.hmm", "FmnB.hmm", "FmnA.hmm", "DmkA.hmm", "DmkB.hmm", "PplA.hmm"]
@@ -1182,8 +1221,7 @@ def main():
             for i in (clusterDict.keys()):
                 ls = (clusterDict[i]["gene"])
                 if "EetA.hmm" in ls or "EetB.hmm" in ls or "Ndh2.hmm" in ls or "FmnB.hmm" in ls or "FmnA.hmm" in ls or "DmkA.hmm" in ls or "DmkB.hmm" in ls or "PplA.hmm" in ls:
-                    fleet = ["EetA.hmm", "EetB.hmm", "Ndh2.hmm", "FmnB.hmm", "FmnA.hmm", "DmkA.hmm", "DmkB.hmm",
-                             "PplA.hmm"]
+                    fleet = ["EetA.hmm", "EetB.hmm", "Ndh2.hmm", "FmnB.hmm", "FmnA.hmm", "DmkA.hmm", "DmkB.hmm", "PplA.hmm"]
 
                     if unique(ls, fleet) < 5:  # If there are less than 5 FLEET genes in the cluster
                         if len(remove2(ls, fleet)) < 1:  # If FLEET genes are the only ones in the cluster
@@ -1191,8 +1229,7 @@ def main():
                         else:  # If there are other genes in the cluster that are not FLEET
                             for j in clusterDict[i]["line"]:
                                 if j[3] not in fleet:  # avoiding the fleet genes
-                                    out.write(
-                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+                                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
                             out.write(
                                 "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1206,8 +1243,7 @@ def main():
 
                 elif "MamA.hmm" in ls or "MamB.hmm" in ls or "MamE.hmm" in ls or "MamK.hmm" in ls or "MamM.hmm" in ls or "MamO.hmm" \
                         in ls or "MamP.hmm" in ls or "MamQ.hmm" in ls or "MamI.hmm" in ls or "MamL.hmm" in ls:
-                    mam = ["MamA.hmm", "MamB.hmm", "MamE.hmm", "MamK.hmm", "MamP.hmm", "MamM.hmm", "MamP.hmm",
-                           "MamQ.hmm",
+                    mam = ["MamA.hmm", "MamB.hmm", "MamE.hmm", "MamK.hmm", "MamP.hmm", "MamM.hmm", "MamP.hmm", "MamQ.hmm",
                            "MamI.hmm", "MamL.hmm", "MamO.hmm"]
                     if unique(ls, mam) < 5:
                         if len(remove2(ls, mam)) < 1:
@@ -1215,8 +1251,7 @@ def main():
                         else:
                             for j in clusterDict[i]["line"]:
                                 if j[3] not in mam:
-                                    out.write(
-                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+                                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
                             out.write(
                                 "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1233,8 +1268,7 @@ def main():
                         for j in clusterDict[i]["line"]:
                             if j[3] in ["MtrB_TIGR03509.hmm", "MtoA.hmm", "CymA.hmm"]:
                                 out.write(
-                                    "iron_oxidation" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[
-                                        5] + "\n")
+                                    "iron_oxidation" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
                             else:
                                 out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
@@ -1246,8 +1280,7 @@ def main():
                         for j in clusterDict[i]["line"]:
                             if j[3] in ["MtrA.hmm", "MtrB_TIGR03509.hmm"]:
                                 out.write(
-                                    "iron_reduction" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[
-                                        5] + "\n")
+                                    "iron_reduction" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
                             else:
                                 out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
@@ -1259,8 +1292,7 @@ def main():
                         for j in clusterDict[i]["line"]:
                             if j[3] in ["MtrA.hmm", "MtrB_TIGR03509.hmm"]:
                                 out.write(
-                                    "iron_reduction" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[
-                                        5] + "\n")
+                                    "iron_reduction" + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
                             else:
                                 out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
@@ -1269,8 +1301,8 @@ def main():
                             "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
 
 
-                        # elif "MtrB_TIGR03509.hmm" not in ls:
-                        #     pass
+                    # elif "MtrB_TIGR03509.hmm" not in ls:
+                    #     pass
 
                 elif "FoxA.hmm" in ls or "FoxB.hmm" in ls or "FoxC.hmm" in ls:
                     foxabc = ["FoxA.hmm", "FoxB.hmm", "FoxC.hmm"]
@@ -1281,8 +1313,7 @@ def main():
                         else:
                             for j in clusterDict[i]["line"]:
                                 if j[3] not in foxabc:
-                                    out.write(
-                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+                                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
                             out.write(
                                 "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1303,8 +1334,7 @@ def main():
                         else:
                             for j in clusterDict[i]["line"]:
                                 if j[3] not in foxeyz:
-                                    out.write(
-                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+                                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
                             out.write(
                                 "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
                     else:
@@ -1324,8 +1354,7 @@ def main():
                         else:
                             for j in clusterDict[i]["line"]:
                                 if j[3] not in DFE1:
-                                    out.write(
-                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+                                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
                             out.write(
                                 "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1347,8 +1376,7 @@ def main():
                         else:
                             for j in clusterDict[i]["line"]:
                                 if j[3] not in DFE2:
-                                    out.write(
-                                        j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
+                                    out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
                             out.write(
                                 "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
@@ -1377,7 +1405,8 @@ def main():
 
                 elif "iron_aquisition-siderophore_synthesis" in clusterDict[i]["category"] or \
                                 "iron_aquisition-siderophore_transport_potential" in clusterDict[i]["category"] or \
-                                "iron_aquisition-iron_transport" in clusterDict[i][
+                                "iron_aquisition-siderophore_transport" in clusterDict[i]["category"] or \
+                        "iron_aquisition-iron_transport" in clusterDict[i][
                             "category"] or "iron_aquisition-heme_transport" in clusterDict[i]["category"]:
 
                     if len(Unique(ls)) > 1:
@@ -1405,12 +1434,114 @@ def main():
                     for j in linels:
                         out.write(j[0] + "," + j[1] + "," + j[2] + "," + j[3] + "," + j[4] + "," + j[5] + "\n")
 
-                    out.write(
-                        "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                    out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
 
             out.close()
             time.sleep(5)
 
+            # REMOVING FILES
+            os.system("rm %s/GeoThermin.csv" % outDirectory)
+            os.system("rm %s/*summary*" % outDirectory)
+            os.system("rm %s/FinalSummary-dereplicated-clustered-blast.csv" % outDirectory)
+            os.system("rm %s/*blast" % outDirectory)
+            os.system("rm %s/FinalSummary.csv" % outDirectory)
+            os.system("rm %s/FinalSummary-dereplicated-clustered.csv" % outDirectory)
+            os.system("mv %s/FinalSummary-dereplicated-clustered-blast-filtered.csv %s/FeGenie-summary.csv" % (outDirectory, outDirectory))
+
+            # OPTIONAL CROSS-VALIDATION AGAINST REFERENCE DATABASE
+            if args.ref != "NA":
+                print("")
+                print("Performing Diamond BLASTx search of putative iron genes against reference database")
+                summary = open("%s/FeGenie-summary.csv" % outDirectory, "r")
+                out = open("%s/FeGenie-summary.fasta" % outDirectory, "w")
+                for i in summary:
+                    if not re.match(r'#', i):
+                        ls = (i.rstrip().split(","))
+                        seq = (BinDict[ls[1]][ls[2]])
+                        header = (">" + ls[1] + "|" + ls[2])
+                        out.write(header + "\n")
+                        out.write(seq + "\n")
+                out.close()
+                time.sleep(5)
+
+                os.system("diamond blastp --db %s.dmnd --out "
+                          "%s/FeGenie-summary.dmndout --max-target-seqs 1 --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle "
+                          "--threads %s --query %s/FeGenie-summary.fasta --quiet" % (args.ref, outDirectory, str(args.t), outDirectory))
+
+                dmndblast = open("%s/FeGenie-summary.dmndout" % outDirectory)
+                dmndblastDict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 'No_Hits')))
+                for hit in dmndblast:
+                    lst = hit.rstrip().split("\t")
+                    evalue = lst[10]
+                    cell = lst[0].split("|")[0]
+                    orf = lst[0].split("|")[1]
+                    target = lst[12]
+                    target = replace(target, [","], ";")
+                    dmndblastDict[cell][orf]["e"] = evalue
+                    dmndblastDict[cell][orf]["target"] = target
+
+            summary = open("%s/FeGenie-summary.csv" % outDirectory, "r")
+            out = open("%s/FeGenie-summary-blasthits.csv" % outDirectory, "w")
+            if args.ref != "NA":
+                out.write(
+                    "category" + "," + "genome/assembly" + "," + "orf" + "," + "HMM" + "," + "bitscore" + "," + "bitscore_cutoff" + "," + "cluster" + "," + "heme_binding_motifs" + "," + "top_blast_hit" + "," + "blast_hit_evalue" + "," + "protein_sequence" + "\n")
+            else:
+                out.write(
+                    "category" + "," + "genome/assembly" + "," + "orf" + "," + "HMM" + "," + "bitscore" + "," + "bitscore_cutoff" + "," + "cluster" + "," + "heme_binding_motifs" + "," + "protein_sequence" + "\n")
+
+
+            # SUMMARIZING CROSS-REFERENCE RESULTS AND COUNTING HEME-BINDING MOTIFS
+            print("Counting heme-binding motifs")
+            aromatics = ["F", "Y", "W", "H"]
+            counter = 1
+            for i in summary:
+                if not re.match(r'#', i):
+                    ls = i.rstrip().split(",")
+                    seq = BinDict[ls[1]][ls[2]]
+
+                    hemes = len(re.findall(r'C(..)CH', seq)) + len(re.findall(r'C(...)CH', seq)) \
+                            + len(re.findall(r'C(....)CH', seq)) + len(re.findall(r'C(..............)CH', seq)) \
+                            + len(re.findall(r'C(...............)CH', seq))
+
+                    if args.ref != "NA":
+                        blasthit = dmndblastDict[ls[1]][ls[2]]["target"]
+                        e = dmndblastDict[ls[1]][ls[2]]["e"]
+                        try:
+                            out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + str(ls[4]) + "," + str(
+                                metaDict[ls[3].split(".")[0]]) + "," + str(counter) + "," + str(
+                                hemes) + "," + blasthit + "," + str(
+                                e) + "," + seq + "\n")
+                        except TypeError:
+                            out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + str(counter) + "," + str(
+                                    hemes) + "," + blasthit + "," + str(e) + "," + seq + "\n")
+
+                    else:
+                        try:
+                            out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + str(ls[4]) + "," + str(
+                                metaDict[ls[3].split(".")[0]]) + "," + str(counter) + "," + str(hemes) + "," + seq + "\n")
+
+                        except TypeError:
+                            out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + str(counter) + "," + str(
+                                    hemes) + "," + seq + "\n")
+
+                else:
+                    counter += 1
+                    out.write(i)
+
+            out.close()
+            time.sleep(5)
+
+        else:
+            print("Pre-processing of final outout file")
+
+            summary = open("%s/FinalSummary-dereplicated-clustered-blast.csv" % outDirectory, "r")
+            out = open("%s/FinalSummary-dereplicated-clustered-blast-filtered.csv" % outDirectory, "w")
+            for i in summary:
+                out.write(i.rstrip() + "\n")
+
+            out.close()
+
+            time.sleep(5)
             # REMOVING FILES
             os.system("rm %s/GeoThermin.csv" % outDirectory)
             os.system("rm %s/*summary*" % outDirectory)
@@ -1441,113 +1572,6 @@ def main():
                           "%s/FeGenie-summary.dmndout --max-target-seqs 1 --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle "
                           "--threads %s --query %s/FeGenie-summary.fasta --quiet" % (
                           args.ref, outDirectory, str(args.t), outDirectory))
-
-                dmndblast = open("%s/FeGenie-summary.dmndout" % outDirectory)
-                dmndblastDict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 'No_Hits')))
-                for hit in dmndblast:
-                    lst = hit.rstrip().split("\t")
-                    evalue = lst[10]
-                    cell = lst[0].split("|")[0]
-                    orf = lst[0].split("|")[1]
-                    target = lst[12]
-                    target = replace(target, [","], ";")
-                    dmndblastDict[cell][orf]["e"] = evalue
-                    dmndblastDict[cell][orf]["target"] = target
-
-            summary = open("%s/FeGenie-summary.csv" % outDirectory, "r")
-            out = open("%s/FeGenie-summary-blasthits.csv" % outDirectory, "w")
-            if args.ref != "NA":
-                out.write(
-                    "category" + "," + "genome/assembly" + "," + "orf" + "," + "HMM" + "," + "bitscore" + "," + "bitscore_cutoff" + "," + "cluster" + "," + "heme_binding_motifs" + "," + "top_blast_hit" + "," + "blast_hit_evalue" + "," + "protein_sequence" + "\n")
-            else:
-                out.write(
-                    "category" + "," + "genome/assembly" + "," + "orf" + "," + "HMM" + "," + "bitscore" + "," + "bitscore_cutoff" + "," + "cluster" + "," + "heme_binding_motifs" + "," + "protein_sequence" + "\n")
-
-            # SUMMARIZING CROSS-REFERENCE RESULTS AND COUNTING HEME-BINDING MOTIFS
-            print("Counting heme-binding motifs")
-            aromatics = ["F", "Y", "W", "H"]
-            counter = 1
-            for i in summary:
-                if not re.match(r'#', i):
-                    ls = i.rstrip().split(",")
-                    seq = BinDict[ls[1]][ls[2]]
-
-                    hemes = len(re.findall(r'C(..)CH', seq)) + len(re.findall(r'C(...)CH', seq)) \
-                            + len(re.findall(r'C(....)CH', seq)) + len(re.findall(r'C(..............)CH', seq)) \
-                            + len(re.findall(r'C(...............)CH', seq))
-
-                    if args.ref != "NA":
-                        blasthit = dmndblastDict[ls[1]][ls[2]]["target"]
-                        e = dmndblastDict[ls[1]][ls[2]]["e"]
-                        try:
-                            out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + str(ls[4]) + "," + str(
-                                metaDict[ls[3].split(".")[0]]) + "," + str(counter) + "," + str(
-                                hemes) + "," + blasthit + "," + str(
-                                e) + "," + seq + "\n")
-                        except TypeError:
-                            out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + str(
-                                counter) + "," + str(
-                                hemes) + "," + blasthit + "," + str(e) + "," + seq + "\n")
-
-                    else:
-                        try:
-                            out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + str(ls[4]) + "," + str(
-                                metaDict[ls[3].split(".")[0]]) + "," + str(counter) + "," + str(
-                                hemes) + "," + seq + "\n")
-
-                        except TypeError:
-                            out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + str(
-                                counter) + "," + str(
-                                hemes) + "," + seq + "\n")
-
-                else:
-                    counter += 1
-                    out.write(i)
-
-            out.close()
-            time.sleep(5)
-
-        else:
-            print("Pre-processing of final outout file")
-
-            summary = open("%s/FinalSummary-dereplicated-clustered-blast.csv" % outDirectory, "r")
-            out = open("%s/FinalSummary-dereplicated-clustered-blast-filtered.csv" % outDirectory, "w")
-            for i in summary:
-                out.write(i.rstrip() + "\n")
-
-            out.close()
-
-            time.sleep(5)
-            # REMOVING FILES
-            os.system("rm %s/GeoThermin.csv" % outDirectory)
-            os.system("rm %s/*summary*" % outDirectory)
-            os.system("rm %s/FinalSummary-dereplicated-clustered-blast.csv" % outDirectory)
-            os.system("rm %s/*blast" % outDirectory)
-            os.system("rm %s/FinalSummary.csv" % outDirectory)
-            os.system("rm %s/FinalSummary-dereplicated-clustered.csv" % outDirectory)
-            os.system("mv %s/FinalSummary-dereplicated-clustered-blast-filtered.csv %s/FeGenie-summary.csv" % (
-                outDirectory, outDirectory))
-
-            # OPTIONAL CROSS-VALIDATION AGAINST REFERENCE DATABASE
-            if args.ref != "NA":
-                print("")
-                print("Performing Diamond BLASTx search of putative iron genes against reference database")
-                summary = open("%s/FeGenie-summary.csv" % outDirectory, "r")
-                out = open("%s/FeGenie-summary.fasta" % outDirectory, "w")
-                for i in summary:
-                    if not re.match(r'#', i):
-                        ls = (i.rstrip().split(","))
-                        seq = (BinDict[ls[1]][ls[2]])
-                        header = (">" + ls[1] + "|" + ls[2])
-                        out.write(header + "\n")
-                        out.write(seq + "\n")
-                out.close()
-                time.sleep(5)
-
-                os.system("diamond blastp --db %s.dmnd --out "
-                          "%s/FeGenie-summary.dmndout --max-target-seqs 1 --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle "
-                          "--threads %s --query %s/FeGenie-summary.fasta --quiet" % (
-                              args.ref, outDirectory, str(args.t), outDirectory))
 
                 dmndblast = open("%s/FeGenie-summary.dmndout" % outDirectory)
                 dmndblastDict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 'No_Hits')))
@@ -1598,8 +1622,7 @@ def main():
                     else:
                         try:
                             out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + str(ls[4]) + "," + str(
-                                metaDict[ls[3].split(".")[0]]) + "," + str(counter) + "," + str(
-                                hemes) + "," + seq + "\n")
+                                metaDict[ls[3].split(".")[0]]) + "," + str(counter) + "," + str(hemes) + "," + seq + "\n")
 
                         except TypeError:
                             out.write(ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + str(
@@ -1683,17 +1706,16 @@ def main():
                             clusterDict[ls[7]].append(hmm + "|" + dataset + "|" + orf)
                     else:
                         out.write(i.rstrip())
-
+            print("\n\n\n\n")
             for i in clusterDict.keys():
-                out.write(
-                    "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
+                out.write("#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "," + "#" + "\n")
                 for j in clusterDict[i]:
                     hmm = j.split("|")[0]
                     dataset = j.split("|")[1]
                     orf = j.split("|")[2]
                     cat = memoryDict[dataset][orf]["cat"]
 
-                    if cat in ["iron_aquisition-siderophore_transport_potential", "iron_aquisition-heme_transport"]:
+                    if cat in ["iron_aquisition-siderophore_transport_potential", "iron_aquisition-siderophore_transport", "iron_aquisition-heme_transport"]:
                         if len(Unique2(clusterDict[i])) < 2:
                             break
                         elif check1(clusterDict[i]) < 2:
@@ -1701,20 +1723,15 @@ def main():
                         else:
                             if args.ref != "NA":
                                 out.write(
-                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[
-                                        hmm] + "," +
+                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
                                     memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
                                     memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
-                                    memoryDict[dataset][orf]["blastHit"] + "," + memoryDict[dataset][orf][
-                                        "blastEval"] + "," +
+                                    memoryDict[dataset][orf]["blastHit"] + "," + memoryDict[dataset][orf]["blastEval"] + "," +
                                     memoryDict[dataset][orf]["seq"] + "\n")
                             else:
-                                out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[
-                                    hmm] + "," +
-                                          memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf][
-                                              "cutoff"] + "," +
-                                          memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf][
-                                              "heme"] + "," +
+                                out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
+                                          memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
+                                          memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
                                           memoryDict[dataset][orf]["seq"] + "\n")
 
                     elif cat in ["iron_aquisition-siderophore_synthesis"]:
@@ -1725,21 +1742,16 @@ def main():
                         else:
                             if args.ref != "NA":
                                 out.write(
-                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[
-                                        hmm] + "," +
+                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
                                     memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
                                     memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
-                                    memoryDict[dataset][orf]["blastHit"] + "," + memoryDict[dataset][orf][
-                                        "blastEval"] + "," +
+                                    memoryDict[dataset][orf]["blastHit"] + "," + memoryDict[dataset][orf]["blastEval"] + "," +
                                     memoryDict[dataset][orf]["seq"] + "\n")
                             else:
 
-                                out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[
-                                    hmm] + "," +
-                                          memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf][
-                                              "cutoff"] + "," +
-                                          memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf][
-                                              "heme"] + "," +
+                                out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
+                                          memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
+                                          memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
                                           memoryDict[dataset][orf]["seq"] + "\n")
 
                     elif cat in ["iron_aquisition-iron_transport", "iron_aquisition-heme_oxygenase"]:
@@ -1750,20 +1762,15 @@ def main():
                         else:
                             if args.ref != "NA":
                                 out.write(
-                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[
-                                        hmm] + "," +
+                                    memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
                                     memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
                                     memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
-                                    memoryDict[dataset][orf]["blastHit"] + "," + memoryDict[dataset][orf][
-                                        "blastEval"] + "," +
+                                    memoryDict[dataset][orf]["blastHit"] + "," + memoryDict[dataset][orf]["blastEval"] + "," +
                                     memoryDict[dataset][orf]["seq"] + "\n")
                             else:
-                                out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[
-                                    hmm] + "," +
-                                          memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf][
-                                              "cutoff"] + "," +
-                                          memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf][
-                                              "heme"] + "," +
+                                out.write(memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + mapDict[hmm] + "," +
+                                          memoryDict[dataset][orf]["bit"] + "," + memoryDict[dataset][orf]["cutoff"] + "," +
+                                          memoryDict[dataset][orf]["clu"] + "," + memoryDict[dataset][orf]["heme"] + "," +
                                           memoryDict[dataset][orf]["seq"] + "\n")
 
                     elif cat == "iron_gene_regulation":
@@ -1775,10 +1782,8 @@ def main():
                                     memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                     memoryDict[dataset][orf]["bit"] + "," +
                                     memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                                    memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf][
-                                        "blastHit"] + "," +
-                                    memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf][
-                                        "seq"] + "\n")
+                                    memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] + "," +
+                                    memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
                             else:
                                 out.write(
                                     memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
@@ -1795,10 +1800,8 @@ def main():
                                     memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                     memoryDict[dataset][orf]["bit"] + "," +
                                     memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
-                                    memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf][
-                                        "blastHit"] + "," +
-                                    memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf][
-                                        "seq"] + "\n")
+                                    memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] + "," +
+                                    memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
                             else:
                                 out.write(
                                     memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
@@ -1816,20 +1819,44 @@ def main():
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
-                                        memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf][
-                                            "blastHit"] + "," +
-                                        memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf][
-                                            "seq"] + "\n")
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                        memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] + "," +
+                                        memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
                                 else:
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
+
+                        elif hmm in ["Cyc2_repCluster1", "Cyc2_repCluster2", "Cyc2_repCluster3"]:
+
+                            seq = memoryDict[dataset][orf]["seq"]
+
+                            numhemes = len(re.findall(r'C(..)CH', seq)) + len(re.findall(r'C(...)CH', seq)) \
+                            + len(re.findall(r'C(....)CH', seq)) + len(re.findall(r'C(..............)CH', seq)) \
+                            + len(re.findall(r'C(...............)CH', seq))
+                            if args.ref == "NA":
+                                if len(seq) >= 365:
+                                    if numhemes > 0:
+                                        out.write(
+                                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                            memoryDict[dataset][orf]["bit"] + "," +
+                                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                            memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["seq"] + "\n")
+                            else:
+                                if len(seq) >= 365:
+                                    if numhemes > 0:
+                                        out.write(
+                                            memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
+                                            memoryDict[dataset][orf]["bit"] + "," +
+                                            memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
+                                            memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf][
+                                                "blastHit"] + "," +
+                                            memoryDict[dataset][orf]["blastEval"] + "," + memoryDict[dataset][orf][
+                                                "seq"] + "\n")
+
 
                         elif hmm in ["MtoA", "MtrA", "MtrB_TIGR03509", "MtrC_TIGR03507"]:
                             operon = clusterDict[i]
@@ -1839,8 +1866,7 @@ def main():
                                     out.write(
                                         "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -1848,8 +1874,7 @@ def main():
                                     out.write(
                                         "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -1858,8 +1883,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -1867,8 +1891,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -1877,8 +1900,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -1886,8 +1908,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -1896,8 +1917,7 @@ def main():
                                     out.write(
                                         "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -1905,8 +1925,7 @@ def main():
                                     out.write(
                                         "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -1915,8 +1934,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -1924,8 +1942,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -1934,8 +1951,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -1943,8 +1959,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -1986,15 +2001,12 @@ def main():
 
                             percAromatic = aromaticAAs / len(seq)
                             if percAromatic > 0.097 and gapThreshold == 0 and \
-                                    re.findall(
-                                        r'[FYWH](......................)[FYWH](..)[FYWH](....)[FYWH](.................)[FYWH][FYWH](.....)[FYWH]',
-                                        seq):
+                                    re.findall(r'[FYWH](......................)[FYWH](..)[FYWH](....)[FYWH](.................)[FYWH][FYWH](.....)[FYWH]', seq):
                                 if args.ref != "NA":
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2002,8 +2014,7 @@ def main():
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -2015,8 +2026,7 @@ def main():
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2024,8 +2034,7 @@ def main():
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -2038,8 +2047,7 @@ def main():
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2047,8 +2055,7 @@ def main():
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -2060,8 +2067,7 @@ def main():
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2069,8 +2075,7 @@ def main():
                                     out.write(
                                         memoryDict[dataset][orf]["cat"] + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -2082,8 +2087,7 @@ def main():
                                     out.write(
                                         "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2091,8 +2095,7 @@ def main():
                                     out.write(
                                         "iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -2101,8 +2104,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2110,8 +2112,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -2120,8 +2121,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2130,8 +2130,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
                                     # print("writing iron_reduction_or_oxidation")
@@ -2141,8 +2140,7 @@ def main():
                                     out.write(
                                         "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2150,8 +2148,7 @@ def main():
                                     out.write(
                                         "possible_iron_oxidation_and_possible_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -2160,8 +2157,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2169,8 +2165,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
 
@@ -2179,8 +2174,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," + memoryDict[dataset][orf]["blastHit"] +
                                         memoryDict[dataset][orf]["blastEval"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
@@ -2188,8 +2182,7 @@ def main():
                                     out.write(
                                         "probable_iron_reduction" + "," + dataset + "," + orf + "," + hmm + "," +
                                         memoryDict[dataset][orf]["bit"] + "," +
-                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf][
-                                            "clu"] + "," +
+                                        memoryDict[dataset][orf]["cutoff"] + "," + memoryDict[dataset][orf]["clu"] + "," +
                                         memoryDict[dataset][orf]["heme"] + "," +
                                         memoryDict[dataset][orf]["seq"] + "\n")
                             else:
@@ -2289,6 +2282,7 @@ def main():
                                 memoryDict[dataset][orf]["blastEval"] = ls[9]
                                 memoryDict[dataset][orf]["seq"] = ls[10]
 
+
                             geneToCatDict[hmm] = cat
                             clusterDict[ls[7]].append(hmm + "|" + dataset + "|" + orf)
                     else:
@@ -2321,7 +2315,8 @@ def main():
 
             out.close()
             time.sleep(5)
-            os.system("mv %s/FeGenie-summary-fixed.csv %s/FeGenie-summary.csv" % (outDirectory, outDirectory))
+            if not args.orfs:
+                os.system("mv %s/FeGenie-summary-fixed.csv %s/FeGenie-summary.csv" % (outDirectory, outDirectory))
 
         # ****************************** PRE-FINAL ALTERATION OF THE OUTPUT FILE ***************************************
         clu = 0
@@ -2362,12 +2357,9 @@ def main():
                             seq = ls[10]
                             hemeb = len(re.findall(r'G(.)[HR](.)C[PLAV]G', seq))
                             hbm = len(re.findall(r'[ST][AVILMFYWH][ST]P[ST]', seq))
-                            out.write(
-                                ls[0] + "," + ls[1] + "," + str(idxDict[ls[2]]) + "," + ls[3] + "," + ls[4] + "," + ls[
-                                    5] + "," + ls[6] + "," + ls[7] + "," + str(hemeb) + "," + str(hbm) + "," + ls[
-                                    8] + "," + ls[9] + "," + ls[10] + "\n")
-                        out.write(
-                            "##########################################################################################################################################################################################################\n")
+                            out.write(ls[0] + "," + ls[1] + "," + str(idxDict[ls[2]]) + "," + ls[3] + "," + ls[4] + "," + ls[
+                                    5] + "," + ls[6] + "," + ls[7] + "," + str(hemeb) + "," + str(hbm) + "," + ls[8] + "," + ls[9] + "," + ls[10] + "\n")
+                        out.write("##########################################################################################################################################################################################################\n")
                     else:
                         for j in summaryDict[i]:
                             ls = j.split(",")
@@ -2376,8 +2368,7 @@ def main():
                             hbm = len(re.findall(r'[ST][AVILMFYWH][ST]P[ST]', seq))
                             out.write(
                                 ls[0] + "," + ls[1] + "," + str(idxDict[ls[2]]) + "," + ls[3] + "," + ls[4] + "," + ls[
-                                    5] + "," + ls[6] + "," + ls[7] + "," + str(hemeb) + "," + str(hbm) + "," + ls[
-                                    8] + "\n")
+                                    5] + "," + ls[6] + "," + ls[7] + "," + str(hemeb) + "," + str(hbm) + "," + ls[8] + "\n")
                         out.write(
                             "#####################################################################################################"
                             "#####################################################################################################\n")
@@ -2391,7 +2382,7 @@ def main():
                             hemeb = len(re.findall(r'G(.)[HR](.)C[PLAV]G', seq))
                             hbm = len(re.findall(r'[STC][AVILMFYWH][ST]P[ST]', seq))
                             out.write(
-                                ls[0] + "," + ls[1] + "," + str(idxDict[ls[2]]) + "," + ls[3] + "," + ls[4] + "," + ls[
+                                ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + ls[
                                     5] + "," + ls[6] + "," + ls[7] + "," + str(hemeb) + "," + str(hbm) + "," + ls[
                                     8] + "," + ls[9] + "," + ls[10] + "\n")
                         out.write(
@@ -2405,8 +2396,7 @@ def main():
                             hbm = len(re.findall(r'[STC][AVILMFYWH][ST]P[ST]', seq))
                             out.write(
                                 ls[0] + "," + ls[1] + "," + ls[2] + "," + ls[3] + "," + ls[4] + "," + ls[
-                                    5] + "," + ls[6] + "," + ls[7] + "," + str(hemeb) + "," + str(hbm) + "," + ls[
-                                    8] + "\n")
+                                    5] + "," + ls[6] + "," + ls[7] + "," + str(hemeb) + "," + str(hbm) + "," + ls[8] + "\n")
                         out.write(
                             "#####################################################################################################"
                             "#####################################################################################################\n")
@@ -2414,12 +2404,11 @@ def main():
         out.close()
 
         time.sleep(5)
-        os.system(
-            "mv %s/FeGenie-summary-altered.csv %s/FeGenie-geneSummary-clusters.csv" % (outDirectory, outDirectory))
+        os.system("mv %s/FeGenie-summary-altered.csv %s/fegenie-summary.csv" % (outDirectory, outDirectory))
         os.system("rm %s/FeGenie-summary.csv" % outDirectory)
 
         # ****************************** REMOVING #'S ***************************************
-        summary = open("%s/FeGenie-geneSummary-clusters.csv" % outDirectory, "r")
+        summary = open("%s/fegenie-summary.csv" % outDirectory, "r")
         out = open("%s/FeGenie-geneSummary.csv" % outDirectory, "w")
         if args.ref != "NA":
             out.write(
@@ -2512,7 +2501,7 @@ def main():
 
         time.sleep(5)
 
-        print("Writen summary to file: %s/FeGenie-geneSummary-clusters.csv for visual inspection" % outDirectory)
+        print("Writen summary to file: %s/fegenie-summary.csv for visual inspection" % outDirectory)
         print("Writen summary to file: %s/FeGenie-geneSummary.csv for downstream parsing and analyses" % outDirectory)
         # ****************************** CREATING A HEATMAP-COMPATIBLE CSV FILE *************************************
         print("Writing heatmap-formatted output file: %s/FeGenie-heatmap-data.csv\n" % outDirectory)
@@ -2520,15 +2509,14 @@ def main():
         # GENE-COUNTS BASED ABUNDANCE
 
         if args.bam == "NA" and args.bams == "NA":
-            cats = ["iron_aquisition-iron_transport", "iron_aquisition-heme_transport",
-                    "iron_aquisition-heme_oxygenase",
-                    "iron_aquisition-siderophore_synthesis",
+            cats = ["iron_aquisition-iron_transport", "iron_aquisition-heme_transport", "iron_aquisition-heme_oxygenase",
+                    "iron_aquisition-siderophore_synthesis", "iron_aquisition-siderophore_transport",
                     "iron_aquisition-siderophore_transport_potential", "iron_gene_regulation", "iron_oxidation",
                     "possible_iron_oxidation_and_possible_iron_reduction", "probable_iron_reduction",
                     "iron_reduction", "iron_storage", "magnetosome_formation"]
 
             Dict = defaultdict(lambda: defaultdict(list))
-            final = open("%s/FeGenie-geneSummary-clusters.csv" % outDirectory, "r")
+            final = open("%s/fegenie-summary.csv" % outDirectory, "r")
             for i in final:
                 ls = (i.rstrip().split(","))
                 if not re.search(r'#', i):
@@ -2550,10 +2538,10 @@ def main():
                     file = fasta(file)
                     normDict[i] = len(file.keys())
 
-            outHeat = open("%s/FeGenie-heatmap-data.csv" % outDirectory, "w")
-            outHeat.write("X" + ',')
+            outHeat = open("%s/FeGenie-heatmap-data.csv" % (outDirectory), "w")
+            outHeat.write("X")
             for i in sorted(Dict.keys()):
-                outHeat.write(i + ",")
+                outHeat.write("," + i)
             outHeat.write("\n")
 
             for i in cats:
@@ -2561,9 +2549,9 @@ def main():
                 for j in sorted(Dict.keys()):
                     if not re.match(r'#', j):
                         if args.norm:
-                            outHeat.write(str((len(Dict[j][i]) / int(normDict[j])) * float(args.inflation)) + ",")
+                            outHeat.write("," + str((len(Dict[j][i]) / int(normDict[j])) * float(args.inflation)))
                         else:
-                            outHeat.write(str(len(Dict[j][i])) + ",")
+                            outHeat.write("," + str(len(Dict[j][i])))
                 outHeat.write("\n")
 
             outHeat.close()
@@ -2572,9 +2560,8 @@ def main():
 
             # COVERAGE-BASED ABUNDANCE WITH MULTIPLE BAM FILES
 
-            cats = ["iron_aquisition-iron_transport", "iron_aquisition-heme_transport",
-                    "iron_aquisition-heme_oxygenase",
-                    "iron_aquisition-siderophore_synthesis",
+            cats = ["iron_aquisition-iron_transport", "iron_aquisition-heme_transport", "iron_aquisition-heme_oxygenase",
+                    "iron_aquisition-siderophore_synthesis", "iron_aquisition-siderophore_transport",
                     "iron_aquisition-siderophore_transport_potential", "iron_gene_regulation", "iron_oxidation",
                     "possible_iron_oxidation_and_possible_iron_reduction", "probable_iron_reduction",
                     "iron_reduction", "iron_storage", "magnetosome_formation"]
@@ -2598,13 +2585,16 @@ def main():
                     for k in depth:
                         LS = k.rstrip().split("\t")
                         if LS[0] != "contigName":
-                            depthDict[cell][LS[0]] = LS[2]
+                            if args.which_bams == "average":
+                                depthDict[cell][LS[0]] = LS[2]
+                            else:
+                                column = int(args.which_bams)*2 + 1
+                                depthDict[cell][LS[0]] = LS[column]
                             total += float(LS[2])
                     normDict[cell] = total
 
                 except FileNotFoundError:
-                    os.system(
-                        "jgi_summarize_bam_contig_depths --outputDepth %s/%s.depth%s" % (outDirectory, cell, string))
+                    os.system("jgi_summarize_bam_contig_depths --outputDepth %s/%s.depth%s" % (outDirectory, cell, string))
                     print("processing... " + cell)
                     depth = open("%s/%s.depth" % (outDirectory, cell))
                     total = 0
@@ -2616,7 +2606,7 @@ def main():
                     normDict[cell] = total
 
             Dict = defaultdict(lambda: defaultdict(list))
-            final = open("%s/FeGenie-geneSummary-clusters.csv" % outDirectory, "r")
+            final = open("%s/fegenie-summary.csv" % outDirectory, "r")
             for i in final:
                 ls = (i.rstrip().split(","))
                 if not re.search(r'#', i):
@@ -2629,17 +2619,17 @@ def main():
                             gene = ls[3]
                             Dict[cell][process].append(float(depthDict[cell][contig]))
 
-            outHeat = open("%s/FeGenie-heatmap-data.csv" % outDirectory, "w")
-            outHeat.write("X" + ',')
+            outHeat = open("%s/FeGenie-%s-heatmap-data.csv" % (outDirectory, args.which_bams), "w")
+            outHeat.write("X")
             for i in sorted(Dict.keys()):
-                outHeat.write(i + ",")
+                outHeat.write("," + i)
             outHeat.write("\n")
 
             for i in cats:
-                outHeat.write(i + ",")
+                outHeat.write(i)
                 for j in sorted(Dict.keys()):
                     if not re.match(r'#', j):
-                        outHeat.write(str(SUM(Dict[j][i])) + ",")
+                        outHeat.write("," + str(SUM(Dict[j][i])))
                 outHeat.write("\n")
 
             outHeat.close()
@@ -2648,9 +2638,8 @@ def main():
 
             # COVERAGE-BASED ABUNDANCE USING ONLY ONE BAM FILE
 
-            cats = ["iron_aquisition-iron_transport", "iron_aquisition-heme_transport",
-                    "iron_aquisition-heme_oxygenase",
-                    "iron_aquisition-siderophore_synthesis",
+            cats = ["iron_aquisition-iron_transport", "iron_aquisition-heme_transport", "iron_aquisition-heme_oxygenase",
+                    "iron_aquisition-siderophore_synthesis", "iron_aquisition-siderophore_transport",
                     "iron_aquisition-siderophore_transport_potential", "iron_gene_regulation", "iron_oxidation",
                     "possible_iron_oxidation_and_possible_iron_reduction", "probable_iron_reduction",
                     "iron_reduction", "iron_storage", "magnetosome_formation"]
@@ -2678,7 +2667,7 @@ def main():
                 os.system("mv %s.depth %s/" % (args.bam, outDirectory))
 
             Dict = defaultdict(lambda: defaultdict(list))
-            final = open("%s/FeGenie-geneSummary-clusters.csv" % outDirectory, "r")
+            final = open("%s/fegenie-summary.csv" % outDirectory, "r")
             for i in final:
                 ls = (i.rstrip().split(","))
                 if not re.search(r'#', i):
@@ -2691,17 +2680,17 @@ def main():
                             gene = ls[3]
                             Dict[cell][process].append(float(depthDict[contig]))
 
-            outHeat = open("%s/FeGenie-heatmap-data.csv" % outDirectory, "w")
-            outHeat.write("X" + ',')
+            outHeat = open("%s/FeGenie-heatmap-data.csv" % (outDirectory), "w")
+            outHeat.write("X")
             for i in sorted(Dict.keys()):
-                outHeat.write(i + ",")
+                outHeat.write("," + i)
             outHeat.write("\n")
 
             for i in cats:
-                outHeat.write(i + ",")
+                outHeat.write(i)
                 for j in sorted(Dict.keys()):
                     if not re.match(r'#', j):
-                        outHeat.write(str(SUM(Dict[j][i])) + ",")
+                        outHeat.write("," + str(SUM(Dict[j][i])))
                 outHeat.write("\n")
 
         outHeat.close()
@@ -2709,24 +2698,33 @@ def main():
 
         # ******** RUNNING RSCRIPT TO GENERATE PLOTS **************
         if args.makeplots:
-            print(
-                "Running Rscript to generate plots. Do not be alarmed if you see Warning or Error messages from Rscript. "
-                "This will not affect any of the output data that was already created. If you see plots generated, great! "
-                "If not, you can plot the data as you wish on your own, or start an issue on FeGenie's GitHub repository")
+            print("Running Rscript to generate plots. Do not be alarmed if you see Warning or Error messages from Rscript. "
+                  "This will not affect any of the output data that was already created. If you see plots generated, great! "
+                  "If not, you can plot the data as you wish on your own, or start an issue on FeGenie's GitHub repository")
 
-            if args.norm:
-                os.system("Rscript --vanilla %s/DotPlot.R %s/FeGenie-heatmap-data.csv %s/" % (
-                rscriptDir, outDirectory, outDirectory))
-                os.system(
-                    "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-heatmap-data.csv %s/" % (
-                    rscriptDir, outDirectory, outDirectory))
+            if args.bams != "NA":
+                if args.norm:
+                    os.system("Rscript --vanilla %s/DotPlot.R %s/FeGenie-%s-heatmap-data.csv %s/" % (rscriptDir, outDirectory, args.which_bams, outDirectory))
+                    os.system(
+                        "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-%s-heatmap-data.csv %s/" % (rscriptDir, outDirectory, args.which_bams, outDirectory))
+                else:
+                    os.system(
+                        "Rscript --vanilla %s/DotPlot-nonorm.R %s/FeGenie-%s-heatmap-data.csv %s/" % (rscriptDir, outDirectory, args.which_bams, outDirectory))
+                    os.system(
+                        "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-%s-heatmap-data.csv %s/" % (rscriptDir, outDirectory, args.which_bams, outDirectory))
+
+                os.system("mv %s/Fegenie-dotplot.tiff %s/Fegenie-%s-dotplot.tiff" % (outDirectory, outDirectory, args.which_bams))
+
             else:
-                os.system(
-                    "Rscript --vanilla %s/DotPlot-nonorm.R %s/FeGenie-heatmap-data.csv %s/" % (
-                    rscriptDir, outDirectory, outDirectory))
-                os.system(
-                    "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-heatmap-data.csv %s/" % (
-                    rscriptDir, outDirectory, outDirectory))
+                if args.norm:
+                    os.system("Rscript --vanilla %s/DotPlot.R %s/FeGenie-heatmap-data.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+                    os.system(
+                        "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-heatmap-data.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+                else:
+                    os.system(
+                        "Rscript --vanilla %s/DotPlot-nonorm.R %s/FeGenie-heatmap-data.csv %s/" % (rscriptDir, outDirectory, outDirectory))
+                    os.system(
+                        "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-heatmap-data.csv %s/" % (rscriptDir, outDirectory, outDirectory))
 
             print("\n\n\n")
             print("...")
@@ -2791,7 +2789,7 @@ def main():
                                 out.write(i + "," + j + "," + str(hemec) + "," + str(hemeb) + "," + seq + "\n")
             out.close()
 
-        if args.hbm:
+        if args.hematite:
             print("Looking for hematite-binding motifs")
             positive = ["R", "H", "K"]
             negative = ["D", "E"]
@@ -2829,13 +2827,13 @@ def main():
         if args.bam == "NA" and args.bams == "NA":
             cats = ["iron_aquisition-iron_transport", "iron_aquisition-heme_transport",
                     "iron_aquisition-heme_oxygenase",
-                    "iron_aquisition-siderophore_synthesis",
+                    "iron_aquisition-siderophore_synthesis", "iron_aquisition-siderophore_transport",
                     "iron_aquisition-siderophore_transport_potential", "iron_gene_regulation", "iron_oxidation",
                     "possible_iron_oxidation_and_possible_iron_reduction", "probable_iron_reduction",
                     "iron_reduction", "iron_storage", "magnetosome_formation"]
 
             Dict = defaultdict(lambda: defaultdict(list))
-            final = open("%s/FeGenie-geneSummary-clusters.csv" % outDirectory, "r")
+            final = open("%s/fegenie-summary.csv" % outDirectory, "r")
             for i in final:
                 ls = (i.rstrip().split(","))
                 if not re.search(r'#', i):
@@ -2857,20 +2855,20 @@ def main():
                     file = fasta(file)
                     normDict[i] = len(file.keys())
 
-            outHeat = open("%s/FeGenie-heatmap-data.csv" % outDirectory, "w")
-            outHeat.write("X" + ',')
+            outHeat = open("%s/FeGenie-heatmap-data.csv" % (outDirectory), "w")
+            outHeat.write("X")
             for i in sorted(Dict.keys()):
-                outHeat.write(i + ",")
+                outHeat.write("," + i)
             outHeat.write("\n")
 
             for i in cats:
-                outHeat.write(i + ",")
+                outHeat.write(i)
                 for j in sorted(Dict.keys()):
                     if not re.match(r'#', j):
                         if args.norm:
-                            outHeat.write(str((len(Dict[j][i]) / int(normDict[j])) * float(args.inflation)) + ",")
+                            outHeat.write("," + str((len(Dict[j][i]) / int(normDict[j])) * float(args.inflation)))
                         else:
-                            outHeat.write(str(len(Dict[j][i])) + ",")
+                            outHeat.write("," + str(len(Dict[j][i])))
                 outHeat.write("\n")
 
             outHeat.close()
@@ -2881,7 +2879,7 @@ def main():
 
             cats = ["iron_aquisition-iron_transport", "iron_aquisition-heme_transport",
                     "iron_aquisition-heme_oxygenase",
-                    "iron_aquisition-siderophore_synthesis",
+                    "iron_aquisition-siderophore_synthesis", "iron_aquisition-siderophore_transport",
                     "iron_aquisition-siderophore_transport_potential", "iron_gene_regulation", "iron_oxidation",
                     "possible_iron_oxidation_and_possible_iron_reduction", "probable_iron_reduction",
                     "iron_reduction", "iron_storage", "magnetosome_formation"]
@@ -2918,12 +2916,16 @@ def main():
                     for k in depth:
                         LS = k.rstrip().split("\t")
                         if LS[0] != "contigName":
-                            depthDict[cell][LS[0]] = LS[2]
+                            if args.which_bams == "average":
+                                depthDict[cell][LS[0]] = LS[2]
+                            else:
+                                column = int(args.which_bams)*2 + 1
+                                depthDict[cell][LS[0]] = LS[column]
                             total += float(LS[2])
                     normDict[cell] = total
 
             Dict = defaultdict(lambda: defaultdict(list))
-            final = open("%s/FeGenie-geneSummary-clusters.csv" % outDirectory, "r")
+            final = open("%s/fegenie-summary.csv" % outDirectory, "r")
             for i in final:
                 ls = (i.rstrip().split(","))
                 if not re.search(r'#', i):
@@ -2936,17 +2938,17 @@ def main():
                             gene = ls[3]
                             Dict[cell][process].append(float(depthDict[cell][contig]))
 
-            outHeat = open("%s/FeGenie-heatmap-data.csv" % outDirectory, "w")
-            outHeat.write("X" + ',')
+            outHeat = open("%s/FeGenie-%s-heatmap-data.csv" % (outDirectory, args.which_bams), "w")
+            outHeat.write("X")
             for i in sorted(Dict.keys()):
-                outHeat.write(i + ",")
+                outHeat.write("," + i)
             outHeat.write("\n")
 
             for i in cats:
-                outHeat.write(i + ",")
+                outHeat.write(i)
                 for j in sorted(Dict.keys()):
                     if not re.match(r'#', j):
-                        outHeat.write(str(SUM(Dict[j][i])) + ",")
+                        outHeat.write("," + str(SUM(Dict[j][i])))
                 outHeat.write("\n")
 
             outHeat.close()
@@ -2957,7 +2959,7 @@ def main():
 
             cats = ["iron_aquisition-iron_transport", "iron_aquisition-heme_transport",
                     "iron_aquisition-heme_oxygenase",
-                    "iron_aquisition-siderophore_synthesis",
+                    "iron_aquisition-siderophore_synthesis", "iron_aquisition-siderophore_transport",
                     "iron_aquisition-siderophore_transport_potential", "iron_gene_regulation", "iron_oxidation",
                     "possible_iron_oxidation_and_possible_iron_reduction", "probable_iron_reduction",
                     "iron_reduction", "iron_storage", "magnetosome_formation"]
@@ -2985,7 +2987,7 @@ def main():
                 os.system("mv %s.depth %s/" % (args.bam, outDirectory))
 
             Dict = defaultdict(lambda: defaultdict(list))
-            final = open("%s/FeGenie-geneSummary-clusters.csv" % outDirectory, "r")
+            final = open("%s/fegenie-summary.csv" % outDirectory, "r")
             for i in final:
                 ls = (i.rstrip().split(","))
                 if not re.search(r'#', i):
@@ -2998,17 +3000,17 @@ def main():
                             gene = ls[3]
                             Dict[cell][process].append(float(depthDict[contig]))
 
-            outHeat = open("%s/FeGenie-heatmap-data.csv" % outDirectory, "w")
-            outHeat.write("X" + ',')
+            outHeat = open("%s/FeGenie-heatmap-data.csv" % (outDirectory), "w")
+            outHeat.write("X")
             for i in sorted(Dict.keys()):
-                outHeat.write(i + ",")
+                outHeat.write("," + i)
             outHeat.write("\n")
 
             for i in cats:
-                outHeat.write(i + ",")
+                outHeat.write(i)
                 for j in sorted(Dict.keys()):
                     if not re.match(r'#', j):
-                        outHeat.write(str(SUM(Dict[j][i])) + ",")
+                        outHeat.write("," + str(SUM(Dict[j][i])))
                 outHeat.write("\n")
 
         outHeat.close()
@@ -3021,18 +3023,32 @@ def main():
                 "This will not affect any of the output data that was already created. If you see plots generated, great! "
                 "If not, you can plot the data as you wish on your own, or start an issue on FeGenie's GitHub repository")
 
-            if args.norm:
-                os.system("Rscript --vanilla %s/DotPlot.R %s/FeGenie-heatmap-data.csv %s/" % (
-                    rscriptDir, outDirectory, outDirectory))
-                os.system(
-                    "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-heatmap-data.csv %s/" % (
-                        rscriptDir, outDirectory, outDirectory))
+            if args.bams != "NA":
+                if args.norm:
+                    os.system("Rscript --vanilla %s/DotPlot.R %s/FeGenie-%s-heatmap-data.csv %s/" % (rscriptDir, outDirectory, args.which_bams, outDirectory))
+                    os.system(
+                        "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-%s-heatmap-data.csv %s/" % (rscriptDir, outDirectory, args.which_bams, outDirectory))
+                else:
+                    os.system(
+                        "Rscript --vanilla %s/DotPlot-nonorm.R %s/FeGenie-%s-heatmap-data.csv %s/" % (rscriptDir, outDirectory, args.which_bams, outDirectory))
+                    os.system(
+                        "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-%s-heatmap-data.csv %s/" % (rscriptDir, outDirectory, args.which_bams, outDirectory))
+
+                os.system("mv %s/Fegenie-dotplot.tiff %s/Fegenie-%s-dotplot.tiff" % (outDirectory, outDirectory, args.which_bams))
+
             else:
-                os.system(
-                    "Rscript --vanilla %s/DotPlot-nonorm.R %s/FeGenie-heatmap-data.csv %s/" % (
+
+                if args.norm:
+                    os.system("Rscript --vanilla %s/DotPlot.R %s/FeGenie-heatmap-data.csv %s/" % (
+                    rscriptDir, outDirectory, outDirectory))
+
+                    os.system("Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-heatmap-data.csv %s/" % (
                         rscriptDir, outDirectory, outDirectory))
-                os.system(
-                    "Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-heatmap-data.csv %s/" % (
+                else:
+                    os.system("Rscript --vanilla %s/DotPlot-nonorm.R %s/FeGenie-heatmap-data.csv %s/" % (
+                        rscriptDir, outDirectory, outDirectory))
+
+                    os.system("Rscript --vanilla %s/dendro-heatmap.R %s/FeGenie-heatmap-data.csv %s/" % (
                         rscriptDir, outDirectory, outDirectory))
 
             print("\n\n\n")

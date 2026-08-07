@@ -519,7 +519,8 @@ def main():
         os.listdir(args.out)
         print("Looks like you already have a directory with the name: " + args.out)
 
-        answer = input("Would you like WspGenie to proceed and potentially overwrite files in this directory? (y/n): ")
+        # answer = input("Would you like WspGenie to proceed and potentially overwrite files in this directory? (y/n): ")
+        answer = "y"
         if answer == "y":
             print("Ok, proceeding with analysis!")
             try:

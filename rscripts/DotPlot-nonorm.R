@@ -3,7 +3,6 @@ library.path <- .libPaths()
 library("ggpubr", lib.loc = library.path)
 library("ggplot2", lib.loc = library.path)
 library("reshape", lib.loc = library.path)
-library("tidyverse", lib.loc = library.path)
 library("argparse", lib.loc = library.path)
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -46,7 +45,8 @@ FeGenie.meta.plot <- ggplot(FeGenie.data.melt, aes(x = X, y = Iron_category, siz
                             "iron_aquisition-heme_uptake" = "Heme uptake", 
                             "iron_aquisition-heme_lyase" = "Heme lyase", 
                             "iron_aquisition-siderophore_synthesis" = "Siderophore synthesis",
-                            "iron_aquisition-siderophore_uptake" = "Siderophore uptake", 
+                            "iron_aquisition-siderophore_transport_potential" = "Siderophore transport potential",
+                            "iron_aquisition-siderophore_transport" = "Siderophore transport",
                             "iron_gene_regulation" = "Iron gene regulation", 
                             "iron_oxidation" = "Iron oxidation", 
                             "iron_reduction" = "Iron reduction", 
@@ -55,8 +55,8 @@ FeGenie.meta.plot <- ggplot(FeGenie.data.melt, aes(x = X, y = Iron_category, siz
         panel.border = element_rect(colour="black", size=1, fill=NA),
         strip.background=element_rect(fill='white', colour='white'),
         strip.text = element_text(face="bold", size=10),
-        panel.grid.major = element_line(size = 0),
-        panel.grid.minor = element_line(size = 0),
+        panel.grid.major = element_line(size = 0.1, colour = "gray"),
+        panel.grid.minor = element_line(size = 0.1, colour = "gray"),
         axis.text = element_text(size=12, colour="black"),
         axis.title = element_text(face="bold", size=14),
         axis.text.x = element_text(vjust = 1, angle = 45, color = "black", size = 12, hjust=1),

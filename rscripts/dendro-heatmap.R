@@ -11,6 +11,7 @@ args <- commandArgs(trailingOnly = TRUE)
 fegenie <- read.csv(args[1])
 l = length(fegenie)
 fegenie.sub <- t(fegenie[,2:l])
+print(fegenie.sub)
 
 fegenie.matrix <- as.matrix(fegenie.sub)
 
@@ -29,7 +30,8 @@ dendro.plot <- ggdendrogram(data = fegenie.dendro, rotate = TRUE)
 #dev.off()
 
 fit <- pvclust(fegenie[,2:l], method.hclust="ward", method.dist="euclidean")
-outfile = paste(args[2], "Fegenie-dendro.tiff", sep = "/", collapse = NULL)tiff(outfile, units="in", width=20, height=12, res=300)
+outfile = paste(args[2], "Fegenie-dendro.tiff", sep = "/", collapse = NULL)
+tiff(outfile, units="in", width=20, height=12, res=300)
 tiff(outfile, units="in", width=20, height=12, res=300)
 plot(fit, lwd = 4)
 pvrect(fit, alpha=.95, lwd = 4)
